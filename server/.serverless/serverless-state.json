@@ -10,6 +10,10 @@
       "runtime": "nodejs12.x",
       "region": "eu-central-1",
       "versionFunctions": true,
+      "environment": {
+        "DB_USER": "ua_video_torrent_qcs3cqejcudbcetyvucdva2xntseearvtgl62ezpjzfhqm",
+        "DB_PASSWORD": "eJuYRxTNLU6wAQC3jnLvT7WSuq2VfgQDr9rFW5Q5WaLS9BgcE55SF6H7ygG7j9yYRPzB6jPab89etX3X"
+      },
       "compiledCloudFormationTemplate": {
         "AWSTemplateFormatVersion": "2010-09-09",
         "Description": "The AWS CloudFormation template for this Serverless application",
@@ -186,13 +190,19 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/serverlessSetup/dev/1683442728698-2023-05-07T06:58:48.698Z/serverlessSetup.zip"
+                "S3Key": "serverless/serverlessSetup/dev/1683460105937-2023-05-07T11:48:25.937Z/serverlessSetup.zip"
               },
               "Handler": "src/aws-functions/hello.handler",
               "Runtime": "nodejs12.x",
               "FunctionName": "serverlessSetup-dev-hello",
               "MemorySize": 128,
               "Timeout": 5,
+              "Environment": {
+                "Variables": {
+                  "DB_USER": "ua_video_torrent_qcs3cqejcudbcetyvucdva2xntseearvtgl62ezpjzfhqm",
+                  "DB_PASSWORD": "eJuYRxTNLU6wAQC3jnLvT7WSuq2VfgQDr9rFW5Q5WaLS9BgcE55SF6H7ygG7j9yYRPzB6jPab89etX3X"
+                }
+              },
               "Role": {
                 "Fn::GetAtt": [
                   "IamRoleLambdaExecution",
@@ -211,13 +221,19 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/serverlessSetup/dev/1683442728698-2023-05-07T06:58:48.698Z/serverlessSetup.zip"
+                "S3Key": "serverless/serverlessSetup/dev/1683460105937-2023-05-07T11:48:25.937Z/serverlessSetup.zip"
               },
               "Handler": "src/aws-functions/goodbye.handler",
               "Runtime": "nodejs12.x",
               "FunctionName": "serverlessSetup-dev-goodbye",
               "MemorySize": 128,
               "Timeout": 5,
+              "Environment": {
+                "Variables": {
+                  "DB_USER": "ua_video_torrent_qcs3cqejcudbcetyvucdva2xntseearvtgl62ezpjzfhqm",
+                  "DB_PASSWORD": "eJuYRxTNLU6wAQC3jnLvT7WSuq2VfgQDr9rFW5Q5WaLS9BgcE55SF6H7ygG7j9yYRPzB6jPab89etX3X"
+                }
+              },
               "Role": {
                 "Fn::GetAtt": [
                   "IamRoleLambdaExecution",
@@ -236,13 +252,19 @@
                 "S3Bucket": {
                   "Ref": "ServerlessDeploymentBucket"
                 },
-                "S3Key": "serverless/serverlessSetup/dev/1683442728698-2023-05-07T06:58:48.698Z/serverlessSetup.zip"
+                "S3Key": "serverless/serverlessSetup/dev/1683460105937-2023-05-07T11:48:25.937Z/serverlessSetup.zip"
               },
               "Handler": "src/aws-functions/index.handler",
               "Runtime": "nodejs12.x",
               "FunctionName": "serverlessSetup-dev-index",
               "MemorySize": 128,
               "Timeout": 5,
+              "Environment": {
+                "Variables": {
+                  "DB_USER": "ua_video_torrent_qcs3cqejcudbcetyvucdva2xntseearvtgl62ezpjzfhqm",
+                  "DB_PASSWORD": "eJuYRxTNLU6wAQC3jnLvT7WSuq2VfgQDr9rFW5Q5WaLS9BgcE55SF6H7ygG7j9yYRPzB6jPab89etX3X"
+                }
+              },
               "Role": {
                 "Fn::GetAtt": [
                   "IamRoleLambdaExecution",
@@ -254,34 +276,34 @@
               "IndexLogGroup"
             ]
           },
-          "HelloLambdaVersionvCi5tojQ06d2rS8zmavynpQ4WidGFpoL4FVeknmVU": {
+          "HelloLambdaVersionBSBz32AgLt5krjoTlUKjmnW3wKvyMmYjpvdSIqmU": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "HelloLambdaFunction"
               },
-              "CodeSha256": "QRqIknRDPLNa9wH6E/cWhBd6pnyNcB4Mhi3JUzVycSM="
+              "CodeSha256": "UsOliKgIlOY7h/n2orkTqAWnPn0641hmgZnBdnnx5zg="
             }
           },
-          "GoodbyeLambdaVersion7EcX4AzBS9CCFfFVMRdyUtpTReV2mBBxX0M0qAq6I": {
+          "GoodbyeLambdaVersionAb6J0mrJ0gS6WKakGKklbRgWJIiMMpwtpo2R98q228": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "GoodbyeLambdaFunction"
               },
-              "CodeSha256": "QRqIknRDPLNa9wH6E/cWhBd6pnyNcB4Mhi3JUzVycSM="
+              "CodeSha256": "UsOliKgIlOY7h/n2orkTqAWnPn0641hmgZnBdnnx5zg="
             }
           },
-          "IndexLambdaVersionmLcpk0ztnKplazsMnXS2AMOqRiR3eCi7f4u12xWz60": {
+          "IndexLambdaVersion6KsFndqOW8QRL2Vh8fjKkZJbLWWZLLHZebYVFyM": {
             "Type": "AWS::Lambda::Version",
             "DeletionPolicy": "Retain",
             "Properties": {
               "FunctionName": {
                 "Ref": "IndexLambdaFunction"
               },
-              "CodeSha256": "QRqIknRDPLNa9wH6E/cWhBd6pnyNcB4Mhi3JUzVycSM="
+              "CodeSha256": "UsOliKgIlOY7h/n2orkTqAWnPn0641hmgZnBdnnx5zg="
             }
           },
           "ApiGatewayRestApi": {
@@ -488,7 +510,7 @@
               "IndexLambdaPermissionApiGateway"
             ]
           },
-          "ApiGatewayDeployment1683442689702": {
+          "ApiGatewayDeployment1683460067712": {
             "Type": "AWS::ApiGateway::Deployment",
             "Properties": {
               "RestApiId": {
@@ -626,7 +648,7 @@
           "HelloLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "HelloLambdaVersionvCi5tojQ06d2rS8zmavynpQ4WidGFpoL4FVeknmVU"
+              "Ref": "HelloLambdaVersionBSBz32AgLt5krjoTlUKjmnW3wKvyMmYjpvdSIqmU"
             },
             "Export": {
               "Name": "sls-serverlessSetup-dev-HelloLambdaFunctionQualifiedArn"
@@ -635,7 +657,7 @@
           "GoodbyeLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "GoodbyeLambdaVersion7EcX4AzBS9CCFfFVMRdyUtpTReV2mBBxX0M0qAq6I"
+              "Ref": "GoodbyeLambdaVersionAb6J0mrJ0gS6WKakGKklbRgWJIiMMpwtpo2R98q228"
             },
             "Export": {
               "Name": "sls-serverlessSetup-dev-GoodbyeLambdaFunctionQualifiedArn"
@@ -644,7 +666,7 @@
           "IndexLambdaFunctionQualifiedArn": {
             "Description": "Current Lambda function version",
             "Value": {
-              "Ref": "IndexLambdaVersionmLcpk0ztnKplazsMnXS2AMOqRiR3eCi7f4u12xWz60"
+              "Ref": "IndexLambdaVersion6KsFndqOW8QRL2Vh8fjKkZJbLWWZLLHZebYVFyM"
             },
             "Export": {
               "Name": "sls-serverlessSetup-dev-IndexLambdaFunctionQualifiedArn"
@@ -765,7 +787,8 @@
     "plugins": [
       "serverless-plugin-typescript",
       "serverless-offline",
-      "serverless-tscpaths"
+      "serverless-tscpaths",
+      "serverless-dotenv-plugin"
     ],
     "pluginsData": {},
     "functions": {
@@ -793,7 +816,7 @@
         "memory": 128,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "HelloLambdaVersionvCi5tojQ06d2rS8zmavynpQ4WidGFpoL4FVeknmVU"
+        "versionLogicalId": "HelloLambdaVersionBSBz32AgLt5krjoTlUKjmnW3wKvyMmYjpvdSIqmU"
       },
       "goodbye": {
         "memorySize": 128,
@@ -819,7 +842,7 @@
         "memory": 128,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "GoodbyeLambdaVersion7EcX4AzBS9CCFfFVMRdyUtpTReV2mBBxX0M0qAq6I"
+        "versionLogicalId": "GoodbyeLambdaVersionAb6J0mrJ0gS6WKakGKklbRgWJIiMMpwtpo2R98q228"
       },
       "index": {
         "memorySize": 128,
@@ -845,7 +868,7 @@
         "memory": 128,
         "runtime": "nodejs12.x",
         "vpc": {},
-        "versionLogicalId": "IndexLambdaVersionmLcpk0ztnKplazsMnXS2AMOqRiR3eCi7f4u12xWz60"
+        "versionLogicalId": "IndexLambdaVersion6KsFndqOW8QRL2Vh8fjKkZJbLWWZLLHZebYVFyM"
       }
     },
     "configValidationMode": "warn",
@@ -867,7 +890,7 @@
     "artifact": "/home/mgerasika/Documents/git/ua-video-torrent/server/.build/.serverless/serverlessSetup.zip"
   },
   "package": {
-    "artifactDirectoryName": "serverless/serverlessSetup/dev/1683442728698-2023-05-07T06:58:48.698Z",
+    "artifactDirectoryName": "serverless/serverlessSetup/dev/1683460105937-2023-05-07T11:48:25.937Z",
     "artifact": "serverlessSetup.zip"
   }
 }

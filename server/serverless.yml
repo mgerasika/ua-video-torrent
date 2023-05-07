@@ -39,3 +39,4 @@ plugins:
     - serverless-plugin-typescript
     - serverless-offline
     - serverless-tscpaths
+    - serverless-dotenv-plugin

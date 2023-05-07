@@ -1,18 +1,15 @@
 {
     "functions": [
         {
-            "source": ".",
+            "source": "functions",
             "codebase": "default",
             "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log"],
-            "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"],
-            "runtime": "nodejs18",
-            "locationId": "europe-central2"
+            "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run build"]
         }
     ],
     "hosting": {
         "public": "dist",
         "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
-        "rewrites": [{ "source": "**", "function": "app" }],
-        "locationId": "europe-central2"
+        "rewrites": [{ "source": "**", "function": "app" }]
     }
 }

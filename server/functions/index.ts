@@ -1,8 +1,8 @@
 import 'module-alias/register';
 const functions = require('firebase-functions');
 import * as admin from 'firebase-admin';
-import { app as expressApp } from '../../src/express-app';
-import { dbService } from '../../src/controller/db.service';
+import { app as expressApp } from '../src/express-app';
+import { dbService } from '../src/controller/db.service';
 import { API_URL } from '@server/constants/api-url.constant';
 
 admin.initializeApp();
