@@ -1,0 +1,41 @@
+service: serverlessSetup
+
+provider:
+    name: aws
+    stage: dev
+    runtime: nodejs12.x
+    region: eu-central-1
+
+# functions
+functions:
+    hello:
+        memorySize: 128
+        timeout: 5
+        handler: src/aws-functions/hello.handler
+        events: # The events that trigger this function
+            - http:
+                  path: serverlessSetup/hello
+                  method: get
+    goodbye:
+        memorySize: 128
+        timeout: 5
+        handler: src/aws-functions/goodbye.handler
+        events:
+            - http:
+                  path: serverlessSetup/goodbye
+                  method: post
+
+    index:
+        memorySize: 128
+        timeout: 5
+        handler: src/aws-functions/index.handler
+        events:
+            - http:
+                  path: /{all+}
+                  method: ANY
+
+# Serverless plugins
+plugins:
+    - serverless-plugin-typescript
+    - serverless-offline
+    - serverless-tscpaths

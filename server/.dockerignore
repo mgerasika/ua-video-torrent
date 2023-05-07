@@ -1,0 +1,12 @@
+node_modules/*
+*/node_modules/*
+.next/*
+.vscode/*
+.git/*
+storybook-static/*
+.husky/*
+build/*
+out/*
+*/dist/*
+.idea/*
+*/.idea/*
