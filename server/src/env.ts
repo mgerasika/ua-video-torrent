@@ -1,7 +1,7 @@
 export const ENV = {
-    user: 'postgres',
+    user: process.env.DB_USER,
     host: '178.210.131.101',
     database: 'ua-video-torrent',
-    password: 'Zxc123=-',
+    password: process.env.DB_PASSWORD,
     port: 5432,
 };
