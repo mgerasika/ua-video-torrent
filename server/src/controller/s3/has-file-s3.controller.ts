@@ -23,21 +23,19 @@ app.get(API_URL.api.s3.get.id().hasFile.toString(), async (req: IRequest, res: I
 });
 
 export const hasFileS3Async = async ({ id }: { id: string }): Promise<IPromiseReturn<void>> => {
-    return toPromise(() =>
-        axios.get(`https://toloka.to/download.php?id=${id}`, HURTOM_HEADERS).then((response) => {
-            const params = {
-                Bucket: S3_BUCKED_NAME,
-                Key: `${id}.torrent`,
-            };
+    return toPromise(() => {
+        const params = {
+            Bucket: S3_BUCKED_NAME,
+            Key: `${id}.torrent`,
+        };
 
-            return new Promise((resolve, reject) => {
-                s3.headObject(params, function (err: any, data: any) {
-                    if (err) {
-                        return reject(err);
-                    }
-                    resolve();
-                });
+        return new Promise((resolve, reject) => {
+            s3.headObject(params, function (err: any, data: any) {
+                if (err) {
+                    return reject(err);
+                }
+                resolve();
             });
-        }),
-    );
+        });
+    });
 };

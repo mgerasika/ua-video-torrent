@@ -4,7 +4,6 @@ import { getImdbAllAsync } from '../imdb/get-imdb-list.controller';
 import { postImdbAsync } from '../imdb/post-imdb.controller';
 import { getMoviesAllAsync } from '../movie/get-movie-list.controller';
 import { putMovieAsync } from '../movie/put-movie.controller';
-import { getAllHurtomPagesAsync } from './get-hurtom-all.controller';
 import { MovieDto } from '@server/dto/movie.dto';
 import { dbService } from '../db.service';
 import Joi from 'joi';
@@ -33,14 +32,14 @@ app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IRespons
         return res.status(400).send(validateError);
     }
 
-    const [logs, error] = await setup(req.body);
+    const [logs, error] = await setupAsync(req.body);
     if (error) {
         return res.status(400).send(error);
     }
     res.send(logs);
 });
 
-export const setup = async ({
+export const setupAsync = async ({
     updateHurtom,
     updateImdb,
     uploadTorrentToS3FromMovieDB,
@@ -48,9 +47,8 @@ export const setup = async ({
     const logs: string[] = [];
 
     const [movies] = await getMoviesAllAsync();
-
     if (updateHurtom) {
-        const [hurtomItems] = await getAllHurtomPagesAsync();
+        const [hurtomItems] = await dbService.tools.getAllHurtomPagesAsync();
         if (hurtomItems) {
             logs.push(`hurtom items received count=${hurtomItems.length}`);
 

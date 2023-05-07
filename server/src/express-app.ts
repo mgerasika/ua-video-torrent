@@ -7,13 +7,12 @@ const cors = require('cors');
 app.use(bodyParser.json());
 app.use(cors());
 
-if (process.env.NODE_ENV === 'development') {
-    const morgan = require('morgan');
-    morgan.token('body', (req: any, res: any) => {
-        return JSON.stringify(req.body);
-    });
-    app.use(morgan(':method :url :status :response-time ms - :res[content-length] :body'));
-}
+const morgan = require('morgan');
+morgan.token('body', (req: any, res: any) => {
+    return JSON.stringify(req.body);
+});
+app.use(morgan(':method :url :status :response-time ms - :res[content-length] :body'));
+
 export type IExpressRequest = {};
 export type IExpressResponse<TSuccess, TError> = {
     json: (data: TSuccess | TError) => void;

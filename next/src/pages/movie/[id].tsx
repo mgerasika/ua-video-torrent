@@ -25,7 +25,11 @@ export async function getStaticPaths() {
 
   return {
     paths: data.data
-      .filter(movie => !movie.enName.includes('%'))
+      .filter(
+        movie =>
+          !movie.enName.includes('%') &&
+          movie.movies.some(subMovie => subMovie.aws_s3_torrent_url),
+      )
       .map(movie => {
         return { params: { id: movie.enName } }
       }),

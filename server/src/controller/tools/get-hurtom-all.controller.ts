@@ -68,7 +68,7 @@ export const HURTOM_HEADERS = {
         'sec-ch-ua': 'Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104',
         'sec-ch-ua-mobile': '?0',
         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        cookie: 'toloka_ssl=1; SL_G_WPT_TO=en; SL_GWPT_Show_Hide_tmp=1; SL_wptGlobTipTmp=1; toloka_sid=3934feba1d836224a9e23ed1e7b3fd1b; toloka_data=a%3A2%3A%7Bs%3A11%3A%22autologinid%22%3Bs%3A32%3A%22180fb77e7e8abf58eae58fc3a96cced2%22%3Bs%3A6%3A%22userid%22%3Bi%3A318894%3B%7D',
+        cookie: 'toloka_ssl=1; SL_G_WPT_TO=en; SL_GWPT_Show_Hide_tmp=1; SL_wptGlobTipTmp=1; toloka_sid=bf63c65b8f2848eef6cdf31af25ef28e; toloka_data=a%3A2%3A%7Bs%3A11%3A%22autologinid%22%3Bs%3A32%3A%22d58ad66967263ce80722e2e600d0b910%22%3Bs%3A6%3A%22userid%22%3Bi%3A318894%3B%7D',
     },
 };
 const YEAR_REGEXP = /\((\d{4})\)/;
