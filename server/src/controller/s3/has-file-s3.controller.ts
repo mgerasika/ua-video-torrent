@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IExpressResponse, app } from '@server/express-app';
-import { IPromiseReturn, toPromise } from '@server/utils/to-promise.util';
+import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 import { HURTOM_HEADERS } from '../tools/get-hurtom-all.controller';
 import { S3_BUCKED_NAME, s3 } from './s3.service';
 
@@ -22,8 +22,8 @@ app.get(API_URL.api.s3.get.id().hasFile.toString(), async (req: IRequest, res: I
     }
 });
 
-export const hasFileS3Async = async ({ id }: { id: string }): Promise<IPromiseReturn<void>> => {
-    return toPromise(() => {
+export const hasFileS3Async = async ({ id }: { id: string }): Promise<IQueryReturn<void>> => {
+    return toQuery(() => {
         const params = {
             Bucket: S3_BUCKED_NAME,
             Key: `${id}.torrent`,

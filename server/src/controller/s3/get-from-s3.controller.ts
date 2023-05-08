@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IExpressResponse, app } from '@server/express-app';
-import { IPromiseReturn, toPromise } from '@server/utils/to-promise.util';
+import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 import { HURTOM_HEADERS } from '../tools/get-hurtom-all.controller';
 import { S3_BUCKED_NAME, s3 } from './s3.service';
 
@@ -22,8 +22,8 @@ app.get(API_URL.api.s3.get.id().toString(), async (req: IRequest, res: IResponse
     }
 });
 
-export const getFromS3Async = async ({ id }: { id: string }): Promise<IPromiseReturn<Blob>> => {
-    return toPromise(() =>
+export const getFromS3Async = async ({ id }: { id: string }): Promise<IQueryReturn<Blob>> => {
+    return toQuery(() =>
         axios.get(`https://toloka.to/download.php?id=${id}`, HURTOM_HEADERS).then((response) => {
             const params = {
                 Bucket: S3_BUCKED_NAME,

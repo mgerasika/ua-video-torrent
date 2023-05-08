@@ -29,6 +29,14 @@ interface IApiUrl {
             };
             upload: IUrlItem;
         };
+        cdn: {
+            get: {
+                id: (id?: string) => {
+                    hasFile: IUrlItem;
+                };
+            };
+            upload: IUrlItem;
+        };
     };
 }
 
@@ -54,6 +62,14 @@ export const API_URL = createUrls<IApiUrl>({
             searchImdbInfo: EMPTY_URL_ITEM,
         },
         s3: {
+            get: {
+                id: (id?: string) => ({
+                    hasFile: EMPTY_URL_ITEM,
+                }),
+            },
+            upload: EMPTY_URL_ITEM,
+        },
+        cdn: {
             get: {
                 id: (id?: string) => ({
                     hasFile: EMPTY_URL_ITEM,

@@ -12,6 +12,7 @@ import { validateSchema } from '@server/utils/validate-schema.util';
 export interface ISetupBody {
     updateHurtom: boolean;
     updateImdb: boolean;
+    uploadToCdn: boolean;
     uploadTorrentToS3FromMovieDB: boolean;
 }
 
@@ -25,7 +26,9 @@ const schema = Joi.object<ISetupBody>({
     updateHurtom: Joi.boolean().required(),
     updateImdb: Joi.boolean().required(),
     uploadTorrentToS3FromMovieDB: Joi.boolean().required(),
+    uploadToCdn: Joi.boolean().required(),
 });
+
 app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IResponse) => {
     const [, validateError] = validateSchema(schema, req.body);
     if (validateError) {
@@ -43,6 +46,7 @@ export const setupAsync = async ({
     updateHurtom,
     updateImdb,
     uploadTorrentToS3FromMovieDB,
+    uploadToCdn,
 }: ISetupBody): Promise<[string[], undefined]> => {
     const logs: string[] = [];
 
@@ -131,9 +135,57 @@ export const setupAsync = async ({
                 };
             });
 
-            await fns.reduce((acc, curr: any) => {
-                return acc.then(curr);
-            }, Promise.resolve());
+            if (fns.length) {
+                await fns.reduce((acc, curr: any) => {
+                    return acc.then(curr);
+                }, Promise.resolve());
+            }
+        }
+    }
+
+    if (uploadToCdn) {
+        if (movies) {
+            const fns = movies.map((movie: MovieDto) => {
+                return async () => {
+                    if (!movie.aws_s3_torrent_url && movie.download_id) {
+                        const [, hasFileError] = await dbService.cdn.hasFileCDNAsync({ id: movie.download_id });
+                        if (hasFileError) {
+                            const [successUpload, errorUpload] = await dbService.cdn.uploadFileToCDNAsync({
+                                hurtomDownloadId: movie.download_id,
+                            });
+                            if (successUpload) {
+                                logs.push(`success upload to cdn`, movie.download_id);
+                            } else {
+                                logs.push(`error upload to cdn`, errorUpload);
+                            }
+
+                            if (successUpload) {
+                                await dbService.movie.putMovieAsync(movie.id, {
+                                    ...movie,
+                                    aws_s3_torrent_url: successUpload,
+                                });
+                            }
+                        } else {
+                            await dbService.movie.putMovieAsync(movie.id, {
+                                ...movie,
+                                aws_s3_torrent_url: movie.download_id,
+                            });
+                        }
+                    } else if (!movie.download_id) {
+                        await putMovieAsync(movie.id, {
+                            ...movie,
+                            aws_s3_torrent_url: '',
+                        });
+                    }
+                    return Promise.resolve();
+                };
+            });
+
+            if (fns.length) {
+                await fns.reduce((acc, curr: any) => {
+                    return acc.then(curr);
+                }, Promise.resolve());
+            }
         }
     }
 
