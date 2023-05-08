@@ -148,10 +148,12 @@ export const setupAsync = async ({
             const fns = movies.map((movie: MovieDto) => {
                 return async () => {
                     if (!movie.aws_s3_torrent_url && movie.download_id) {
-                        const [, hasFileError] = await dbService.cdn.hasFileCDNAsync({ id: movie.download_id });
+                        const fileName = `${movie.download_id}.torrent`;
+                        const [, hasFileError] = await dbService.cdn.hasFileCDNAsync({ fileName: fileName });
                         if (hasFileError) {
                             const [successUpload, errorUpload] = await dbService.cdn.uploadFileToCDNAsync({
-                                hurtomDownloadId: movie.download_id,
+                                fileName: fileName,
+                                hurtomId: movie.download_id,
                             });
                             if (successUpload) {
                                 logs.push(`success upload to cdn`, movie.download_id);

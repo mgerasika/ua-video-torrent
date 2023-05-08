@@ -8,14 +8,14 @@ import { cdnService } from './cdn.service';
 
 interface IRequest {
     params: {
-        id: string;
+        fileName: string;
     };
 }
 
 interface IResponse extends IExpressResponse<Blob, void> {}
 
 app.get(API_URL.api.cdn.get.id().toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await getFromCDNAsync({ id: req.params.id });
+    const [data, error] = await getFromCDNAsync({ fileName: req.params.fileName });
     if (error) {
         res.status(400).send(error);
     } else {
@@ -23,10 +23,10 @@ app.get(API_URL.api.cdn.get.id().toString(), async (req: IRequest, res: IRespons
     }
 });
 
-export const getFromCDNAsync = async ({ id }: { id: string }): Promise<IQueryReturn<Blob>> => {
+export const getFromCDNAsync = async ({ fileName }: { fileName: string }): Promise<IQueryReturn<Blob>> => {
     return await toQuery(() => {
         return new Promise((resolve, reject) => {
-            fs.readFile(cdnService.cdnFile(`${id}.torrent`), (err: unknown, data) => {
+            fs.readFile(cdnService.cdnFile(fileName), (err: unknown, data) => {
                 if (err) {
                     return reject(err);
                 }

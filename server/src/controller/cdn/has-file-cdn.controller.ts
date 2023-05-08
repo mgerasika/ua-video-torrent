@@ -14,7 +14,7 @@ interface IRequest {
 interface IResponse extends IExpressResponse<void, void> {}
 
 app.get(API_URL.api.cdn.get.id().hasFile.toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await hasFileCDNAsync({ id: req.params.id });
+    const [data, error] = await hasFileCDNAsync({ fileName: req.params.id });
     if (error) {
         res.status(400).send(error);
     } else {
@@ -22,10 +22,10 @@ app.get(API_URL.api.cdn.get.id().hasFile.toString(), async (req: IRequest, res: 
     }
 });
 
-export const hasFileCDNAsync = async ({ id }: { id: string }): Promise<IQueryReturn<void>> => {
+export const hasFileCDNAsync = async ({ fileName: fileName }: { fileName: string }): Promise<IQueryReturn<void>> => {
     return await toQuery(() => {
         return new Promise(async (resolve, reject) => {
-            const res = fs.existsSync(cdnService.cdnFile(`${id}.torrent`));
+            const res = fs.existsSync(cdnService.cdnFile(fileName));
             if (res) {
                 resolve();
             } else {
