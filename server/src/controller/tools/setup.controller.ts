@@ -99,41 +99,44 @@ export const setupAsync = async ({
 
     if (uploadTorrentToS3FromMovieDB) {
         if (movies) {
-            const fns = movies.map((movie: MovieDto) => {
-                return async () => {
-                    if (!movie.aws_s3_torrent_url && movie.download_id) {
-                        const [, hasFileError] = await dbService.s3.hasFileS3Async({ id: movie.download_id });
-                        if (hasFileError) {
-                            const [successUpload, errorUpload] = await dbService.s3.uploadFileToAmazonAsync({
-                                hurtomDownloadId: movie.download_id,
-                            });
-                            if (successUpload) {
-                                logs.push(`success upload to s3`, movie.download_id);
-                            } else {
-                                logs.push(`error upload to s3`, errorUpload);
-                            }
+            const fns = movies
+                .filter((m) => m.download_id === '142850')
+                .map((movie: MovieDto) => {
+                    return async () => {
+                        if (true || (!movie.aws_s3_torrent_url && movie.download_id)) {
+                            const [, hasFileError] = await dbService.s3.hasFileS3Async({ id: movie.download_id });
+                            if (true || hasFileError) {
+                                const [successUpload, errorUpload] = await dbService.s3.uploadFileToAmazonAsync({
+                                    hurtomDownloadId: movie.download_id,
+                                });
+                                console.log('success upload', successUpload);
+                                if (successUpload) {
+                                    logs.push(`success upload to s3`, movie.download_id);
+                                } else {
+                                    logs.push(`error upload to s3`, errorUpload);
+                                }
 
-                            if (successUpload) {
+                                if (successUpload) {
+                                    await dbService.movie.putMovieAsync(movie.id, {
+                                        ...movie,
+                                        aws_s3_torrent_url: successUpload,
+                                    });
+                                }
+                            } else {
                                 await dbService.movie.putMovieAsync(movie.id, {
                                     ...movie,
-                                    aws_s3_torrent_url: successUpload,
+                                    aws_s3_torrent_url: movie.download_id,
                                 });
                             }
-                        } else {
-                            await dbService.movie.putMovieAsync(movie.id, {
+                        } else if (!movie.download_id) {
+                            await putMovieAsync(movie.id, {
                                 ...movie,
-                                aws_s3_torrent_url: movie.download_id,
+                                aws_s3_torrent_url: '',
                             });
                         }
-                    } else if (!movie.download_id) {
-                        await putMovieAsync(movie.id, {
-                            ...movie,
-                            aws_s3_torrent_url: '',
-                        });
-                    }
-                    return Promise.resolve();
-                };
-            });
+                        return Promise.resolve();
+                    };
+                });
 
             if (fns.length) {
                 await fns.reduce((acc, curr: any) => {

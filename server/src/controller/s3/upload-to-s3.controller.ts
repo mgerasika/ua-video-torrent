@@ -4,6 +4,8 @@ import { IExpressResponse, app } from '@server/express-app';
 import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 import { HURTOM_HEADERS } from '../tools/get-hurtom-all.controller';
 import { S3_BUCKED_NAME, s3 } from './s3.service';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 const fs = require('fs');
 
 // permissions for s3 bucket
@@ -34,42 +36,39 @@ export const uploadFileToAmazonAsync = async ({
 }: {
     hurtomDownloadId: string;
 }): Promise<IQueryReturn<string>> => {
-    return toQuery(() =>
-        axios
-            .get(`https://toloka.to/download.php?id=${hurtomDownloadId}`, {
-                ...HURTOM_HEADERS,
-                responseType: 'arraybuffer',
-                responseEncoding: 'utf-8',
-            })
-            .then((response) => {
-                const fileContent = response.data as string;
+    console.log('uploadFileToAmazonAsync start');
+    return await toQuery(
+        async () =>
+            await axios
+                .get(`https://toloka.to/download.php?id=${hurtomDownloadId}`, {
+                    ...HURTOM_HEADERS,
+                    responseType: 'arraybuffer',
+                    responseEncoding: 'utf-8',
+                })
+                .then(async (response) => {
+                    const fileContent = response.data as string;
 
-                console.log('fileContent', fileContent);
-                if (fileContent?.includes('<script')) {
-                    throw 'File not found';
-                }
-                // const os = require('os');
-                // const desktopPath = os.homedir() + '/Desktop/hello.txt';
-                // fs.writeFileSync(desktopPath, fileContent);
+                    if (fileContent?.includes('<script')) {
+                        throw 'File not found';
+                    }
 
-                return new Promise((resolve, reject) => {
-                    s3.upload(
-                        {
-                            Bucket: S3_BUCKED_NAME,
-                            Key: `${hurtomDownloadId}.torrent`,
-                            Body: fileContent,
-                            ContentType: 'application/x-bittorrent',
-                            ContentLength: fileContent.length,
-                        },
-                        function (err: any, data: any) {
-                            if (err) {
-                                return reject(err);
-                            }
-                            console.log(`File uploaded successfully. ${data.Location}`);
-                            resolve(data.Location);
-                        },
-                    );
-                });
-            }),
+                    const command = new GetObjectCommand({
+                        Bucket: S3_BUCKED_NAME,
+                        Key: `${hurtomDownloadId}.torrent`,
+                        // ContentType: 'application/x-bittorrent',
+                    });
+
+                    const sign = await getSignedUrl(s3, command, { expiresIn: 3600 });
+
+                    const putObj = new PutObjectCommand({
+                        Bucket: S3_BUCKED_NAME,
+                        Key: `${hurtomDownloadId}.torrent`,
+                        ContentType: 'application/x-bittorrent',
+                        Body: fileContent,
+                    });
+
+                    await s3.send(putObj);
+                    return sign;
+                }),
     );
 };

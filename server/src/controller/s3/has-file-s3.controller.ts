@@ -4,6 +4,7 @@ import { IExpressResponse, app } from '@server/express-app';
 import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 import { HURTOM_HEADERS } from '../tools/get-hurtom-all.controller';
 import { S3_BUCKED_NAME, s3 } from './s3.service';
+const { headObject } = require('@aws-sdk/s3-request-presigner');
 
 interface IRequest {
     params: {
@@ -30,7 +31,7 @@ export const hasFileS3Async = async ({ id }: { id: string }): Promise<IQueryRetu
         };
 
         return new Promise((resolve, reject) => {
-            s3.headObject(params, function (err: any, data: any) {
+            headObject(s3, params, function (err: any, data: any) {
                 if (err) {
                     return reject(err);
                 }

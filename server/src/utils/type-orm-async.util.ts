@@ -18,7 +18,7 @@ const getDataSource = (): DataSource => {
         port: ENV.port,
         entities: [MovieDto, ImdbDto],
         synchronize: true,
-        poolSize: 1,
+        poolSize: 10,
         logging: false,
     });
     return _dataSource;
