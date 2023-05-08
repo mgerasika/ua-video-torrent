@@ -1,22 +1,26 @@
 import tw from 'twin.macro'
 import { IGroupMovieResponse, api } from '../api/api.generated'
 import { MoviesComponent } from '../features/movies/components/movies.component'
+import { getMoviesAsync } from '../api/get-movies'
+import MoviesListByPage, { PAGE_SIZE } from './[page]'
 
 interface IProps {
   movies: IGroupMovieResponse[]
 }
-const App = ({ movies }: IProps) => <MoviesComponent movies={movies} />
+const App = ({ movies }: IProps) => {
+  return (
+    <>
+      <MoviesListByPage page={'0'} movies={movies} />
+    </>
+  )
+}
 
 export async function getStaticProps() {
-  const data = await api.movieGroupSearchGet({})
+  const movies = await getMoviesAsync()
 
   return {
     props: {
-      movies: data.data.filter(
-        movie =>
-          !movie.enName.includes('%') &&
-          movie.movies.some(subMovie => subMovie.aws_s3_torrent_url),
-      ),
+      movies: movies.slice(0, PAGE_SIZE),
     },
   }
 }

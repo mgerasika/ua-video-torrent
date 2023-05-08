@@ -1,4 +1,5 @@
 import { IGroupMovieResponse, api } from '../../api/api.generated'
+import { getMoviesAsync } from '../../api/get-movies'
 import { MovieDetailed } from '../../features/movie-detailed/components/movie-detailed.component'
 
 interface IProps {
@@ -18,21 +19,12 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
 }
 
 export async function getStaticPaths() {
-  const data = await api.movieGroupSearchGet({})
-  if (data.error) {
-    throw data.error
-  }
+  const movies = await getMoviesAsync()
 
   return {
-    paths: data.data
-      .filter(
-        movie =>
-          !movie.enName.includes('%') &&
-          movie.movies.some(subMovie => subMovie.aws_s3_torrent_url),
-      )
-      .map(movie => {
-        return { params: { id: movie.enName } }
-      }),
+    paths: movies.map(movie => {
+      return { params: { id: movie.enName } }
+    }),
     fallback: false,
   }
 }
