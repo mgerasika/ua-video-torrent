@@ -3,6 +3,7 @@ import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { API_URL } from '@server/constants/api-url.constant';
 import { dbService } from '../db.service';
 import { ISearchMovieResponse } from './search-list-movie.controller';
+import { IMovieResponse } from './get-movie-list.controller';
 
 export interface IGroupMovieResponse {
     enName: string;
@@ -33,7 +34,7 @@ export const groupSearchMoviesAsync = async (): Promise<[IGroupMovieResponse[] |
     const [movies, error] = await dbService.movie.searchMoviesAsync();
     if (movies) {
         const unique = Object.keys(
-            movies.reduce((acc: any, it) => {
+            movies.reduce((acc: any, it: any) => {
                 acc[it.en_name || ''] = it.en_name;
                 return acc;
             }, {}),
@@ -41,7 +42,7 @@ export const groupSearchMoviesAsync = async (): Promise<[IGroupMovieResponse[] |
 
         const data = unique
             .map((key) => {
-                const filteredMovies = movies.filter((m) => m.en_name === key);
+                const filteredMovies = movies.filter((m: IMovieResponse) => m.en_name === key);
                 const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
                 return {
                     enName: key,

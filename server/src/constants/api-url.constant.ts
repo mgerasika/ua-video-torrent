@@ -31,7 +31,7 @@ interface IApiUrl {
         };
         cdn: {
             get: {
-                id: (id?: string) => {
+                file_name: (id?: string) => {
                     hasFile: IUrlItem;
                 };
             };
@@ -71,7 +71,7 @@ export const API_URL = createUrls<IApiUrl>({
         },
         cdn: {
             get: {
-                id: (id?: string) => ({
+                file_name: (id?: string) => ({
                     hasFile: EMPTY_URL_ITEM,
                 }),
             },

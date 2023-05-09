@@ -1,6 +1,7 @@
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
+import { IQueryReturn } from '@server/utils/to-query.util';
 
 export interface IImdbResultResponse {
     Title: string;
@@ -38,6 +39,7 @@ export interface IImdbRating {
 interface ISearchImdbBody {
     enName: string;
     year: string;
+    id?: string;
 }
 interface IRequest extends IExpressRequest {
     body: ISearchImdbBody;
@@ -50,7 +52,7 @@ interface IError {
 interface IResponse extends IExpressResponse<IImdbResultResponse, IError> {}
 
 app.post(API_URL.api.tools.searchImdbInfo.toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await searchImdbMovieInfoAsync(req.body.enName, req.body.year);
+    const [data, error] = await searchImdbMovieInfoAsync(req.body.enName, req.body.year, req.body.id);
     if (error) {
         res.status(400).send();
     } else {
@@ -59,23 +61,24 @@ app.post(API_URL.api.tools.searchImdbInfo.toString(), async (req: IRequest, res:
 });
 
 export const searchImdbMovieInfoAsync = async (
-    enMovieName: string,
-    year: string,
-): Promise<[IImdbResultResponse | undefined, string | undefined]> => {
+    enMovieName?: string,
+    year?: string,
+    id?: string,
+): Promise<IQueryReturn<IImdbResultResponse>> => {
     // const apiKey1 = '1768a885'; //mgerasika@gmail.com
     // const apiKey2 = 'f06cfff4'; //mger@ciklum.com
     const apiKey3 = '7a355028'; //oddbox.cypress@gmail.com
     if (!enMovieName) {
-        throw Error('Empty movie');
+        return [, 'Empty movie'];
     }
+    const p = id ? { i: id } : { t: enMovieName, y: year };
     return axios({
         method: 'get',
         url: 'http://www.omdbapi.com/',
         params: {
             apikey: apiKey3,
-            t: enMovieName,
-            y: year,
-            type: 'movie', // вказуємо, що шукаємо фільм
+            type: 'movie',
+            ...p,
         },
     }).then((r: any) => {
         const data = r.data;

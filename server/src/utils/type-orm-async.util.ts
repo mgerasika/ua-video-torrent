@@ -1,8 +1,10 @@
 import { ImdbDto } from '@server/dto/imdb.dto';
 import { MovieDto } from '@server/dto/movie.dto';
 import { ENV } from '@server/env';
-import { ISqlReturn } from '@server/interfaces/sql-return.interface';
 import { DataSource } from 'typeorm';
+import { IQueryReturn } from './to-query.util';
+
+const IS_DEBUG = ENV.node_env === 'development';
 
 let _dataSource: DataSource | undefined = undefined;
 const getDataSource = (): DataSource => {
@@ -11,10 +13,10 @@ const getDataSource = (): DataSource => {
     }
     _dataSource = new DataSource({
         type: 'postgres',
-        username: ENV.user,
+        username: IS_DEBUG ? ENV.owner_user : ENV.user,
         host: ENV.host,
         database: ENV.database,
-        password: ENV.password,
+        password: IS_DEBUG ? ENV.owner_password : ENV.password,
         port: ENV.port,
         entities: [MovieDto, ImdbDto],
         synchronize: true,
@@ -24,22 +26,19 @@ const getDataSource = (): DataSource => {
     return _dataSource;
 };
 
-export async function typeOrmAsync<T>(callback: (client: DataSource) => Promise<T>): Promise<ISqlReturn<T>> {
-    let data: T | undefined = undefined;
-    let error;
-    let client;
+export async function typeOrmAsync<T>(callback: (client: DataSource) => Promise<IQueryReturn<T>>): Promise<IQueryReturn<T>> {
+    let client = getDataSource();
     try {
-        client = await getDataSource().initialize();
+        if (!client.isInitialized) {
+            client = await getDataSource().initialize();
+        }
         if (!client.isInitialized) {
             return [, 'Client is not Initialized'];
         }
-        data = (await callback(client)) as T;
+        const data: IQueryReturn<T> = (await callback(client)) as IQueryReturn<T>;
+        return data;
     } catch (ex) {
         console.log('typeOrm error ', ex);
-        error = ex;
-    } finally {
-        client?.destroy();
+        return [, ex];
     }
-
-    return [data, error];
 }

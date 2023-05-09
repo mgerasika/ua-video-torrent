@@ -32,6 +32,6 @@ export const putMovieAsync = async (id: string, data: Omit<MovieDto, 'id'>) => {
         if (!entityToUpdate) {
             throw 'Entity not found';
         }
-        return await client.getRepository(MovieDto).save({ ...entityToUpdate, ...data });
+        return [await client.getRepository(MovieDto).save({ ...entityToUpdate, ...data })];
     });
 };

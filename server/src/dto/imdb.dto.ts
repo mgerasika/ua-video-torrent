@@ -5,6 +5,9 @@ export class ImdbDto {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
+    @Column({ nullable: true, type: 'text', unique: true })
+    original_id!: string;
+
     @Column({ nullable: true, type: 'text' })
     en_name!: string;
 

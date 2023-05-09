@@ -14,6 +14,7 @@ export interface IMovieResponse {
     download_id: string;
     size: number;
     aws_s3_torrent_url: string;
+    imdb_original_id?: string;
 }
 
 interface IRequest extends IExpressRequest {
@@ -36,6 +37,6 @@ app.get(API_URL.api.movie.toString(), async (req: IRequest, res: IResponse) => {
 
 export const getMoviesAllAsync = async () => {
     return typeOrmAsync<MovieDto[]>(async (client) => {
-        return await client.getRepository(MovieDto).find();
+        return [await client.getRepository(MovieDto).find()];
     });
 };

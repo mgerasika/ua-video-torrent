@@ -12,19 +12,17 @@ export const useScrollEnd = ({ onScrollTop, onScrollEnd }: IProps) => {
         window.document.documentElement.offsetHeight -
         (window.scrollY + window.document.documentElement.clientHeight)
 
-      if (scrollBottom <= 2) {
+      if (scrollBottom <= 5) {
         onScrollEnd && onScrollEnd()
       } else if (window.scrollY === 0) {
         onScrollTop && onScrollTop()
       }
     }
 
-    console.log('subscripte on scroll')
     window.addEventListener('scroll', handleScroll)
 
     // clean up the observer when the component unmounts
     return (): void => {
-      console.log('unsubscribe scroll')
       window.removeEventListener('scroll', handleScroll)
     }
   }, [onScrollEnd, onScrollTop])

@@ -21,7 +21,7 @@ app.post(API_URL.api.imdb.toString(), async (req: IRequest, res: IResponse) => {
 });
 
 export const postImdbAsync = async (data: Omit<ImdbDto, 'id'>) => {
-    return typeOrmAsync<ImdbDto>(async (client) => {
-        return await client.getRepository(ImdbDto).save(data);
+    return await typeOrmAsync<ImdbDto>(async (client) => {
+        return [await client.getRepository(ImdbDto).save(data)];
     });
 };

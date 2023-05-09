@@ -8,14 +8,14 @@ import { cdnService } from './cdn.service';
 
 interface IRequest {
     params: {
-        fileName: string;
+        file_name: string;
     };
 }
 
 interface IResponse extends IExpressResponse<Blob, void> {}
 
-app.get(API_URL.api.cdn.get.id().toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await getFromCDNAsync({ fileName: req.params.fileName });
+app.get(API_URL.api.cdn.get.file_name().toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await getFromCDNAsync({ fileName: req.params.file_name });
     if (error) {
         res.status(400).send(error);
     } else {

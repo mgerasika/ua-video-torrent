@@ -7,14 +7,14 @@ import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 
 interface IRequest {
     params: {
-        id: string;
+        file_name: string;
     };
 }
 
 interface IResponse extends IExpressResponse<void, void> {}
 
-app.get(API_URL.api.cdn.get.id().hasFile.toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await hasFileCDNAsync({ fileName: req.params.id });
+app.get(API_URL.api.cdn.get.file_name().hasFile.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await hasFileCDNAsync({ fileName: req.params.file_name });
     if (error) {
         res.status(400).send(error);
     } else {
@@ -24,13 +24,6 @@ app.get(API_URL.api.cdn.get.id().hasFile.toString(), async (req: IRequest, res: 
 
 export const hasFileCDNAsync = async ({ fileName: fileName }: { fileName: string }): Promise<IQueryReturn<void>> => {
     return await toQuery(() => {
-        return new Promise(async (resolve, reject) => {
-            const res = fs.existsSync(cdnService.cdnFile(fileName));
-            if (res) {
-                resolve();
-            } else {
-                reject();
-            }
-        });
+        return fs.existsSync(cdnService.cdnFile(fileName)) ? Promise.resolve() : Promise.reject();
     });
 };

@@ -4,14 +4,14 @@
   "author": "",
   "license": "MIT",
   "scripts": {
-    "codegen": "yarn codegen-server && yarn codegen-web && yarn codegen-next",
+    "codegen": "yarn codegen-server && yarn codegen-admin && yarn codegen-next",
     "codegen-server": "cd server && yarn codegen",
-    "codegen-web": "cd web && yarn codegen",
+    "codegen-admin": "cd admin && yarn codegen",
     "codegen-next": "cd next && yarn codegen",
-    "dev": "concurrently --kill-others \"yarn dev-server\" \"yarn dev-web\" ",
+    "dev": "concurrently --kill-others \"yarn dev-server\" \"yarn dev-admin\" ",
     "dev-server": "cd server && yarn dev",
-    "dev-web": "cd web && yarn dev",
-    "deploy": "concurrently --kill-others \"cd next && yarn deploy\" \"cd web && yarn deploy\" \"cd server && yarn deploy\" "
+    "dev-admin": "cd admin && yarn dev",
+    "deploy": "concurrently --kill-others \"cd next && yarn deploy\" \"cd admin && yarn deploy\" \"cd server && yarn deploy\" "
   },
   "devDependencies": {
     "concurrently": "^8.0.1"

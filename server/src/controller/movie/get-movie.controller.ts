@@ -25,8 +25,8 @@ export const getMovieByIdAsync = async (id: string) => {
     return typeOrmAsync<MovieDto>(async (client) => {
         const entity = await client.getRepository(MovieDto).findOne({ where: { id } });
         if (!entity) {
-            throw 'entity not found';
+            return [, 'entity not found'];
         }
-        return entity;
+        return [entity];
     });
 };

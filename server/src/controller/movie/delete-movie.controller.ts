@@ -26,8 +26,8 @@ export const deleteMovieAsync = async (id: string) => {
     return typeOrmAsync<MovieDto>(async (client) => {
         const entityToDelete = await client.getRepository(MovieDto).findOne({ where: { id } });
         if (!entityToDelete) {
-            throw 'entity not found';
+            return [undefined, 'entity not found'];
         }
-        return await client.getRepository(MovieDto).remove(entityToDelete);
+        return [await client.getRepository(MovieDto).remove(entityToDelete)];
     });
 };

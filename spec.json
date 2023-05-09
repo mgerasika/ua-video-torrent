@@ -1,5 +1,99 @@
 {
   "paths": {
+    "api/cdn/get/{file_name}": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "file_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Blob"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/cdn/get/{file_name}has-file/": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "file_name",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/cdn/upload/": {
+      "post": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": {
+                  "id": "string",
+                  "fileName": "string"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "api/imdb/{id}": {
       "delete": {
         "operationId": "",
@@ -768,7 +862,8 @@
           "poster",
           "imdb_rating",
           "year",
-          "json"
+          "json",
+          "original_id"
         ],
         "properties": {
           "id": {
@@ -788,6 +883,9 @@
           },
           "json": {
             "type": "string"
+          },
+          "original_id": {
+            "type": "string"
           }
         }
       },
@@ -798,7 +896,8 @@
           "poster",
           "imdb_rating",
           "year",
-          "json"
+          "json",
+          "original_id"
         ],
         "properties": {
           "en_name": {
@@ -814,6 +913,9 @@
             "type": "integer"
           },
           "json": {
+            "type": "string"
+          },
+          "original_id": {
             "type": "string"
           }
         }
@@ -825,7 +927,8 @@
           "poster",
           "imdb_rating",
           "year",
-          "json"
+          "json",
+          "original_id"
         ],
         "properties": {
           "en_name": {
@@ -841,6 +944,9 @@
             "type": "integer"
           },
           "json": {
+            "type": "string"
+          },
+          "original_id": {
             "type": "string"
           }
         }
@@ -889,6 +995,9 @@
           },
           "aws_s3_torrent_url": {
             "type": "string"
+          },
+          "imdb_original_id": {
+            "type": "string"
           }
         }
       },
@@ -923,6 +1032,7 @@
           "poster",
           "imdb_rating",
           "year",
+          "original_id",
           "imdb_id",
           "ua_name",
           "href",
@@ -947,6 +1057,9 @@
           "year": {
             "type": "integer"
           },
+          "original_id": {
+            "type": "string"
+          },
           "imdb_id": {
             "type": "string"
           },
@@ -966,6 +1079,9 @@
             "type": "integer"
           },
           "aws_s3_torrent_url": {
+            "type": "string"
+          },
+          "imdb_original_id": {
             "type": "string"
           }
         }
@@ -1010,6 +1126,9 @@
           },
           "aws_s3_torrent_url": {
             "type": "string"
+          },
+          "imdb_original_id": {
+            "type": "string"
           }
         }
       },
@@ -1052,6 +1171,9 @@
             "type": "integer"
           },
           "aws_s3_torrent_url": {
+            "type": "string"
+          },
+          "imdb_original_id": {
             "type": "string"
           }
         }
@@ -1106,6 +1228,9 @@
             "type": "string"
           },
           "year": {
+            "type": "string"
+          },
+          "id": {
             "type": "string"
           }
         }
@@ -1252,6 +1377,8 @@
         "required": [
           "updateHurtom",
           "updateImdb",
+          "uploadToCdn",
+          "searchImdb",
           "uploadTorrentToS3FromMovieDB"
         ],
         "properties": {
@@ -1259,6 +1386,12 @@
             "type": "boolean"
           },
           "updateImdb": {
+            "type": "boolean"
+          },
+          "uploadToCdn": {
+            "type": "boolean"
+          },
+          "searchImdb": {
             "type": "boolean"
           },
           "uploadTorrentToS3FromMovieDB": {

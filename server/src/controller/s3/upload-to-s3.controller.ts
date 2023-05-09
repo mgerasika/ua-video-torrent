@@ -37,38 +37,30 @@ export const uploadFileToAmazonAsync = async ({
     hurtomDownloadId: string;
 }): Promise<IQueryReturn<string>> => {
     console.log('uploadFileToAmazonAsync start');
-    return await toQuery(
-        async () =>
-            await axios
-                .get(`https://toloka.to/download.php?id=${hurtomDownloadId}`, {
-                    ...HURTOM_HEADERS,
-                    responseType: 'arraybuffer',
-                    responseEncoding: 'utf-8',
-                })
-                .then(async (response) => {
-                    const fileContent = response.data as string;
 
-                    if (fileContent?.includes('<script')) {
-                        throw 'File not found';
-                    }
+    const [response] = await toQuery(() => axios.get(`https://toloka.to/download.php?id=${id}`, HURTOM_HEADERS));
 
-                    const command = new GetObjectCommand({
-                        Bucket: S3_BUCKED_NAME,
-                        Key: `${hurtomDownloadId}.torrent`,
-                        // ContentType: 'application/x-bittorrent',
-                    });
+    const fileContent = response?.data as string;
 
-                    const sign = await getSignedUrl(s3, command, { expiresIn: 3600 });
+    if (fileContent?.includes('<script')) {
+        return [, 'File not found'];
+    }
 
-                    const putObj = new PutObjectCommand({
-                        Bucket: S3_BUCKED_NAME,
-                        Key: `${hurtomDownloadId}.torrent`,
-                        ContentType: 'application/x-bittorrent',
-                        Body: fileContent,
-                    });
+    const command = new GetObjectCommand({
+        Bucket: S3_BUCKED_NAME,
+        Key: `${hurtomDownloadId}.torrent`,
+        // ContentType: 'application/x-bittorrent',
+    });
 
-                    await s3.send(putObj);
-                    return sign;
-                }),
-    );
+    const [sign] = await toQuery(async () => await getSignedUrl(s3, command, { expiresIn: 3600 }));
+
+    const putObj = new PutObjectCommand({
+        Bucket: S3_BUCKED_NAME,
+        Key: `${hurtomDownloadId}.torrent`,
+        ContentType: 'application/x-bittorrent',
+        Body: fileContent,
+    });
+
+    await s3.send(putObj);
+    return Promise.resolve([sign || '']);
 };

@@ -25,8 +25,8 @@ export const deleteImdbAsync = async (id: string) => {
     return typeOrmAsync<ImdbDto>(async (client) => {
         const entityToDelete = await client.getRepository(ImdbDto).findOne({ where: { id } });
         if (!entityToDelete) {
-            throw 'entity not found';
+            return [, 'entity not found'];
         }
-        return await client.getRepository(ImdbDto).remove(entityToDelete);
+        return [await client.getRepository(ImdbDto).remove(entityToDelete)];
     });
 };

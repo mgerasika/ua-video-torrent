@@ -25,8 +25,8 @@ export const getImdbByIdAsync = async (id: string) => {
     return typeOrmAsync<ImdbDto>(async (client) => {
         const entity = await client.getRepository(ImdbDto).findOne({ where: { id } });
         if (!entity) {
-            throw 'entity not found';
+            return [, 'entity not found'];
         }
-        return entity;
+        return [entity];
     });
 };

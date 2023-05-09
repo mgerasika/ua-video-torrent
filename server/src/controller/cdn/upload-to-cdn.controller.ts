@@ -37,28 +37,26 @@ export const uploadFileToCDNAsync = async ({
     hurtomId: string;
     fileName: string;
 }): Promise<IQueryReturn<string>> => {
-    return await toQuery(() =>
-        axios
-            .get(`https://toloka.to/download.php?id=${hurtomId}`, {
-                ...HURTOM_HEADERS,
-                responseType: 'arraybuffer',
-                responseEncoding: 'utf-8',
-            })
-            .then((response) => {
-                const fileContent = response.data as string;
-
-                if (fileContent?.includes('<script')) {
-                    throw 'File not found';
-                }
-
-                return new Promise((resolve, reject) => {
-                    fs.writeFile(cdnService.cdnFile(fileName), fileContent, (err: unknown) => {
-                        if (err) {
-                            return reject(error);
-                        }
-                        return resolve(ENV.cdn + fileName);
-                    });
-                });
-            }),
+    const [response] = await toQuery(() =>
+        axios.get(`https://toloka.to/download.php?id=${hurtomId}`, {
+            ...HURTOM_HEADERS,
+            responseType: 'arraybuffer',
+            responseEncoding: 'utf-8',
+        }),
     );
+
+    const fileContent = response?.data as string;
+
+    if (fileContent?.includes('<script')) {
+        throw 'File not found';
+    }
+
+    return new Promise((resolve, reject) => {
+        fs.writeFile(cdnService.cdnFile(fileName), fileContent, (err: unknown) => {
+            if (err) {
+                return reject([, error]);
+            }
+            return resolve([ENV.cdn + fileName]);
+        });
+    });
 };

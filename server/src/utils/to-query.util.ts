@@ -1,14 +1,11 @@
-export type IQueryReturn<T> = [T | undefined, any];
+export type IQueryReturn<T> = [T, any] | [undefined, any] | [T];
 
 export async function toQuery<T>(callback: () => Promise<T>): Promise<IQueryReturn<T>> {
-    let data: T | undefined = undefined;
-    let error;
     try {
-        data = (await callback()) as T;
+        const data = (await callback()) as T;
+        return [data, undefined];
     } catch (ex) {
-        error = ex || 'empty error';
-    } finally {
+        const error = (ex as Error) || 'empty error';
+        return [undefined, error];
     }
-
-    return [data, error];
 }

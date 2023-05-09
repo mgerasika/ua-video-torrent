@@ -24,11 +24,12 @@ app.put(API_URL.api.imdb.id().toString(), async (req: IRequest, res: IResponse) 
 });
 
 export const putImdbAsync = async (id: string, data: Omit<ImdbDto, 'id'>) => {
-    return typeOrmAsync<ImdbDto>(async (client) => {
+    return await typeOrmAsync<ImdbDto>(async (client) => {
         const entityToUpdate = await client.getRepository(ImdbDto).findOne({ where: { id } });
         if (!entityToUpdate) {
-            throw 'Entity not found';
+            return [, 'Entity not found'];
         }
-        return await client.getRepository(ImdbDto).save({ ...entityToUpdate, ...data });
+        return [await client.getRepository(ImdbDto).save({ ...entityToUpdate, ...data })];
     });
+    [];
 };

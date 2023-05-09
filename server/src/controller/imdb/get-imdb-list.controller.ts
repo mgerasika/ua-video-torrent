@@ -10,6 +10,7 @@ export interface IImdbResponse {
     imdb_rating: number;
     year: number;
     json: string;
+    original_id: string;
 }
 
 interface IRequest extends IExpressRequest {
@@ -32,6 +33,6 @@ app.get(API_URL.api.imdb.toString(), async (req: IRequest, res: IResponse) => {
 
 export const getImdbAllAsync = async () => {
     return typeOrmAsync<ImdbDto[]>(async (client) => {
-        return await client.getRepository(ImdbDto).find();
+        return [await client.getRepository(ImdbDto).find()];
     });
 };
