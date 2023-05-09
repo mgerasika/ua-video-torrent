@@ -17,9 +17,13 @@ interface IApiUrl {
             id: (id?: string) => IUrlItem;
         };
         tools: {
-            getHurtomAll: IUrlItem;
             searchImdbInfo: IUrlItem;
             setup: IUrlItem;
+        };
+        parser: {
+            getHurtomAll: {
+                id: (id?: string) => IUrlItem;
+            };
         };
         s3: {
             get: {
@@ -57,9 +61,13 @@ export const API_URL = createUrls<IApiUrl>({
             id: (id?: string) => EMPTY_URL_ITEM,
         },
         tools: {
-            getHurtomAll: EMPTY_URL_ITEM,
             setup: EMPTY_URL_ITEM,
             searchImdbInfo: EMPTY_URL_ITEM,
+        },
+        parser: {
+            getHurtomAll: {
+                id: (id?: string) => EMPTY_URL_ITEM,
+            },
         },
         s3: {
             get: {

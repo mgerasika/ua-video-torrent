@@ -37,8 +37,8 @@ export async function typeOrmAsync<T>(callback: (client: DataSource) => Promise<
         }
         const data: IQueryReturn<T> = (await callback(client)) as IQueryReturn<T>;
         return data;
-    } catch (ex) {
-        console.log('typeOrm error ', ex);
-        return [, ex];
+    } catch (error) {
+        console.log('typeOrm error ', error);
+        return [, error];
     }
 }

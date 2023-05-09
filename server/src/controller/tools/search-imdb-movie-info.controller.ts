@@ -54,10 +54,10 @@ interface IResponse extends IExpressResponse<IImdbResultResponse, IError> {}
 app.post(API_URL.api.tools.searchImdbInfo.toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await searchImdbMovieInfoAsync(req.body.enName, req.body.year, req.body.id);
     if (error) {
-        res.status(400).send();
-    } else {
-        res.send(data);
+        return res.status(400).send();
     }
+
+    return res.send(data);
 });
 
 export const searchImdbMovieInfoAsync = async (
@@ -65,18 +65,16 @@ export const searchImdbMovieInfoAsync = async (
     year?: string,
     id?: string,
 ): Promise<IQueryReturn<IImdbResultResponse>> => {
-    // const apiKey1 = '1768a885'; //mgerasika@gmail.com
-    // const apiKey2 = 'f06cfff4'; //mger@ciklum.com
-    const apiKey3 = '7a355028'; //oddbox.cypress@gmail.com
-    if (!enMovieName) {
-        return [, 'Empty movie'];
-    }
+    const apiKey1 = '1768a885'; //mgerasika@gmail.com
+    //const apiKey2 = 'f06cfff4'; //mger@ciklum.com
+    //const apiKey3 = '7a355028'; //oddbox.cypress@gmail.com
+
     const p = id ? { i: id } : { t: enMovieName, y: year };
     return axios({
         method: 'get',
         url: 'http://www.omdbapi.com/',
         params: {
-            apikey: apiKey3,
+            apikey: apiKey1,
             type: 'movie',
             ...p,
         },

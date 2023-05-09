@@ -9,3 +9,13 @@ export async function toQuery<T>(callback: () => Promise<T>): Promise<IQueryRetu
         return [undefined, error];
     }
 }
+
+export async function toQueryPromise<T>(
+    callback: (resolve: (data: T) => void, reject: (error: string | Error) => void) => void,
+): Promise<IQueryReturn<T>> {
+    return await toQuery(() => {
+        return new Promise((resolve, reject) => {
+            return callback(resolve, reject);
+        });
+    });
+}

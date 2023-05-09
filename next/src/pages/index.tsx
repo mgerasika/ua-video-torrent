@@ -24,8 +24,19 @@ const App = ({ allMovies }: IProps) => {
   }, [page])
 
   const handleScrollEnd = useCallback(() => {
-    setPage(prev => prev + 1)
+    setPage(prev => {
+      const newVal = prev + 1
+      sessionStorage.setItem('page', newVal + '')
+      return newVal
+    })
   }, [page])
+
+  useEffect(() => {
+    const newPage = sessionStorage.getItem('page')
+    if (newPage) {
+      setPage(+newPage)
+    }
+  }, [])
 
   useScrollEnd({
     onScrollEnd: handleScrollEnd,
@@ -35,7 +46,7 @@ const App = ({ allMovies }: IProps) => {
     <div>
       <MoviesComponent movies={movies} />
       <div tw="p-6 text-center text-2xl">
-        <div onClick={() => setPage(prev => prev + 1)} tw="text-white ">
+        <div onClick={handleScrollEnd} tw="text-white ">
           Next
         </div>
       </div>

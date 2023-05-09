@@ -1,11 +1,11 @@
 import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IExpressResponse, app } from '@server/express-app';
-import { HURTOM_HEADERS } from '../tools/get-hurtom-all.controller';
+import { HURTOM_HEADERS } from '../parser/get-hurtom-all.controller';
 import { cdnService } from './cdn.service';
 import { error } from 'console';
 import { ENV } from '@server/env';
-import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
+import { IQueryReturn, toQuery, toQueryPromise } from '@server/utils/to-query.util';
 const fs = require('fs');
 
 interface IRequest {
@@ -19,15 +19,13 @@ interface IResponse extends IExpressResponse<void, void> {}
 
 app.post(API_URL.api.cdn.upload.toString(), async (req: IRequest, res: IResponse) => {
     if (!req.body.id) {
-        res.status(400).send('id is undefined');
-    } else {
-        const [data, error] = await uploadFileToCDNAsync({ hurtomId: req.body.id, fileName: req.body.fileName });
-        if (error) {
-            res.status(400).send(error);
-        } else {
-            res.send(data);
-        }
+        return res.status(400).send('id is undefined');
     }
+    const [data, error] = await uploadFileToCDNAsync({ hurtomId: req.body.id, fileName: req.body.fileName });
+    if (error) {
+        return res.status(400).send(error);
+    }
+    return res.send(data);
 });
 
 export const uploadFileToCDNAsync = async ({
@@ -48,15 +46,15 @@ export const uploadFileToCDNAsync = async ({
     const fileContent = response?.data as string;
 
     if (fileContent?.includes('<script')) {
-        throw 'File not found';
+        return [, 'File not found'];
     }
 
-    return new Promise((resolve, reject) => {
+    return toQueryPromise((resolve, reject) => {
         fs.writeFile(cdnService.cdnFile(fileName), fileContent, (err: unknown) => {
             if (err) {
-                return reject([, error]);
+                return reject(error as unknown as string);
             }
-            return resolve([ENV.cdn + fileName]);
+            return resolve(ENV.cdn + fileName);
         });
     });
 };

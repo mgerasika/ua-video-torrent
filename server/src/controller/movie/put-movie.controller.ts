@@ -19,18 +19,18 @@ interface IResponse extends IExpressResponse<IMovieResponse, void> {}
 app.put(API_URL.api.movie.id().toString(), async (req: IRequest, res: IResponse) => {
     const [, error] = await putMovieAsync(req.params.id, req.body);
     if (error) {
-        res.status(400).send('error' + error);
-    } else {
-        const [data] = await getMovieByIdAsync(req.params.id);
-        res.send(data);
+        return res.status(400).send('error' + error);
     }
+
+    const [data] = await getMovieByIdAsync(req.params.id);
+    return res.send(data);
 });
 
 export const putMovieAsync = async (id: string, data: Omit<MovieDto, 'id'>) => {
     return typeOrmAsync<MovieDto>(async (client) => {
         const entityToUpdate = await client.getRepository(MovieDto).findOne({ where: { id } });
         if (!entityToUpdate) {
-            throw 'Entity not found';
+            return [, 'Entity not found'];
         }
         return [await client.getRepository(MovieDto).save({ ...entityToUpdate, ...data })];
     });

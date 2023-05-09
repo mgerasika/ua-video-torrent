@@ -8,14 +8,12 @@ interface IProps {
   movies: IGroupMovieResponse[] | undefined
 }
 export const MoviesComponent = ({ movies }: IProps): JSX.Element => {
-  const isMounted = useIsMounted()
-
   useEffect(() => {
     let interval = 0
     const handleScroll = () => {
       interval = window.setTimeout(() => {
         window.sessionStorage.setItem('scrollTop', window.scrollY + '')
-      }, 100)
+      }, 500)
     }
 
     window.addEventListener('scroll', handleScroll)
@@ -27,11 +25,14 @@ export const MoviesComponent = ({ movies }: IProps): JSX.Element => {
   }, [])
 
   useEffect(() => {
-    const position = window.sessionStorage.getItem('scrollTop')
-    if (position) {
-      window.scrollTo({ left: 0, top: +position || 0 })
-    }
-  }, [])
+    const interval = setTimeout(() => {
+      const position = window.sessionStorage.getItem('scrollTop')
+      if (position) {
+        window.scrollTo({ left: 0, top: +position || 0 })
+      }
+    })
+    return () => window.clearInterval(interval)
+  }, [400])
 
   return (
     <div tw="mx-auto container">

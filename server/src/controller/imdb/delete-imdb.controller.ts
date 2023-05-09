@@ -15,10 +15,9 @@ interface IResponse extends IExpressResponse<IImdbResponse, void> {}
 app.delete(API_URL.api.imdb.id().toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await deleteImdbAsync(req.params.id);
     if (error) {
-        res.status(400).send('error' + error);
-    } else {
-        res.send(data);
+        return res.status(400).send('error' + error);
     }
+    return res.send(data);
 });
 
 export const deleteImdbAsync = async (id: string) => {

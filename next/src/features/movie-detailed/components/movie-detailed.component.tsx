@@ -32,19 +32,21 @@ export const MovieDetailed = ({ movie }: IProps): JSX.Element => {
         <div tw="py-2 px-4 order-2">
           <h3 tw="text-white text-xl">Download torrent:</h3>
           <ul>
-            {movie?.movies.map(movie => (
-              <li tw="text-white pb-1" key={movie.href}>
-                <a
-                  tw="cursor-pointer"
-                  target="_blank"
-                  href={movie.aws_s3_torrent_url}
-                  rel="noreferrer"
-                >
-                  {' '}
-                  - {movie.title} - ({movie.size} GB)
-                </a>
-              </li>
-            ))}
+            {movie?.movies
+              .filter(movie => !movie.en_name.includes('%'))
+              .map(movie => (
+                <li tw="text-white pb-1" key={movie.href}>
+                  <a
+                    tw="cursor-pointer"
+                    target="_blank"
+                    href={movie.aws_s3_torrent_url}
+                    rel="noreferrer"
+                  >
+                    {' '}
+                    - {movie.title} - ({movie.size} GB)
+                  </a>
+                </li>
+              ))}
           </ul>
         </div>
       </div>

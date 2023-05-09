@@ -15,10 +15,9 @@ interface IResponse extends IExpressResponse<IMovieResponse, void> {}
 app.get(API_URL.api.movie.id().toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await getMovieByIdAsync(req.params.id);
     if (error) {
-        res.status(400).send('error' + error);
-    } else {
-        res.send(data);
+        return res.status(400).send('error' + error);
     }
+    return res.send(data);
 });
 
 export const getMovieByIdAsync = async (id: string) => {

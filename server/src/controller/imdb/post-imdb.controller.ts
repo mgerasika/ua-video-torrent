@@ -14,10 +14,9 @@ interface IResponse extends IExpressResponse<IImdbResponse, void> {}
 app.post(API_URL.api.imdb.toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await postImdbAsync(req.body);
     if (error) {
-        res.status(400).send('error' + error);
-    } else {
-        res.send(data);
+        return res.status(400).send('error' + error);
     }
+    return res.send(data);
 });
 
 export const postImdbAsync = async (data: Omit<ImdbDto, 'id'>) => {

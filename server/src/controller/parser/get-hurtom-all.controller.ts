@@ -26,9 +26,12 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IHurtomInfoResponse[], void> {}
 
-app.get(API_URL.api.tools.getHurtomAll.toString(), async (req: IRequest, res: IResponse) => {
-    const [data] = await getAllHurtomPagesAsync();
-    res.send(data);
+app.get(API_URL.api.parser.getHurtomAll.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await getAllHurtomPagesAsync();
+    if (error) {
+        return res.status(400).send(error);
+    }
+    return res.send(data);
 });
 
 export const getAllHurtomPagesAsync = async (): Promise<IQueryReturn<IHurtomInfoResponse[]>> => {

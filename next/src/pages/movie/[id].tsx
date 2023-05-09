@@ -10,10 +10,7 @@ export default function Movie({ movie }: IProps) {
 }
 
 export async function getStaticProps({ params }: { params: { id: string } }) {
-  const data = await api.movieGroupSearchIdGet(
-    decodeURIComponent(params.id),
-    {},
-  )
+  const data = await api.movieGroupSearchIdGet(params.id, {})
 
   return { props: { movie: data.data } }
 }
@@ -23,7 +20,7 @@ export async function getStaticPaths() {
 
   return {
     paths: movies.map(movie => {
-      return { params: { id: movie.enName } }
+      return { params: { id: movie.group_id } }
     }),
     fallback: false,
   }

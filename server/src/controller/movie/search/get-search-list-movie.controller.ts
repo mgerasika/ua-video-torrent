@@ -1,8 +1,8 @@
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { sqlAsync } from '@server/utils/sql-async.util';
 import { API_URL } from '@server/constants/api-url.constant';
-import { IImdbResponse } from '../imdb/get-imdb-list.controller';
-import { IMovieResponse } from './get-movie-list.controller';
+import { IImdbResponse } from '../../imdb/get-imdb-list.controller';
+import { IMovieResponse } from '../get-movie-list.controller';
 
 export interface ISearchMovieResponse extends IMovieResponse, Omit<IImdbResponse, 'json'> {}
 
@@ -18,10 +18,9 @@ interface IResponse extends IExpressResponse<ISearchMovieResponse[], void> {}
 app.get(API_URL.api.movie.search.toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await searchMoviesAsync();
     if (error) {
-        res.status(400).send('error' + error);
-    } else {
-        res.send(data);
+        return res.status(400).send('error' + error);
     }
+    return res.send(data);
 });
 
 export const searchMoviesAsync = async () => {

@@ -59,6 +59,7 @@ export interface IMovieResponse {
 }
 export interface IGroupMovieResponse {
   enName: string;
+  group_id: string;
   imdb_rating: number;
   poster: string;
   movies: ISearchMovieResponse[];
@@ -113,6 +114,9 @@ export interface IHurtomInfoResponse {
   size: number;
   downloadId: string;
 }
+export interface IHurtomInfoByIdResponse {
+  imdb_original_id: string;
+}
 export interface ISearchImdbBody {
   enName: string;
   year: string;
@@ -158,6 +162,7 @@ export interface ISetupBody {
   updateImdb: boolean;
   uploadToCdn: boolean;
   searchImdb: boolean;
+  searchImdbIdInHurtom: boolean;
   uploadTorrentToS3FromMovieDB: boolean;
 }
 export type TCdnGetFileNameGetError = "" | "undefined";
@@ -173,13 +178,14 @@ export type TMovieIdGetError = "" | "undefined";
 export type TMovieIdPutError = "" | "undefined";
 export type TMovieGetError = "" | "undefined";
 export type TMoviePostError = "" | "undefined";
-export type TMovieGroupSearchIdGetError = "" | "undefined";
 export type TMovieGroupSearchGetError = "" | "undefined";
+export type TMovieGroupSearchIdGetError = "" | "undefined";
 export type TMovieSearchGetError = "" | "undefined";
+export type TParserGetHurtomAllGetError = "" | "undefined";
+export type TParserGetHurtomAllIdGetError = "" | "undefined";
 export type TS3GetIdGetError = "" | "undefined";
 export type TS3GetIdHasFileGetError = "" | "undefined";
 export type TS3UploadPostError = "" | "undefined";
-export type TToolsGetHurtomAllGetError = "" | "undefined";
 export type TToolsSearchImdbInfoPostError = "" | "undefined";
 export type TToolsSetupPostError = "" | "undefined";
 export type TPartialErrorCodes =
@@ -196,13 +202,14 @@ export type TPartialErrorCodes =
   | TMovieIdPutError
   | TMovieGetError
   | TMoviePostError
-  | TMovieGroupSearchIdGetError
   | TMovieGroupSearchGetError
+  | TMovieGroupSearchIdGetError
   | TMovieSearchGetError
+  | TParserGetHurtomAllGetError
+  | TParserGetHurtomAllIdGetError
   | TS3GetIdGetError
   | TS3GetIdHasFileGetError
   | TS3UploadPostError
-  | TToolsGetHurtomAllGetError
   | TToolsSearchImdbInfoPostError
   | TToolsSetupPostError
   | "";
@@ -299,6 +306,13 @@ export const createApiRequest = (rs: IRequestService) => ({
     IBEError<TMoviePostError>
   > => rs.post(formatUrl(API_SERVER_URL + `api/movie/`), body),
 
+  movieGroupSearchGet: (
+    query: { page?: number; limit?: number } | undefined
+  ): CustomPromise<
+    CustomAxiosResponse<Array<IGroupMovieResponse>, TMovieGroupSearchGetError>,
+    IBEError<TMovieGroupSearchGetError>
+  > => rs.get(formatUrl(API_SERVER_URL + `api/movie/group-search/`, query)),
+
   movieGroupSearchIdGet: (
     id: string,
     query: { page?: number; limit?: number } | undefined
@@ -308,19 +322,29 @@ export const createApiRequest = (rs: IRequestService) => ({
   > =>
     rs.get(formatUrl(API_SERVER_URL + `api/movie/group-search/${id}`, query)),
 
-  movieGroupSearchGet: (
-    query: { page?: number; limit?: number } | undefined
-  ): CustomPromise<
-    CustomAxiosResponse<Array<IGroupMovieResponse>, TMovieGroupSearchGetError>,
-    IBEError<TMovieGroupSearchGetError>
-  > => rs.get(formatUrl(API_SERVER_URL + `api/movie/group-search/`, query)),
-
   movieSearchGet: (
     query: { page?: number; limit?: number } | undefined
   ): CustomPromise<
     CustomAxiosResponse<Array<ISearchMovieResponse>, TMovieSearchGetError>,
     IBEError<TMovieSearchGetError>
   > => rs.get(formatUrl(API_SERVER_URL + `api/movie/search/`, query)),
+
+  parserGetHurtomAllGet: (
+    query: { page?: number; limit?: number } | undefined
+  ): CustomPromise<
+    CustomAxiosResponse<
+      Array<IHurtomInfoResponse>,
+      TParserGetHurtomAllGetError
+    >,
+    IBEError<TParserGetHurtomAllGetError>
+  > => rs.get(formatUrl(API_SERVER_URL + `api/parser/get-hurtom-all/`, query)),
+
+  parserGetHurtomAllIdGet: (
+    id: string
+  ): CustomPromise<
+    CustomAxiosResponse<IHurtomInfoByIdResponse, TParserGetHurtomAllIdGetError>,
+    IBEError<TParserGetHurtomAllIdGetError>
+  > => rs.get(formatUrl(API_SERVER_URL + `api/parser/get-hurtom-all/${id}`)),
 
   s3GetIdGet: (
     id: string
@@ -340,13 +364,6 @@ export const createApiRequest = (rs: IRequestService) => ({
     CustomAxiosResponse<void, TS3UploadPostError>,
     IBEError<TS3UploadPostError>
   > => rs.post(formatUrl(API_SERVER_URL + `api/s3/upload/`)),
-
-  toolsGetHurtomAllGet: (
-    query: { page?: number; limit?: number } | undefined
-  ): CustomPromise<
-    CustomAxiosResponse<Array<IHurtomInfoResponse>, TToolsGetHurtomAllGetError>,
-    IBEError<TToolsGetHurtomAllGetError>
-  > => rs.get(formatUrl(API_SERVER_URL + `api/tools/get-hurtom-all/`, query)),
 
   toolsSearchImdbInfoPost: (
     body: ISearchImdbBody
@@ -378,13 +395,15 @@ const URL = {
   movieIdPut: (id: string): string => `api/movie/${id}`,
   movieGet: (): string => `api/movie/`,
   moviePost: (): string => `api/movie/`,
-  movieGroupSearchIdGet: (id: string): string => `api/movie/group-search/${id}`,
   movieGroupSearchGet: (): string => `api/movie/group-search/`,
+  movieGroupSearchIdGet: (id: string): string => `api/movie/group-search/${id}`,
   movieSearchGet: (): string => `api/movie/search/`,
+  parserGetHurtomAllGet: (): string => `api/parser/get-hurtom-all/`,
+  parserGetHurtomAllIdGet: (id: string): string =>
+    `api/parser/get-hurtom-all/${id}`,
   s3GetIdGet: (id: string): string => `api/s3/get/${id}`,
   s3GetIdHasFileGet: (id: string): string => `api/s3/get/${id}has-file/`,
   s3UploadPost: (): string => `api/s3/upload/`,
-  toolsGetHurtomAllGet: (): string => `api/tools/get-hurtom-all/`,
   toolsSearchImdbInfoPost: (): string => `api/tools/search-imdb-info/`,
   toolsSetupPost: (): string => `api/tools/setup/`,
 };

@@ -15,11 +15,10 @@ interface IResponse extends IExpressResponse<IMovieResponse[], void> {}
 app.post(API_URL.api.movie.toString(), async (req: IRequest, res: IResponse) => {
     const [, error] = await postMovieAsync(req.body);
     if (error) {
-        res.status(400).send('error' + error);
-    } else {
-        const [data] = await getMoviesAllAsync();
-        res.send(data);
+        return res.status(400).send('error' + error);
     }
+    const [data] = await getMoviesAllAsync();
+    return res.send(data);
 });
 
 export const postMovieAsync = async (data: Omit<MovieDto, 'id'>) => {

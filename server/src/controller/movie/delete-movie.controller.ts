@@ -15,11 +15,10 @@ interface IResponse extends IExpressResponse<IMovieResponse[], void> {}
 app.delete(API_URL.api.movie.id().toString(), async (req: IRequest, res: IResponse) => {
     const [, error] = await deleteMovieAsync(req.params.id);
     if (error) {
-        res.status(400).send('error' + error);
-    } else {
-        const [data] = await getMoviesAllAsync();
-        res.send(data);
+        return res.status(400).send('error' + error);
     }
+    const [data] = await getMoviesAllAsync();
+    return res.send(data);
 });
 
 export const deleteMovieAsync = async (id: string) => {

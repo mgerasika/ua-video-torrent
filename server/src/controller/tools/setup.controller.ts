@@ -18,6 +18,7 @@ export interface ISetupBody {
     updateImdb: boolean;
     uploadToCdn: boolean;
     searchImdb: boolean;
+    searchImdbIdInHurtom: boolean;
     uploadTorrentToS3FromMovieDB: boolean;
 }
 
@@ -33,6 +34,7 @@ const schema = Joi.object<ISetupBody>({
     uploadTorrentToS3FromMovieDB: Joi.boolean().required(),
     uploadToCdn: Joi.boolean().required(),
     searchImdb: Joi.boolean().required(),
+    searchImdbIdInHurtom: Joi.boolean().required(),
 });
 
 app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IResponse) => {
@@ -41,11 +43,11 @@ app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IRespons
         return res.status(400).send(validateError);
     }
 
-    const [logs, error] = await setupAsync(req.body);
-    if (error) {
-        return res.status(400).send(error);
+    const [logs, setupError] = await setupAsync(req.body);
+    if (setupError) {
+        return res.status(400).send(setupError);
     }
-    res.send(logs);
+    return res.send(logs);
 });
 
 export const setupAsync = async ({
@@ -54,12 +56,13 @@ export const setupAsync = async ({
     uploadTorrentToS3FromMovieDB,
     uploadToCdn,
     searchImdb,
+    searchImdbIdInHurtom,
 }: ISetupBody): Promise<[string[], any]> => {
     const logs = createLogs();
 
     const [movies = []] = await getMoviesAllAsync();
     if (updateHurtom) {
-        const [hurtomItems = [], hurtomError] = await dbService.tools.getAllHurtomPagesAsync();
+        const [hurtomItems = [], hurtomError] = await dbService.parser.getAllHurtomPagesAsync();
         if (hurtomError) {
             logs.push(`hurtom items error`, hurtomError);
             return Promise.reject(logs.get());
@@ -109,7 +112,7 @@ export const setupAsync = async ({
                     const [, hasFileError] = await dbService.s3.hasFileS3Async({ id: movie.download_id });
                     if (hasFileError) {
                         const [successUpload, errorUpload] = await dbService.s3.uploadFileToAmazonAsync({
-                            hurtomDownloadId: movie.download_id,
+                            id: movie.download_id,
                         });
                         if (successUpload) {
                             logs.push(`success upload to s3`, movie.download_id);
@@ -163,6 +166,67 @@ export const setupAsync = async ({
                             ...movie,
                             aws_s3_torrent_url: successUpload || '',
                         });
+                    }
+                }
+            }
+            return Promise.resolve();
+        });
+    }
+
+    if (searchImdbIdInHurtom) {
+        const [imdbInfoItems = []] = await dbService.imdb.getImdbAllAsync();
+
+        await oneByOneAsync(movies, async (movieItem) => {
+            if (!movieItem.imdb_original_id || !movieItem.imdb_id) {
+                let imdbInfo = imdbInfoItems.find(
+                    (imdbItem) =>
+                        imdbItem.en_name === movieItem.en_name || imdbItem.original_id === movieItem.imdb_original_id,
+                );
+                if (!imdbInfo) {
+                    const [hurtomDetails, hurtomError] = await dbService.parser.getHurtomPageByIdAsync(movieItem.href || '');
+                    if (hurtomError) {
+                        logs.push(`hurtom info by id not found ${movieItem.en_name} error=${hurtomError}`);
+                    } else if (hurtomDetails?.imdb_original_id) {
+                        logs.push('found imdbId on hurtom site ', hurtomDetails.imdb_original_id);
+
+                        imdbInfo = imdbInfoItems.find((imdbItem) => imdbItem.original_id === hurtomDetails.imdb_original_id);
+                        if (!imdbInfo) {
+                            const [newImdbInfo, searchError] = await dbService.tools.searchImdbMovieInfoAsync(
+                                '',
+                                '',
+                                hurtomDetails.imdb_original_id,
+                            );
+                            if (searchError) {
+                                logs.push('Imdb search not found by id ', hurtomDetails.imdb_original_id);
+                            } else if (newImdbInfo) {
+                                const [result, postImdbError] = await postImdbAsync({
+                                    en_name: newImdbInfo.Title,
+                                    imdb_rating: +newImdbInfo.imdbRating,
+                                    json: JSON.stringify(newImdbInfo),
+                                    poster: newImdbInfo.Poster,
+                                    year: +newImdbInfo.Year,
+                                    original_id: newImdbInfo.imdbID,
+                                });
+                                if (postImdbError) {
+                                    logs.push(`imdb post error ${movieItem.en_name} imdbId = ${newImdbInfo.imdbID}`);
+                                } else {
+                                    logs.push(`imdb post ${movieItem.en_name} imdbId = ${result?.original_id}`);
+                                    imdbInfo = result;
+                                }
+                            }
+                        }
+                        if (imdbInfo) {
+                            const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
+                                ...movieItem,
+                                imdb: imdbInfo,
+                                imdb_original_id: imdbInfo?.original_id,
+                            });
+                            if (putMovieError) {
+                                logs.push(`put movie v2 imdb_id error ${movieItem.id} error=${putMovieError}`);
+                            } else {
+                                logs.push(`put movie v2 imdb_id success ${movieItem.id} `);
+                            }
+                        }
                     }
                 }
             }
