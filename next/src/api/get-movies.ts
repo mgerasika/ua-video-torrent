@@ -9,8 +9,10 @@ export const getMoviesAsync = async () => {
   if (data.error) {
     throw data.error
   }
-  _movies = data.data.filter(movie =>
-    movie.movies.some(subMovie => subMovie.aws_s3_torrent_url),
+  _movies = data.data.filter(
+    movie =>
+      !movie.imdb_original_id &&
+      movie.movies.some(subMovie => subMovie.aws_s3_torrent_url),
   )
   return _movies
 }

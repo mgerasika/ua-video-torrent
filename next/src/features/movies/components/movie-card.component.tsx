@@ -10,7 +10,7 @@ export const MovieCard = ({ movie }: IProps): JSX.Element => {
     //   bg-black relative transition duration-200 ease-in transform hover:scale-110
     <Link
       tw="w-full flex flex-col items-center cursor-pointer"
-      href={'/movie/' + movie.group_id}
+      href={'/movie/' + movie.imdb_original_id}
     >
       <div tw="relative w-[300px] transition duration-200 ease-in transform hover:scale-110">
         <img

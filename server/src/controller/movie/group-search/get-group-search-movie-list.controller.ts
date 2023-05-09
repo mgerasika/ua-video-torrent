@@ -4,11 +4,10 @@ import { dbService } from '../../db.service';
 import { ISearchMovieResponse } from '../search/get-search-list-movie.controller';
 import { IMovieResponse } from '../get-movie-list.controller';
 import { IQueryReturn } from '@server/utils/to-query.util';
-import { getGroupId } from './get-group-search-movie.controller';
 
 export interface IGroupMovieResponse {
     enName: string;
-    group_id: string;
+    imdb_original_id: string;
     imdb_rating: number;
     poster: string;
     movies: ISearchMovieResponse[];
@@ -47,11 +46,11 @@ export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovie
                 const filteredMovies = movies.filter((m: IMovieResponse) => m.en_name === key);
                 const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
                 return {
+                    imdb_original_id: firstMovie?.imdb_original_id,
                     enName: key,
                     imdb_rating: firstMovie?.imdb_rating || 0,
                     poster: firstMovie?.poster || '',
                     movies: filteredMovies,
-                    group_id: getGroupId(key),
                 } as IGroupMovieResponse;
             })
             .sort((a, b) => b.imdb_rating - a.imdb_rating);

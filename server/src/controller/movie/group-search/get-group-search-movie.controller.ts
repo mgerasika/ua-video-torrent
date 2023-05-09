@@ -24,16 +24,14 @@ app.get(API_URL.api.movie.groupSearch.id().toString(), async (req: IRequest, res
     return res.send(data);
 });
 
-export const getGroupId = (en_name: string) => en_name.replace(/[^a-zA-Z0-9]/g, '') || '';
-
-export const groupSearchMovieByIdAsync = async (group_id: string): Promise<IQueryReturn<IGroupMovieResponse>> => {
+export const groupSearchMovieByIdAsync = async (imdb_id: string): Promise<IQueryReturn<IGroupMovieResponse>> => {
     const [movies, error] = await dbService.movie.searchMoviesAsync();
     if (movies) {
-        const filteredMovies = movies.filter((m) => getGroupId(m.en_name) === group_id).sort((a, b) => a.size - b.size);
+        const filteredMovies = movies.filter((m) => m.imdb_original_id === imdb_id).sort((a, b) => a.size - b.size);
 
         const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
         const data: IGroupMovieResponse = {
-            group_id: getGroupId(firstMovie?.en_name || ''),
+            imdb_original_id: firstMovie?.imdb_original_id || '',
             enName: firstMovie?.en_name || '',
             imdb_rating: firstMovie?.imdb_rating || 0,
             poster: firstMovie?.poster || '',

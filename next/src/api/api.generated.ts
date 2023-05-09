@@ -59,7 +59,7 @@ export interface IMovieResponse {
 }
 export interface IGroupMovieResponse {
   enName: string
-  group_id: string
+  imdb_original_id: string
   imdb_rating: number
   poster: string
   movies: ISearchMovieResponse[]
