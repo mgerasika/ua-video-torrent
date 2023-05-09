@@ -9515,10 +9515,10 @@ typeorm@^0.3.15:
     uuid "^9.0.0"
     yargs "^17.6.2"
 
-typescript-to-swagger@0.1.21:
-  version "0.1.21"
-  resolved "https://registry.npmjs.org/typescript-to-swagger/-/typescript-to-swagger-0.1.21.tgz"
-  integrity sha512-ZwlHnDf9A8x+w+qq/Is2S5bnoDh2y915g3YSRs0JwLAd/ub+OjoxDy40GqO/lrrLYw7oFEn70Bd30yIyFAtWbA==
+typescript-to-swagger@^0.1.27:
+  version "0.1.27"
+  resolved "https://registry.yarnpkg.com/typescript-to-swagger/-/typescript-to-swagger-0.1.27.tgz#661eca07b9c7ba234801c365fc6f19f48abc5f8a"
+  integrity sha512-ifcHdLzAtberXGzSpVRyqcdkPYSbJal2FEzrhJLpQmLbGyQNTUjbkJdKNIsoNMNiP85Q6Os81ZiPeO7p9SQLrg==
   dependencies:
     "@typescript-eslint/eslint-plugin" "^5.57.0"
     eslint "^8.37.0"

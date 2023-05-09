@@ -44,6 +44,46 @@ export interface IPutImdbBody {
   json: string;
   original_id: string;
 }
+export interface ISearchImdbBody {
+  enName: string;
+  year: string;
+  id?: string;
+}
+export interface IImdbResultResponse {
+  Title: string;
+  Year: string;
+  Rated: string;
+  Released: string;
+  Runtime: string;
+  Genre: string;
+  Director: string;
+  Writer: string;
+  Actors: string;
+  Plot: string;
+  Language: string;
+  Country: string;
+  Awards: string;
+  Poster: string;
+  Ratings: IImdbRating[];
+  Metascore: string;
+  imdbRating: string;
+  imdbVotes: string;
+  imdbID: string;
+  Type: string;
+  DVD: string;
+  BoxOffice: string;
+  Production: string;
+  Website: string;
+  Response: string;
+}
+export interface IImdbRating {
+  Source: string;
+  Value: string;
+}
+export interface IError {
+  message: string;
+  code: string;
+}
 export interface IMovieResponse {
   imdb_id: string;
   id: string;
@@ -59,7 +99,7 @@ export interface IMovieResponse {
 }
 export interface IGroupMovieResponse {
   enName: string;
-  group_id: string;
+  imdb_original_id: string;
   imdb_rating: number;
   poster: string;
   movies: ISearchMovieResponse[];
@@ -117,46 +157,6 @@ export interface IHurtomInfoResponse {
 export interface IHurtomInfoByIdResponse {
   imdb_original_id: string;
 }
-export interface ISearchImdbBody {
-  enName: string;
-  year: string;
-  id?: string;
-}
-export interface IImdbResultResponse {
-  Title: string;
-  Year: string;
-  Rated: string;
-  Released: string;
-  Runtime: string;
-  Genre: string;
-  Director: string;
-  Writer: string;
-  Actors: string;
-  Plot: string;
-  Language: string;
-  Country: string;
-  Awards: string;
-  Poster: string;
-  Ratings: IImdbRating[];
-  Metascore: string;
-  imdbRating: string;
-  imdbVotes: string;
-  imdbID: string;
-  Type: string;
-  DVD: string;
-  BoxOffice: string;
-  Production: string;
-  Website: string;
-  Response: string;
-}
-export interface IImdbRating {
-  Source: string;
-  Value: string;
-}
-export interface IError {
-  message: string;
-  code: string;
-}
 export interface ISetupBody {
   updateHurtom: boolean;
   updateImdb: boolean;
@@ -173,6 +173,7 @@ export type TImdbIdGetError = "" | "undefined";
 export type TImdbIdPutError = "" | "undefined";
 export type TImdbGetError = "" | "undefined";
 export type TImdbPostError = "" | "undefined";
+export type TImdbSearchPostError = "" | "undefined";
 export type TMovieIdDeleteError = "" | "undefined";
 export type TMovieIdGetError = "" | "undefined";
 export type TMovieIdPutError = "" | "undefined";
@@ -186,7 +187,6 @@ export type TParserGetHurtomAllIdGetError = "" | "undefined";
 export type TS3GetIdGetError = "" | "undefined";
 export type TS3GetIdHasFileGetError = "" | "undefined";
 export type TS3UploadPostError = "" | "undefined";
-export type TToolsSearchImdbInfoPostError = "" | "undefined";
 export type TToolsSetupPostError = "" | "undefined";
 export type TPartialErrorCodes =
   | TCdnGetFileNameGetError
@@ -197,6 +197,7 @@ export type TPartialErrorCodes =
   | TImdbIdPutError
   | TImdbGetError
   | TImdbPostError
+  | TImdbSearchPostError
   | TMovieIdDeleteError
   | TMovieIdGetError
   | TMovieIdPutError
@@ -210,7 +211,6 @@ export type TPartialErrorCodes =
   | TS3GetIdGetError
   | TS3GetIdHasFileGetError
   | TS3UploadPostError
-  | TToolsSearchImdbInfoPostError
   | TToolsSetupPostError
   | "";
 
@@ -218,7 +218,7 @@ export const createApiRequest = (rs: IRequestService) => ({
   cdnGetFileNameGet: (
     file_name: string
   ): CustomPromise<
-    CustomAxiosResponse<void, TCdnGetFileNameGetError>,
+    CustomAxiosResponse<Blob, TCdnGetFileNameGetError>,
     IBEError<TCdnGetFileNameGetError>
   > => rs.get(formatUrl(API_SERVER_URL + `api/cdn/get/${file_name}`)),
 
@@ -227,7 +227,7 @@ export const createApiRequest = (rs: IRequestService) => ({
   ): CustomPromise<
     CustomAxiosResponse<void, TCdnGetFileNameHasFileGetError>,
     IBEError<TCdnGetFileNameHasFileGetError>
-  > => rs.get(formatUrl(API_SERVER_URL + `api/cdn/get/${file_name}has-file/`)),
+  > => rs.get(formatUrl(API_SERVER_URL + `api/cdn/get/${file_name}hasFile/`)),
 
   cdnUploadPost: (): CustomPromise<
     CustomAxiosResponse<void, TCdnUploadPostError>,
@@ -269,6 +269,13 @@ export const createApiRequest = (rs: IRequestService) => ({
     CustomAxiosResponse<IImdbResponse, TImdbPostError>,
     IBEError<TImdbPostError>
   > => rs.post(formatUrl(API_SERVER_URL + `api/imdb/`), body),
+
+  imdbSearchPost: (
+    body: ISearchImdbBody
+  ): CustomPromise<
+    CustomAxiosResponse<IImdbResultResponse, TImdbSearchPostError>,
+    IBEError<TImdbSearchPostError>
+  > => rs.post(formatUrl(API_SERVER_URL + `api/imdb/search/`), body),
 
   movieIdDelete: (
     id: string
@@ -358,19 +365,12 @@ export const createApiRequest = (rs: IRequestService) => ({
   ): CustomPromise<
     CustomAxiosResponse<void, TS3GetIdHasFileGetError>,
     IBEError<TS3GetIdHasFileGetError>
-  > => rs.get(formatUrl(API_SERVER_URL + `api/s3/get/${id}has-file/`)),
+  > => rs.get(formatUrl(API_SERVER_URL + `api/s3/get/${id}hasFile/`)),
 
   s3UploadPost: (): CustomPromise<
     CustomAxiosResponse<void, TS3UploadPostError>,
     IBEError<TS3UploadPostError>
   > => rs.post(formatUrl(API_SERVER_URL + `api/s3/upload/`)),
-
-  toolsSearchImdbInfoPost: (
-    body: ISearchImdbBody
-  ): CustomPromise<
-    CustomAxiosResponse<IImdbResultResponse, TToolsSearchImdbInfoPostError>,
-    IBEError<TToolsSearchImdbInfoPostError>
-  > => rs.post(formatUrl(API_SERVER_URL + `api/tools/search-imdb-info/`), body),
 
   toolsSetupPost: (
     body: ISetupBody
@@ -383,13 +383,14 @@ export const createApiRequest = (rs: IRequestService) => ({
 const URL = {
   cdnGetFileNameGet: (file_name: string): string => `api/cdn/get/${file_name}`,
   cdnGetFileNameHasFileGet: (file_name: string): string =>
-    `api/cdn/get/${file_name}has-file/`,
+    `api/cdn/get/${file_name}hasFile/`,
   cdnUploadPost: (): string => `api/cdn/upload/`,
   imdbIdDelete: (id: string): string => `api/imdb/${id}`,
   imdbIdGet: (id: string): string => `api/imdb/${id}`,
   imdbIdPut: (id: string): string => `api/imdb/${id}`,
   imdbGet: (): string => `api/imdb/`,
   imdbPost: (): string => `api/imdb/`,
+  imdbSearchPost: (): string => `api/imdb/search/`,
   movieIdDelete: (id: string): string => `api/movie/${id}`,
   movieIdGet: (id: string): string => `api/movie/${id}`,
   movieIdPut: (id: string): string => `api/movie/${id}`,
@@ -402,9 +403,8 @@ const URL = {
   parserGetHurtomAllIdGet: (id: string): string =>
     `api/parser/get-hurtom-all/${id}`,
   s3GetIdGet: (id: string): string => `api/s3/get/${id}`,
-  s3GetIdHasFileGet: (id: string): string => `api/s3/get/${id}has-file/`,
+  s3GetIdHasFileGet: (id: string): string => `api/s3/get/${id}hasFile/`,
   s3UploadPost: (): string => `api/s3/upload/`,
-  toolsSearchImdbInfoPost: (): string => `api/tools/search-imdb-info/`,
   toolsSetupPost: (): string => `api/tools/setup/`,
 };
 // INSERT END

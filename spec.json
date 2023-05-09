@@ -19,7 +19,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Blob"
+                  "type": "Blob"
                 }
               }
             }
@@ -36,7 +36,7 @@
         }
       }
     },
-    "api/cdn/get/{file_name}has-file/": {
+    "api/cdn/get/{file_name}hasFile/": {
       "get": {
         "operationId": "",
         "summary": "",
@@ -73,10 +73,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "type": {
-                  "id": "string",
-                  "fileName": "string"
-                }
+                "type": "object"
               }
             }
           }
@@ -283,6 +280,43 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/imdb/search/": {
+      "post": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ISearchImdbBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IImdbResultResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ IError"
                 }
               }
             }
@@ -757,7 +791,7 @@
         }
       }
     },
-    "api/s3/get/{id}has-file/": {
+    "api/s3/get/{id}hasFile/": {
       "get": {
         "operationId": "",
         "summary": "",
@@ -806,43 +840,6 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/ void"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "api/tools/search-imdb-info/": {
-      "post": {
-        "operationId": "",
-        "summary": "",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ISearchImdbBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IImdbResultResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ IError"
                 }
               }
             }
@@ -983,6 +980,161 @@
             "type": "string"
           },
           "original_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ISearchImdbBody": {
+        "type": "object",
+        "required": [
+          "enName",
+          "year"
+        ],
+        "properties": {
+          "enName": {
+            "type": "string"
+          },
+          "year": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "IImdbResultResponse": {
+        "type": "object",
+        "required": [
+          "Title",
+          "Year",
+          "Rated",
+          "Released",
+          "Runtime",
+          "Genre",
+          "Director",
+          "Writer",
+          "Actors",
+          "Plot",
+          "Language",
+          "Country",
+          "Awards",
+          "Poster",
+          "Ratings",
+          "Metascore",
+          "imdbRating",
+          "imdbVotes",
+          "imdbID",
+          "Type",
+          "DVD",
+          "BoxOffice",
+          "Production",
+          "Website",
+          "Response"
+        ],
+        "properties": {
+          "Title": {
+            "type": "string"
+          },
+          "Year": {
+            "type": "string"
+          },
+          "Rated": {
+            "type": "string"
+          },
+          "Released": {
+            "type": "string"
+          },
+          "Runtime": {
+            "type": "string"
+          },
+          "Genre": {
+            "type": "string"
+          },
+          "Director": {
+            "type": "string"
+          },
+          "Writer": {
+            "type": "string"
+          },
+          "Actors": {
+            "type": "string"
+          },
+          "Plot": {
+            "type": "string"
+          },
+          "Language": {
+            "type": "string"
+          },
+          "Country": {
+            "type": "string"
+          },
+          "Awards": {
+            "type": "string"
+          },
+          "Poster": {
+            "type": "string"
+          },
+          "Ratings": {
+            "type": "IImdbRating[]"
+          },
+          "Metascore": {
+            "type": "string"
+          },
+          "imdbRating": {
+            "type": "string"
+          },
+          "imdbVotes": {
+            "type": "string"
+          },
+          "imdbID": {
+            "type": "string"
+          },
+          "Type": {
+            "type": "string"
+          },
+          "DVD": {
+            "type": "string"
+          },
+          "BoxOffice": {
+            "type": "string"
+          },
+          "Production": {
+            "type": "string"
+          },
+          "Website": {
+            "type": "string"
+          },
+          "Response": {
+            "type": "string"
+          }
+        }
+      },
+      "IImdbRating": {
+        "type": "object",
+        "required": [
+          "Source",
+          "Value"
+        ],
+        "properties": {
+          "Source": {
+            "type": "string"
+          },
+          "Value": {
+            "type": "string"
+          }
+        }
+      },
+      "IError": {
+        "type": "object",
+        "required": [
+          "message",
+          "code"
+        ],
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "code": {
             "type": "string"
           }
         }
@@ -1264,161 +1416,6 @@
         ],
         "properties": {
           "imdb_original_id": {
-            "type": "string"
-          }
-        }
-      },
-      "ISearchImdbBody": {
-        "type": "object",
-        "required": [
-          "enName",
-          "year"
-        ],
-        "properties": {
-          "enName": {
-            "type": "string"
-          },
-          "year": {
-            "type": "string"
-          },
-          "id": {
-            "type": "string"
-          }
-        }
-      },
-      "IImdbResultResponse": {
-        "type": "object",
-        "required": [
-          "Title",
-          "Year",
-          "Rated",
-          "Released",
-          "Runtime",
-          "Genre",
-          "Director",
-          "Writer",
-          "Actors",
-          "Plot",
-          "Language",
-          "Country",
-          "Awards",
-          "Poster",
-          "Ratings",
-          "Metascore",
-          "imdbRating",
-          "imdbVotes",
-          "imdbID",
-          "Type",
-          "DVD",
-          "BoxOffice",
-          "Production",
-          "Website",
-          "Response"
-        ],
-        "properties": {
-          "Title": {
-            "type": "string"
-          },
-          "Year": {
-            "type": "string"
-          },
-          "Rated": {
-            "type": "string"
-          },
-          "Released": {
-            "type": "string"
-          },
-          "Runtime": {
-            "type": "string"
-          },
-          "Genre": {
-            "type": "string"
-          },
-          "Director": {
-            "type": "string"
-          },
-          "Writer": {
-            "type": "string"
-          },
-          "Actors": {
-            "type": "string"
-          },
-          "Plot": {
-            "type": "string"
-          },
-          "Language": {
-            "type": "string"
-          },
-          "Country": {
-            "type": "string"
-          },
-          "Awards": {
-            "type": "string"
-          },
-          "Poster": {
-            "type": "string"
-          },
-          "Ratings": {
-            "type": "IImdbRating[]"
-          },
-          "Metascore": {
-            "type": "string"
-          },
-          "imdbRating": {
-            "type": "string"
-          },
-          "imdbVotes": {
-            "type": "string"
-          },
-          "imdbID": {
-            "type": "string"
-          },
-          "Type": {
-            "type": "string"
-          },
-          "DVD": {
-            "type": "string"
-          },
-          "BoxOffice": {
-            "type": "string"
-          },
-          "Production": {
-            "type": "string"
-          },
-          "Website": {
-            "type": "string"
-          },
-          "Response": {
-            "type": "string"
-          }
-        }
-      },
-      "IImdbRating": {
-        "type": "object",
-        "required": [
-          "Source",
-          "Value"
-        ],
-        "properties": {
-          "Source": {
-            "type": "string"
-          },
-          "Value": {
-            "type": "string"
-          }
-        }
-      },
-      "IError": {
-        "type": "object",
-        "required": [
-          "message",
-          "code"
-        ],
-        "properties": {
-          "message": {
-            "type": "string"
-          },
-          "code": {
             "type": "string"
           }
         }
