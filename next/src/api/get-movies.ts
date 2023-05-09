@@ -1,18 +1,11 @@
 import { IGroupMovieResponse, api } from './api.generated'
 
-let _movies: IGroupMovieResponse[] | undefined = undefined
 export const getMoviesAsync = async () => {
-  if (_movies) {
-    return _movies
+  const response = await api.movieGroupSearchGet({})
+  if (response.error) {
+    throw response.error
   }
-  const data = await api.movieGroupSearchGet({})
-  if (data.error) {
-    throw data.error
-  }
-  _movies = data.data.filter(
-    movie =>
-      !movie.imdb_original_id &&
-      movie.movies.some(subMovie => subMovie.aws_s3_torrent_url),
+  return response.data.filter(groupMovie =>
+    groupMovie.movies.some(subMovie => subMovie.aws_s3_torrent_url),
   )
-  return _movies
 }

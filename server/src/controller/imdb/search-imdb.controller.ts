@@ -51,7 +51,7 @@ interface IError {
 }
 interface IResponse extends IExpressResponse<IImdbResultResponse, IError> {}
 
-app.post(API_URL.api.tools.searchImdbInfo.toString(), async (req: IRequest, res: IResponse) => {
+app.post(API_URL.api.imdb.search.toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await searchImdbMovieInfoAsync(req.body.enName, req.body.year, req.body.id);
     if (error) {
         return res.status(400).send();

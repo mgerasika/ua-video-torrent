@@ -8,6 +8,7 @@ interface IApiUrl {
         };
         imdb: {
             id: (id?: string) => IUrlItem;
+            search: IUrlItem;
         };
         movie: {
             search: IUrlItem;
@@ -17,7 +18,6 @@ interface IApiUrl {
             id: (id?: string) => IUrlItem;
         };
         tools: {
-            searchImdbInfo: IUrlItem;
             setup: IUrlItem;
         };
         parser: {
@@ -52,6 +52,7 @@ export const API_URL = createUrls<IApiUrl>({
         },
         imdb: {
             id: (id?: string) => EMPTY_URL_ITEM,
+            search: EMPTY_URL_ITEM,
         },
         movie: {
             search: EMPTY_URL_ITEM,
@@ -62,7 +63,6 @@ export const API_URL = createUrls<IApiUrl>({
         },
         tools: {
             setup: EMPTY_URL_ITEM,
-            searchImdbInfo: EMPTY_URL_ITEM,
         },
         parser: {
             getHurtomAll: {

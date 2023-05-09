@@ -36,18 +36,18 @@ export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovie
     if (movies) {
         const unique = Object.keys(
             movies.reduce((acc: any, it: any) => {
-                acc[it.en_name || ''] = it.en_name;
+                acc[it.imdb_original_id || ''] = it.imdb_original_id;
                 return acc;
             }, {}),
         );
 
         const data = unique
             .map((key) => {
-                const filteredMovies = movies.filter((m: IMovieResponse) => m.en_name === key);
+                const filteredMovies = movies.filter((m: IMovieResponse) => m.imdb_original_id === key);
                 const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
                 return {
                     imdb_original_id: firstMovie?.imdb_original_id,
-                    enName: key,
+                    enName: firstMovie?.en_name,
                     imdb_rating: firstMovie?.imdb_rating || 0,
                     poster: firstMovie?.poster || '',
                     movies: filteredMovies,

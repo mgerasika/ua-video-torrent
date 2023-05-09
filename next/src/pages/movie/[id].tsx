@@ -16,10 +16,9 @@ export async function getStaticProps({ params }: { params: { id: string } }) {
 }
 
 export async function getStaticPaths() {
-  const groupMovies = await getMoviesAsync()
-
+  const response = await api.movieGroupSearchGet({})
   return {
-    paths: groupMovies.map(groupMovie => {
+    paths: response.data.map(groupMovie => {
       return {
         params: { id: groupMovie.imdb_original_id },
       }

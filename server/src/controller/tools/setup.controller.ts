@@ -8,7 +8,7 @@ import { MovieDto } from '@server/dto/movie.dto';
 import { dbService } from '../db.service';
 import Joi from 'joi';
 import { validateSchema } from '@server/utils/validate-schema.util';
-import { IImdbResultResponse } from './search-imdb-movie-info.controller';
+import { IImdbResultResponse } from '../imdb/search-imdb.controller';
 import { createLogs } from '@server/utils/create-logs.utils';
 import { oneByOneAsync } from '@server/utils/one-by-one-async.util';
 import { movie } from '../movie';
@@ -191,7 +191,7 @@ export const setupAsync = async ({
 
                         imdbInfo = imdbInfoItems.find((imdbItem) => imdbItem.original_id === hurtomDetails.imdb_original_id);
                         if (!imdbInfo) {
-                            const [newImdbInfo, searchError] = await dbService.tools.searchImdbMovieInfoAsync(
+                            const [newImdbInfo, searchError] = await dbService.imdb.searchImdbMovieInfoAsync(
                                 '',
                                 '',
                                 hurtomDetails.imdb_original_id,
@@ -214,7 +214,7 @@ export const setupAsync = async ({
                                     imdbInfo = result;
                                 }
                             }
-                        }
+						}
                         if (imdbInfo) {
                             const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
                                 ...movieItem,
@@ -222,9 +222,9 @@ export const setupAsync = async ({
                                 imdb_original_id: imdbInfo?.original_id,
                             });
                             if (putMovieError) {
-                                logs.push(`put movie v2 imdb_id error ${movieItem.id} error=${putMovieError}`);
+                                logs.push(`put movie imdb_id error ${movieItem.id} error=${putMovieError}`);
                             } else {
-                                logs.push(`put movie v2 imdb_id success ${movieItem.id} `);
+                                logs.push(`put movie imdb_id success ${movieItem.id} `);
                             }
                         }
                     }
@@ -244,7 +244,7 @@ export const setupAsync = async ({
                         imdbItem.en_name === movieItem.en_name || imdbItem.original_id === movieItem.imdb_original_id,
                 );
                 if (!imdbInfo) {
-                    const [newImdbInfo, error] = await dbService.tools.searchImdbMovieInfoAsync(
+                    const [newImdbInfo, error] = await dbService.imdb.searchImdbMovieInfoAsync(
                         movieItem.en_name,
                         movieItem.year + '',
                         movieItem.imdb_original_id,

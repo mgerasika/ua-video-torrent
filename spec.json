@@ -1041,7 +1041,7 @@
         "type": "object",
         "required": [
           "enName",
-          "group_id",
+          "imdb_original_id",
           "imdb_rating",
           "poster",
           "movies"
@@ -1050,7 +1050,7 @@
           "enName": {
             "type": "string"
           },
-          "group_id": {
+          "imdb_original_id": {
             "type": "string"
           },
           "imdb_rating": {
