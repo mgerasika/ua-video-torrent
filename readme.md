@@ -11,7 +11,9 @@ This app - it's html parser that get all hd movies info from https://toloka.to/ 
 - [postgresql](https://www.postgresql.org/) - database
 - [typeorm](https://typeorm.io/) - orm for database
 - [serverless](https://aws.amazon.com/lambda/) - aws lambda
-- [serverless-http](https://github.com/dougmoscrop/serverless-http) - express bridge for aws lambda
+- [serverless-http](https://github.com/dougmoscrop/serverless-http) -
+  express bridge for aws lambda
+- [swagger code generation](https://github.com/mgerasika/typescript-to-swagger) - automatically build swagger.spec from express code + automatically generate client proxy code.
 
 ## Frontend
 
