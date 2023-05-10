@@ -1,4 +1,4 @@
-export async function oneByOneAsync<T>(items: T[], fn: (item: T) => Promise<any>) {
+export async function oneByOneAsync<T>(items: T[], fn: (item: T) => Promise<void>) {
     const fns = items.map((item) => {
         return () => fn(item);
     });

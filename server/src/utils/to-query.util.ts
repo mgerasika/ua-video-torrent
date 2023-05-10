@@ -1,9 +1,9 @@
-export type IQueryReturn<T> = [T, any] | [undefined, any] | [T];
+export type IQueryReturn<T> = [T, undefined] | [undefined, string | Error] | [T];
 
 export async function toQuery<T>(callback: () => Promise<T>): Promise<IQueryReturn<T>> {
     try {
         const data = (await callback()) as T;
-        return [data, undefined];
+        return [data];
     } catch (ex) {
         const error = (ex as Error) || 'empty error';
         return [undefined, error];

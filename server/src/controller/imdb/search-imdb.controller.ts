@@ -81,8 +81,8 @@ export const searchImdbMovieInfoAsync = async (
     }).then((r: any) => {
         const data = r.data;
         if (data.Response === 'False') {
-            return [undefined, 'error'];
+            return [ 'error'];
         }
-        return [data, undefined];
+        return [data];
     });
 };

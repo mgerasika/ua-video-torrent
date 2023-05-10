@@ -12,6 +12,7 @@ import { IImdbResultResponse } from '../imdb/search-imdb.controller';
 import { createLogs } from '@server/utils/create-logs.utils';
 import { oneByOneAsync } from '@server/utils/one-by-one-async.util';
 import { movie } from '../movie';
+import { IQueryReturn } from '@server/utils/to-query.util';
 
 export interface ISetupBody {
     updateHurtom: boolean;
@@ -57,7 +58,7 @@ export const setupAsync = async ({
     uploadToCdn,
     searchImdb,
     searchImdbIdInHurtom,
-}: ISetupBody): Promise<[string[], any]> => {
+}: ISetupBody): Promise<IQueryReturn<string[]>> => {
     const logs = createLogs();
 
     const [movies = []] = await getMoviesAllAsync();
@@ -65,7 +66,7 @@ export const setupAsync = async ({
         const [hurtomItems = [], hurtomError] = await dbService.parser.getAllHurtomPagesAsync();
         if (hurtomError) {
             logs.push(`hurtom items error`, hurtomError);
-            return Promise.reject(logs.get());
+            return [undefined, logs.get() as any];
         } else {
             logs.push(`hurtom items success count=${hurtomItems?.length}`);
         }
@@ -84,10 +85,9 @@ export const setupAsync = async ({
                     size: hurtomItem.size,
                 });
                 if (postError) {
-                    logs.push(`post movie error ${hurtomItem.id} error=${postError}`);
-                } else {
-                    logs.push(`post movie success ${hurtomItem.id} `);
+                    return logs.push(`post movie error ${hurtomItem.id} error=${postError}`);
                 }
+                logs.push(`post movie success ${hurtomItem.id} `);
             } else if (!movie.download_id) {
                 const [, putError] = await dbService.movie.putMovieAsync(movie.id, {
                     ...movie,
@@ -95,235 +95,178 @@ export const setupAsync = async ({
                     download_id: hurtomItem.downloadId,
                 });
                 if (putError) {
-                    logs.push(`put movie error ${hurtomItem.id} error=${putError}`);
-                } else {
-                    logs.push(`put movie success ${hurtomItem.id} `);
+                    return logs.push(`put movie error ${hurtomItem.id} error=${putError}`);
                 }
+                logs.push(`put movie success ${hurtomItem.id} `);
             }
-            return Promise.resolve();
         });
     }
 
     if (uploadTorrentToS3FromMovieDB) {
         await oneByOneAsync(
-            movies.filter((m) => m.download_id === '142850'),
+            movies.filter((m) => m.download_id === '142850' && !m.aws_s3_torrent_url && m.download_id),
             async (movie) => {
-                if (!movie.aws_s3_torrent_url && movie.download_id) {
-                    const [, hasFileError] = await dbService.s3.hasFileS3Async({ id: movie.download_id });
-                    if (hasFileError) {
-                        const [successUpload, errorUpload] = await dbService.s3.uploadFileToAmazonAsync({
-                            id: movie.download_id,
-                        });
-                        if (successUpload) {
-                            logs.push(`success upload to s3`, movie.download_id);
-                        } else {
-                            logs.push(`error upload to s3`, errorUpload);
-                        }
-
-                        if (successUpload) {
-                            await dbService.movie.putMovieAsync(movie.id, {
-                                ...movie,
-                                aws_s3_torrent_url: successUpload,
-                            });
-                        }
-                    } else {
-                        await dbService.movie.putMovieAsync(movie.id, {
-                            ...movie,
-                            aws_s3_torrent_url: movie.download_id,
-                        });
-                    }
-                } else if (!movie.download_id) {
-                    await putMovieAsync(movie.id, {
-                        ...movie,
-                        aws_s3_torrent_url: '',
-                    });
+                const [hasFile] = await dbService.s3.hasFileS3Async({ id: movie.download_id });
+                if (hasFile) {
+                    return;
                 }
-                return Promise.resolve();
+                const [successUpload, errorUpload] = await dbService.s3.uploadFileToAmazonAsync({
+                    id: movie.download_id,
+                });
+                if (errorUpload) {
+                    return logs.push(`error upload to s3`, errorUpload);
+                }
+
+                logs.push(`success upload to s3`, movie.download_id);
+                await dbService.movie.putMovieAsync(movie.id, {
+                    ...movie,
+                    aws_s3_torrent_url: successUpload as string,
+                });
             },
         );
     }
 
     if (uploadToCdn) {
-        await oneByOneAsync(movies, async (movie) => {
-            if (!movie.download_id) {
-                await putMovieAsync(movie.id, {
-                    ...movie,
-                    aws_s3_torrent_url: '',
-                });
-            } else if (!movie.aws_s3_torrent_url && movie.download_id) {
+        await oneByOneAsync(
+            movies.filter((movie) => !movie.aws_s3_torrent_url && movie.download_id),
+            async (movie) => {
                 const fileName = `${movie.download_id}.torrent`;
-                const [, hasFileError] = await dbService.cdn.hasFileCDNAsync({ fileName: fileName });
-                if (hasFileError) {
-                    const [successUpload, errorUpload] = await dbService.cdn.uploadFileToCDNAsync({
-                        fileName: fileName,
-                        hurtomId: movie.download_id,
-                    });
-                    if (errorUpload) {
-                        logs.push(`error upload to cdn`, errorUpload);
-                    } else {
-                        logs.push(`success upload to cdn`, movie.download_id);
-                        await dbService.movie.putMovieAsync(movie.id, {
-                            ...movie,
-                            aws_s3_torrent_url: successUpload || '',
-                        });
-                    }
+                const [hasFile] = await dbService.cdn.hasFileCDNAsync({ fileName: fileName });
+                if (hasFile) {
+                    return;
                 }
-            }
-            return Promise.resolve();
-        });
+                const [successUpload, errorUpload] = await dbService.cdn.uploadFileToCDNAsync({
+                    fileName: fileName,
+                    hurtomId: movie.download_id,
+                });
+                if (errorUpload) {
+                    return logs.push(`error upload to cdn`, errorUpload);
+                }
+                logs.push(`success upload to cdn`, movie.download_id);
+                await dbService.movie.putMovieAsync(movie.id, {
+                    ...movie,
+                    aws_s3_torrent_url: successUpload || '',
+                });
+            },
+        );
     }
 
     if (searchImdbIdInHurtom) {
         const [imdbInfoItems = []] = await dbService.imdb.getImdbAllAsync();
 
-        await oneByOneAsync(movies, async (movieItem) => {
-            if (!movieItem.imdb_original_id || !movieItem.imdb_id) {
+        await oneByOneAsync(
+            movies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
+            async (movieItem) => {
                 let imdbInfo = imdbInfoItems.find(
                     (imdbItem) =>
                         imdbItem.en_name === movieItem.en_name || imdbItem.original_id === movieItem.imdb_original_id,
                 );
-                if (!imdbInfo) {
-                    const [hurtomDetails, hurtomError] = await dbService.parser.getHurtomPageByIdAsync(movieItem.href || '');
-                    if (hurtomError) {
-                        logs.push(`hurtom info by id not found ${movieItem.en_name} error=${hurtomError}`);
-                    } else if (hurtomDetails?.imdb_original_id) {
-                        logs.push('found imdbId on hurtom site ', hurtomDetails.imdb_original_id);
+                if (imdbInfo) {
+                    return;
+				}
+                const [hurtomDetails, hurtomError] = await dbService.parser.getHurtomPageByIdAsync(movieItem.href || '');
+                if (hurtomError) {
+                    return logs.push(`hurtom info by id not found ${movieItem.en_name} error=${hurtomError}`);
+                }
+                if (hurtomDetails?.imdb_original_id) {
+                    logs.push('found imdbId on hurtom site ', hurtomDetails.imdb_original_id);
 
-                        imdbInfo = imdbInfoItems.find((imdbItem) => imdbItem.original_id === hurtomDetails.imdb_original_id);
-                        if (!imdbInfo) {
-                            const [newImdbInfo, searchError] = await dbService.imdb.searchImdbMovieInfoAsync(
-                                '',
-                                '',
-                                hurtomDetails.imdb_original_id,
-                            );
-                            if (searchError) {
-                                logs.push('Imdb search not found by id ', hurtomDetails.imdb_original_id);
-                            } else if (newImdbInfo) {
-                                const [result, postImdbError] = await postImdbAsync({
-                                    en_name: newImdbInfo.Title,
-                                    imdb_rating: +newImdbInfo.imdbRating,
-                                    json: JSON.stringify(newImdbInfo),
-                                    poster: newImdbInfo.Poster,
-                                    year: +newImdbInfo.Year,
-                                    original_id: newImdbInfo.imdbID,
-                                });
-                                if (postImdbError) {
-                                    logs.push(`imdb post error ${movieItem.en_name} imdbId = ${newImdbInfo.imdbID}`);
-                                } else {
-                                    logs.push(`imdb post ${movieItem.en_name} imdbId = ${result?.original_id}`);
-                                    imdbInfo = result;
-                                }
-                            }
-						}
-                        if (imdbInfo) {
-                            const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
-                                ...movieItem,
-                                imdb: imdbInfo,
-                                imdb_original_id: imdbInfo?.original_id,
-                            });
-                            if (putMovieError) {
-                                logs.push(`put movie imdb_id error ${movieItem.id} error=${putMovieError}`);
-                            } else {
-                                logs.push(`put movie imdb_id success ${movieItem.id} `);
-                            }
+                    imdbInfo = imdbInfoItems.find((imdbItem) => imdbItem.original_id === hurtomDetails.imdb_original_id);
+                    if (imdbInfo) {
+                        const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
+                            ...movieItem,
+                            imdb: imdbInfo,
+                            imdb_original_id: imdbInfo?.original_id,
+                        });
+                        if (putMovieError) {
+                            return logs.push(`put movie imdb_id error ${movieItem.id} error=${putMovieError}`);
                         }
+                        logs.push(`put movie imdb_id success ${movieItem.id} `);
                     }
                 }
-            }
-            return Promise.resolve();
-        });
+            },
+        );
     }
 
     if (searchImdb) {
         const [imdbInfoItems = []] = await dbService.imdb.getImdbAllAsync();
 
-        await oneByOneAsync(movies, async (movieItem) => {
-            if (!movieItem.imdb_original_id || !movieItem.imdb_id) {
+        await oneByOneAsync(
+            movies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
+            async (movieItem) => {
                 const imdbInfo = imdbInfoItems.find(
                     (imdbItem) =>
                         imdbItem.en_name === movieItem.en_name || imdbItem.original_id === movieItem.imdb_original_id,
                 );
-                if (!imdbInfo) {
-                    const [newImdbInfo, error] = await dbService.imdb.searchImdbMovieInfoAsync(
-                        movieItem.en_name,
-                        movieItem.year + '',
-                        movieItem.imdb_original_id,
-                    );
-                    if (newImdbInfo) {
-                        const [dbImdbInfoWithId, postImdbError] = await postImdbAsync({
-                            en_name: newImdbInfo.Title,
-                            imdb_rating: +newImdbInfo.imdbRating,
-                            json: JSON.stringify(newImdbInfo),
-                            poster: newImdbInfo.Poster,
-                            year: +newImdbInfo.Year,
-                            original_id: newImdbInfo.imdbID,
-                        });
-                        if (postImdbError) {
-                            logs.push(`imdb post error ${movieItem.en_name} imdbId = ${newImdbInfo.imdbID}`);
-                        } else {
-                            logs.push(`imdb post ${movieItem.en_name} imdbId = ${newImdbInfo.imdbID}`);
-
-                            const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
-                                ...movieItem,
-                                imdb: dbImdbInfoWithId,
-                                imdb_original_id: dbImdbInfoWithId?.original_id,
-                            });
-                            if (putMovieError) {
-                                logs.push(`put movie v2 imdb_id error ${movieItem.id} error=${putMovieError}`);
-                            } else {
-                                logs.push(`put movie v2 imdb_id success ${movieItem.id} `);
-                            }
-                        }
-                    }
-                    if (error) {
-                        logs.push(`imdb info not found ${movieItem.en_name} error=${error}`);
-                    }
+                if (imdbInfo) {
+                    return;
                 }
-            }
-            return Promise.resolve();
-        });
+                const [newImdbInfo, newImdbInfoError] = await dbService.imdb.searchImdbMovieInfoAsync(
+                    movieItem.en_name,
+                    movieItem.year + '',
+                    movieItem.imdb_original_id,
+                );
+                if (newImdbInfoError) {
+                    return logs.push(`imdb info not found ${movieItem.en_name} error=${newImdbInfoError}`);
+                }
+
+                if (newImdbInfo) {
+                    const [, postImdbError] = await postImdbAsync({
+                        en_name: newImdbInfo.Title,
+                        imdb_rating: +newImdbInfo.imdbRating,
+                        json: JSON.stringify(newImdbInfo),
+                        poster: newImdbInfo.Poster,
+                        year: +newImdbInfo.Year,
+                        original_id: newImdbInfo.imdbID,
+                    });
+                    if (postImdbError) {
+                        return logs.push(`imdb post error ${movieItem.en_name} imdbId = ${newImdbInfo.imdbID}`);
+                    }
+                    logs.push(`imdb post ${movieItem.en_name} imdbId = ${newImdbInfo.imdbID}`);
+                }
+            },
+        );
     }
 
     if (updateImdb) {
         const [imdbInfoItems = []] = await dbService.imdb.getImdbAllAsync();
         logs.push('imdbInfoItems.length', imdbInfoItems.length);
 
-        await oneByOneAsync(imdbInfoItems, async (imdbInfo) => {
-            if (!imdbInfo.original_id) {
+        await oneByOneAsync(
+            imdbInfoItems.filter((imdbInfo) => !imdbInfo.original_id),
+            async (imdbInfo) => {
                 const [, putError] = await dbService.imdb.putImdbAsync(imdbInfo.id, {
                     ...imdbInfo,
                     original_id: (JSON.parse(imdbInfo.json) as unknown as IImdbResultResponse).imdbID,
                 });
                 if (putError) {
-                    logs.push(`put imdb error ${imdbInfo.id} error=${putError}`);
-                } else {
-                    logs.push(`put imdb success ${imdbInfo.id}`);
+                    return logs.push(`put imdb error ${imdbInfo.id} error=${putError}`);
                 }
-            }
-            return Promise.resolve();
-        });
+                logs.push(`put imdb success ${imdbInfo.id}`);
+            },
+        );
 
-        await oneByOneAsync(movies, async (movieItem) => {
-            if (!movieItem.imdb_original_id || !movieItem.imdb_id) {
+        await oneByOneAsync(
+            movies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
+            async (movieItem) => {
                 const imdbInfo = imdbInfoItems.find(
                     (imdbItem) =>
                         imdbItem.en_name === movieItem.en_name || imdbItem.original_id === movieItem.imdb_original_id,
                 );
-                if (imdbInfo) {
-                    const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
-                        ...movieItem,
-                        imdb: imdbInfo,
-                        imdb_original_id: imdbInfo.original_id,
-                    });
-                    if (putMovieError) {
-                        logs.push(`put movie imdb_id error ${movieItem.id} error=${putMovieError}`);
-                    } else {
-                        logs.push(`put movie imdb_id success ${movieItem.id} `);
-                    }
+                if (!imdbInfo) {
+                    return;
                 }
-            }
-            return Promise.resolve();
-        });
+                const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
+                    ...movieItem,
+                    imdb: imdbInfo,
+                    imdb_original_id: imdbInfo.original_id,
+                });
+                if (putMovieError) {
+                    return logs.push(`put movie imdb_id error ${movieItem.id} error=${putMovieError}`);
+                }
+                logs.push(`put movie imdb_id success ${movieItem.id} `);
+            },
+        );
     }
 
     return [logs.get(), undefined];
