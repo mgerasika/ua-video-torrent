@@ -8,9 +8,19 @@ getSpecInfoAsync({ dir: ['./src/controller', './src/enum', './src/dto', './src/i
 });
 
 generateSpecAsync({ dir: ['./src/controller', './src/enum', './src/dto', './src/interfaces'] }).then((res) => {
-    const spec = JSON.stringify(res, null, 2);
-    // console.log('SPEC', spec);
-
+    const spec = JSON.stringify(
+        {
+            openapi: '3.0.1',
+            info: {
+                title: 'ua-video-torrent',
+                description: 'service-1',
+                version: '0.0.1',
+            },
+            ...res,
+        },
+        null,
+        2,
+    );
     fs.writeFileSync(path.resolve('../spec.json'), spec);
     console.log('generate spec file success ', '../spec.json');
 });

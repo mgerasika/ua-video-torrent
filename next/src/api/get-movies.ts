@@ -1,7 +1,7 @@
 import { IGroupMovieResponse, api } from './api.generated'
 
 export const getMoviesAsync = async () => {
-  const response = await api.movieGroupSearchGet({})
+  const response = await api.groupMovieGet({})
   if (response.error) {
     throw response.error
   }

@@ -3,6 +3,9 @@ import { createUrls, EMPTY_URL_ITEM, IUrlItem } from 'react-create-url';
 interface IApiUrl {
     swagger: IUrlItem;
     api: {
+        torrent: {
+            id: (id?: string) => IUrlItem;
+        };
         user: {
             id: (id?: string) => IUrlItem;
         };
@@ -10,11 +13,12 @@ interface IApiUrl {
             id: (id?: string) => IUrlItem;
             search: IUrlItem;
         };
+        groupMovie: {
+            id: (id?: string) => IUrlItem;
+        };
         movie: {
             search: IUrlItem;
-            groupSearch: {
-                id: (id?: string) => IUrlItem;
-            };
+
             id: (id?: string) => IUrlItem;
         };
         tools: {
@@ -47,6 +51,9 @@ interface IApiUrl {
 export const API_URL = createUrls<IApiUrl>({
     swagger: EMPTY_URL_ITEM,
     api: {
+        torrent: {
+            id: (id?: string) => EMPTY_URL_ITEM,
+        },
         user: {
             id: (id?: string) => EMPTY_URL_ITEM,
         },
@@ -56,9 +63,10 @@ export const API_URL = createUrls<IApiUrl>({
         },
         movie: {
             search: EMPTY_URL_ITEM,
-            groupSearch: {
-                id: (id?: string) => EMPTY_URL_ITEM,
-            },
+
+            id: (id?: string) => EMPTY_URL_ITEM,
+        },
+        groupMovie: {
             id: (id?: string) => EMPTY_URL_ITEM,
         },
         tools: {

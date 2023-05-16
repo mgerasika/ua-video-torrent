@@ -39,6 +39,6 @@ export async function typeOrmAsync<T>(callback: (client: DataSource) => Promise<
         return data;
     } catch (error) {
         console.log('typeOrm error ', error);
-        return [, error];
+        return [, error as Error];
     }
 }

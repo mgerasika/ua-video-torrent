@@ -33,9 +33,8 @@ export const MovieDetailed = ({ movie }: IProps): JSX.Element => {
           <h3 tw="text-white text-xl">Download torrent:</h3>
           <ul>
             {movie?.movies
-              .filter(movie => !movie.en_name.includes('%'))
               .map(movie => (
-                <li tw="text-white pb-1" key={movie.href}>
+                <li tw="text-white pb-1" key={movie.aws_s3_torrent_url}>
                   <a
                     tw="cursor-pointer"
                     target="_blank"

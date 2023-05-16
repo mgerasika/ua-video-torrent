@@ -1,16 +1,17 @@
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { API_URL } from '@server/constants/api-url.constant';
-import { dbService } from '../../db.service';
-import { ISearchMovieResponse } from '../search/get-search-list-movie.controller';
-import { IMovieResponse } from '../get-movie-list.controller';
+import { dbService } from '../db.service';
+import { ISearchMovieResponse } from '../movie/search/get-search-list-movie.controller';
+import { IMovieResponse } from '../movie/get-movie-list.controller';
 import { IQueryReturn } from '@server/utils/to-query.util';
 
+interface IGroupMovieItem extends Pick<ISearchMovieResponse, 'aws_s3_torrent_url' | 'title' | 'size'> {}
 export interface IGroupMovieResponse {
     enName: string;
     imdb_original_id: string;
     imdb_rating: number;
     poster: string;
-    movies: ISearchMovieResponse[];
+    movies: IGroupMovieItem[];
 }
 
 interface IRequest extends IExpressRequest {
@@ -22,7 +23,7 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IGroupMovieResponse[], void> {}
 
-app.get(API_URL.api.movie.groupSearch.toString(), async (req: IRequest, res: IResponse) => {
+app.get(API_URL.api.groupMovie.toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await groupSearchMoviesAsync();
     if (error) {
         return res.status(400).send('error' + error);
@@ -50,7 +51,12 @@ export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovie
                     enName: firstMovie?.en_name,
                     imdb_rating: firstMovie?.imdb_rating || 0,
                     poster: firstMovie?.poster || '',
-                    movies: filteredMovies,
+                    movies: filteredMovies.map((m) => {
+                        return {
+                            aws_s3_torrent_url: m.aws_s3_torrent_url,
+                            title: m.title,
+                        };
+                    }),
                 } as IGroupMovieResponse;
             })
             .sort((a, b) => b.imdb_rating - a.imdb_rating);

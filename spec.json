@@ -1,4 +1,10 @@
 {
+  "openapi": "3.0.1",
+  "info": {
+    "title": "ua-video-torrent",
+    "description": "service-1",
+    "version": "0.0.1"
+  },
   "paths": {
     "api/cdn/get/{file_name}": {
       "get": {
@@ -79,6 +85,105 @@
           }
         },
         "responses": {
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/group-movie/": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IGroupMovieResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/group-movie/{id}": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IGroupMovieResponse"
+                }
+              }
+            }
+          },
           "400": {
             "content": {
               "application/json": {
@@ -526,105 +631,6 @@
         }
       }
     },
-    "api/movie/group-search/": {
-      "get": {
-        "operationId": "",
-        "summary": "",
-        "parameters": [
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/IGroupMovieResponse"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ void"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "api/movie/group-search/{id}": {
-      "get": {
-        "operationId": "",
-        "summary": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "page",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "integer"
-            }
-          },
-          {
-            "name": "limit",
-            "in": "query",
-            "required": true,
-            "schema": {
-              "type": "integer"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IGroupMovieResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ void"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "api/movie/search/": {
       "get": {
         "operationId": "",
@@ -883,10 +889,92 @@
           }
         }
       }
+    },
+    "api/torrent/{id}": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ITorrentInfo"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "IGroupMovieResponse": {
+        "type": "object",
+        "required": [
+          "enName",
+          "imdb_original_id",
+          "imdb_rating",
+          "poster",
+          "movies"
+        ],
+        "properties": {
+          "enName": {
+            "type": "string"
+          },
+          "imdb_original_id": {
+            "type": "string"
+          },
+          "imdb_rating": {
+            "type": "integer"
+          },
+          "poster": {
+            "type": "string"
+          },
+          "movies": {
+            "type": "IGroupMovieItem[]"
+          }
+        }
+      },
+      "IGroupMovieItem": {
+        "type": "object",
+        "required": [
+          "title",
+          "size",
+          "aws_s3_torrent_url"
+        ],
+        "properties": {
+          "title": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "aws_s3_torrent_url": {
+            "type": "string"
+          }
+        }
+      },
       "IImdbResponse": {
         "type": "object",
         "required": [
@@ -1189,95 +1277,6 @@
           }
         }
       },
-      "IGroupMovieResponse": {
-        "type": "object",
-        "required": [
-          "enName",
-          "imdb_original_id",
-          "imdb_rating",
-          "poster",
-          "movies"
-        ],
-        "properties": {
-          "enName": {
-            "type": "string"
-          },
-          "imdb_original_id": {
-            "type": "string"
-          },
-          "imdb_rating": {
-            "type": "integer"
-          },
-          "poster": {
-            "type": "string"
-          },
-          "movies": {
-            "type": "ISearchMovieResponse[]"
-          }
-        }
-      },
-      "ISearchMovieResponse": {
-        "type": "object",
-        "required": [
-          "id",
-          "en_name",
-          "poster",
-          "imdb_rating",
-          "year",
-          "original_id",
-          "imdb_id",
-          "ua_name",
-          "href",
-          "title",
-          "download_id",
-          "size",
-          "aws_s3_torrent_url"
-        ],
-        "properties": {
-          "id": {
-            "type": "string"
-          },
-          "en_name": {
-            "type": "string"
-          },
-          "poster": {
-            "type": "string"
-          },
-          "imdb_rating": {
-            "type": "integer"
-          },
-          "year": {
-            "type": "integer"
-          },
-          "original_id": {
-            "type": "string"
-          },
-          "imdb_id": {
-            "type": "string"
-          },
-          "ua_name": {
-            "type": "string"
-          },
-          "href": {
-            "type": "string"
-          },
-          "title": {
-            "type": "string"
-          },
-          "download_id": {
-            "type": "string"
-          },
-          "size": {
-            "type": "integer"
-          },
-          "aws_s3_torrent_url": {
-            "type": "string"
-          },
-          "imdb_original_id": {
-            "type": "string"
-          }
-        }
-      },
       "IPostMovieBody": {
         "type": "object",
         "required": [
@@ -1352,6 +1351,68 @@
           },
           "year": {
             "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "download_id": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "aws_s3_torrent_url": {
+            "type": "string"
+          },
+          "imdb_original_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ISearchMovieResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "en_name",
+          "poster",
+          "imdb_rating",
+          "year",
+          "original_id",
+          "imdb_id",
+          "ua_name",
+          "href",
+          "title",
+          "download_id",
+          "size",
+          "aws_s3_torrent_url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "en_name": {
+            "type": "string"
+          },
+          "poster": {
+            "type": "string"
+          },
+          "imdb_rating": {
+            "type": "integer"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "original_id": {
+            "type": "string"
+          },
+          "imdb_id": {
+            "type": "string"
+          },
+          "ua_name": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
           },
           "title": {
             "type": "string"
@@ -1448,6 +1509,17 @@
           },
           "uploadTorrentToS3FromMovieDB": {
             "type": "boolean"
+          }
+        }
+      },
+      "ITorrentInfo": {
+        "type": "object",
+        "required": [
+          "peers"
+        ],
+        "properties": {
+          "peers": {
+            "type": "integer"
           }
         }
       }

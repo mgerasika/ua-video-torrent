@@ -1,8 +1,8 @@
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { API_URL } from '@server/constants/api-url.constant';
-import { dbService } from '../../db.service';
 import { IGroupMovieResponse } from './get-group-search-movie-list.controller';
 import { IQueryReturn } from '@server/utils/to-query.util';
+import { dbService } from '../db.service';
 
 interface IRequest extends IExpressRequest {
     params: {
@@ -16,7 +16,7 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IGroupMovieResponse, void> {}
 
-app.get(API_URL.api.movie.groupSearch.id().toString(), async (req: IRequest, res: IResponse) => {
+app.get(API_URL.api.groupMovie.id().toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await groupSearchMovieByIdAsync(req.params.id);
     if (error) {
         res.status(400).send('error' + error);

@@ -21,6 +21,18 @@ const API_SERVER_URL =
 
 // DON'T REMOVE THIS COMMENTS!!! Code between comments auto-generated
 // INSERT START
+export interface IGroupMovieResponse {
+  enName: string
+  imdb_original_id: string
+  imdb_rating: number
+  poster: string
+  movies: IGroupMovieItem[]
+}
+export interface IGroupMovieItem {
+  title: string
+  size: number
+  aws_s3_torrent_url: string
+}
 export interface IImdbResponse {
   id: string
   en_name: string
@@ -99,29 +111,6 @@ export interface IMovieResponse {
   aws_s3_torrent_url: string
   imdb_original_id?: string
 }
-export interface IGroupMovieResponse {
-  enName: string
-  imdb_original_id: string
-  imdb_rating: number
-  poster: string
-  movies: ISearchMovieResponse[]
-}
-export interface ISearchMovieResponse {
-  id: string
-  en_name: string
-  poster: string
-  imdb_rating: number
-  year: number
-  original_id: string
-  imdb_id: string
-  ua_name: string
-  href: string
-  title: string
-  download_id: string
-  size: number
-  aws_s3_torrent_url: string
-  imdb_original_id?: string
-}
 export interface IPostMovieBody {
   imdb_id: string
   en_name: string
@@ -140,6 +129,22 @@ export interface IPutMovieBody {
   ua_name: string
   href: string
   year: number
+  title: string
+  download_id: string
+  size: number
+  aws_s3_torrent_url: string
+  imdb_original_id?: string
+}
+export interface ISearchMovieResponse {
+  id: string
+  en_name: string
+  poster: string
+  imdb_rating: number
+  year: number
+  original_id: string
+  imdb_id: string
+  ua_name: string
+  href: string
   title: string
   download_id: string
   size: number
@@ -170,6 +175,8 @@ export interface ISetupBody {
 export type TCdnGetFileNameGetError = '' | 'undefined'
 export type TCdnGetFileNameHasFileGetError = '' | 'undefined'
 export type TCdnUploadPostError = '' | 'undefined'
+export type TGroupMovieGetError = '' | 'undefined'
+export type TGroupMovieIdGetError = '' | 'undefined'
 export type TImdbIdDeleteError = '' | 'undefined'
 export type TImdbIdGetError = '' | 'undefined'
 export type TImdbIdPutError = '' | 'undefined'
@@ -181,8 +188,6 @@ export type TMovieIdGetError = '' | 'undefined'
 export type TMovieIdPutError = '' | 'undefined'
 export type TMovieGetError = '' | 'undefined'
 export type TMoviePostError = '' | 'undefined'
-export type TMovieGroupSearchGetError = '' | 'undefined'
-export type TMovieGroupSearchIdGetError = '' | 'undefined'
 export type TMovieSearchGetError = '' | 'undefined'
 export type TParserGetHurtomAllGetError = '' | 'undefined'
 export type TParserGetHurtomAllIdGetError = '' | 'undefined'
@@ -194,6 +199,8 @@ export type TPartialErrorCodes =
   | TCdnGetFileNameGetError
   | TCdnGetFileNameHasFileGetError
   | TCdnUploadPostError
+  | TGroupMovieGetError
+  | TGroupMovieIdGetError
   | TImdbIdDeleteError
   | TImdbIdGetError
   | TImdbIdPutError
@@ -205,8 +212,6 @@ export type TPartialErrorCodes =
   | TMovieIdPutError
   | TMovieGetError
   | TMoviePostError
-  | TMovieGroupSearchGetError
-  | TMovieGroupSearchIdGetError
   | TMovieSearchGetError
   | TParserGetHurtomAllGetError
   | TParserGetHurtomAllIdGetError
@@ -235,6 +240,21 @@ export const createApiRequest = (rs: IRequestService) => ({
     CustomAxiosResponse<void, TCdnUploadPostError>,
     IBEError<TCdnUploadPostError>
   > => rs.post(formatUrl(API_SERVER_URL + `api/cdn/upload/`)),
+
+  groupMovieGet: (
+    query: { page?: number; limit?: number } | undefined,
+  ): CustomPromise<
+    CustomAxiosResponse<Array<IGroupMovieResponse>, TGroupMovieGetError>,
+    IBEError<TGroupMovieGetError>
+  > => rs.get(formatUrl(API_SERVER_URL + `api/group-movie/`, query)),
+
+  groupMovieIdGet: (
+    id: string,
+    query: { page?: number; limit?: number } | undefined,
+  ): CustomPromise<
+    CustomAxiosResponse<IGroupMovieResponse, TGroupMovieIdGetError>,
+    IBEError<TGroupMovieIdGetError>
+  > => rs.get(formatUrl(API_SERVER_URL + `api/group-movie/${id}`, query)),
 
   imdbIdDelete: (
     id: string,
@@ -315,22 +335,6 @@ export const createApiRequest = (rs: IRequestService) => ({
     IBEError<TMoviePostError>
   > => rs.post(formatUrl(API_SERVER_URL + `api/movie/`), body),
 
-  movieGroupSearchGet: (
-    query: { page?: number; limit?: number } | undefined,
-  ): CustomPromise<
-    CustomAxiosResponse<Array<IGroupMovieResponse>, TMovieGroupSearchGetError>,
-    IBEError<TMovieGroupSearchGetError>
-  > => rs.get(formatUrl(API_SERVER_URL + `api/movie/group-search/`, query)),
-
-  movieGroupSearchIdGet: (
-    id: string,
-    query: { page?: number; limit?: number } | undefined,
-  ): CustomPromise<
-    CustomAxiosResponse<IGroupMovieResponse, TMovieGroupSearchIdGetError>,
-    IBEError<TMovieGroupSearchIdGetError>
-  > =>
-    rs.get(formatUrl(API_SERVER_URL + `api/movie/group-search/${id}`, query)),
-
   movieSearchGet: (
     query: { page?: number; limit?: number } | undefined,
   ): CustomPromise<
@@ -387,6 +391,8 @@ const URL = {
   cdnGetFileNameHasFileGet: (file_name: string): string =>
     `api/cdn/get/${file_name}hasFile/`,
   cdnUploadPost: (): string => `api/cdn/upload/`,
+  groupMovieGet: (): string => `api/group-movie/`,
+  groupMovieIdGet: (id: string): string => `api/group-movie/${id}`,
   imdbIdDelete: (id: string): string => `api/imdb/${id}`,
   imdbIdGet: (id: string): string => `api/imdb/${id}`,
   imdbIdPut: (id: string): string => `api/imdb/${id}`,
@@ -398,8 +404,6 @@ const URL = {
   movieIdPut: (id: string): string => `api/movie/${id}`,
   movieGet: (): string => `api/movie/`,
   moviePost: (): string => `api/movie/`,
-  movieGroupSearchGet: (): string => `api/movie/group-search/`,
-  movieGroupSearchIdGet: (id: string): string => `api/movie/group-search/${id}`,
   movieSearchGet: (): string => `api/movie/search/`,
   parserGetHurtomAllGet: (): string => `api/parser/get-hurtom-all/`,
   parserGetHurtomAllIdGet: (id: string): string =>

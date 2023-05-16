@@ -30,6 +30,6 @@ export async function sqlAsync<T>(callback: (client: any) => Promise<T>): Promis
         return [data];
     } catch (ex) {
         client?.release();
-        return [, ex];
+        return [, ex as Error];
     }
 }

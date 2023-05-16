@@ -1,4 +1,4 @@
-import 'module-alias/register';
+require('module-alias/register');
 import { dbService } from './src/controller/db.service';
 import { app } from './src/express-app';
 import { typeOrmAsync } from './src/utils/type-orm-async.util';
