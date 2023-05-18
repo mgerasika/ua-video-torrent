@@ -1,6 +1,6 @@
 # Short info
 
-This app - it's html parser that get all hd movies info from https://toloka.to/ and https://uakino.club/ websites and stores into database for quick search + downloading torrent files. All torrent files uploaded to [amazon s3](https://aws.amazon.com/s3/) storage & [firebase cdn](https://firebase.google.com/docs/hosting).
+This app - it's html parser that get all hd cartoons info from https://toloka.to/ and https://uakino.club/ websites and stores into database for quick search + downloading torrent files. All torrent files uploaded to [amazon s3](https://aws.amazon.com/s3/) storage & [firebase cdn](https://firebase.google.com/docs/hosting).
 
 # Stack
 
