@@ -1,0 +1,13 @@
+{
+    "compilerOptions": {
+        "allowJs": true,
+        "types": ["cypress", "node"],
+        "jsx": "react",
+        "lib": ["es2019", "dom"],
+        "baseUrl": "..",
+        "resolveJsonModule": true,
+        "esModuleInterop": true
+    },
+    "include": ["**/*.ts", "**/*.tsx", "../src/msw-mocks/cy-intercept.ts"],
+    "exclude": ["**/*.test.ts"]
+}

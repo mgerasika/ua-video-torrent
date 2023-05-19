@@ -21,11 +21,20 @@ interface IApiUrl {
 
             id: (id?: string) => IUrlItem;
         };
+        rezka_movie: {
+            id: (id?: string) => IUrlItem;
+        };
         tools: {
             setup: IUrlItem;
         };
+        cypress: {
+            id: (id?: string) => IUrlItem;
+        };
         parser: {
             getHurtomAll: {
+                id: (id?: string) => IUrlItem;
+            };
+            getRezkaAll: {
                 id: (id?: string) => IUrlItem;
             };
         };
@@ -54,6 +63,9 @@ export const API_URL = createUrls<IApiUrl>({
         torrent: {
             id: (id?: string) => EMPTY_URL_ITEM,
         },
+        cypress: {
+            id: (id?: string) => EMPTY_URL_ITEM,
+        },
         user: {
             id: (id?: string) => EMPTY_URL_ITEM,
         },
@@ -66,6 +78,9 @@ export const API_URL = createUrls<IApiUrl>({
 
             id: (id?: string) => EMPTY_URL_ITEM,
         },
+        rezka_movie: {
+            id: (id?: string) => EMPTY_URL_ITEM,
+        },
         groupMovie: {
             id: (id?: string) => EMPTY_URL_ITEM,
         },
@@ -74,6 +89,9 @@ export const API_URL = createUrls<IApiUrl>({
         },
         parser: {
             getHurtomAll: {
+                id: (id?: string) => EMPTY_URL_ITEM,
+            },
+            getRezkaAll: {
                 id: (id?: string) => EMPTY_URL_ITEM,
             },
         },

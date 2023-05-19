@@ -14,6 +14,7 @@ if (process.env.NODE_ENV === 'development') {
 }
 
 const port = process.env.PORT || 8004;
-app.listen(port, function () {
+const server = app.listen(port, function () {
     console.log('Listening on port ' + port);
 });
+server.setTimeout(500000);

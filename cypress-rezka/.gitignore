@@ -1,0 +1,11 @@
+/node_modules/
+/.next/
+/coverage/
+/out/
+/.vscode/
+/build/
+.github-personal-access-token.env
+/src/common/
+/common/
+common
+.DS_Store

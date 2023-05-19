@@ -13,6 +13,7 @@ import { createLogs } from '@server/utils/create-logs.utils';
 import { oneByOneAsync } from '@server/utils/one-by-one-async.util';
 import { movie } from '../movie';
 import { IQueryReturn } from '@server/utils/to-query.util';
+import { ERezkaVideoType } from '@server/dto/rezka-movie.dto';
 
 export interface ISetupBody {
     updateHurtom: boolean;
@@ -21,6 +22,9 @@ export interface ISetupBody {
     searchImdb: boolean;
     searchImdbIdInHurtom: boolean;
     uploadTorrentToS3FromMovieDB: boolean;
+    updateRezka: boolean;
+    updateRezkaById: boolean;
+    rezkaType: ERezkaVideoType;
 }
 
 interface IRequest extends IExpressRequest {
@@ -36,9 +40,17 @@ const schema = Joi.object<ISetupBody>({
     uploadToCdn: Joi.boolean().required(),
     searchImdb: Joi.boolean().required(),
     searchImdbIdInHurtom: Joi.boolean().required(),
+
+    updateRezka: Joi.boolean().required(),
+    updateRezkaById: Joi.boolean().required(),
+    rezkaType: Joi.string()
+        .valid(...Object.values(ERezkaVideoType))
+        .required(),
 });
 
 app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IResponse) => {
+    (req as any).setTimeout(60 * 60 * 60 * 10000);
+
     const [, validateError] = validateSchema(schema, req.body);
     if (validateError) {
         return res.status(400).send(validateError);
@@ -58,21 +70,24 @@ export const setupAsync = async ({
     uploadToCdn,
     searchImdb,
     searchImdbIdInHurtom,
+    updateRezka,
+    updateRezkaById,
+    rezkaType,
 }: ISetupBody): Promise<IQueryReturn<string[]>> => {
     const logs = createLogs();
 
-    const [movies = []] = await getMoviesAllAsync();
+    const [hurtomDbMovies = []] = await dbService.movie.getMoviesAllAsync();
     if (updateHurtom) {
-        const [hurtomItems = [], hurtomError] = await dbService.parser.getAllHurtomPagesAsync();
-        if (hurtomError) {
-            logs.push(`hurtom items error`, hurtomError);
+        const [parseItems = [], parseError] = await dbService.parser.getAllHurtomPagesAsync();
+        if (parseError) {
+            logs.push(`hurtom items error`, parseError);
             return [undefined, logs.get() as any];
         } else {
-            logs.push(`hurtom items success count=${hurtomItems?.length}`);
+            logs.push(`hurtom items success count=${parseItems?.length}`);
         }
 
-        await oneByOneAsync(hurtomItems, async (hurtomItem) => {
-            const movie = movies?.find((movie) => movie.href === hurtomItem.href);
+        await oneByOneAsync(parseItems, async (hurtomItem) => {
+            const movie = hurtomDbMovies?.find((movie) => movie.href === hurtomItem.href);
             if (!movie) {
                 const [, postError] = await dbService.movie.postMovieAsync({
                     en_name: hurtomItem.enName,
@@ -104,7 +119,7 @@ export const setupAsync = async ({
 
     if (uploadTorrentToS3FromMovieDB) {
         await oneByOneAsync(
-            movies.filter((m) => m.download_id === '142850' && !m.aws_s3_torrent_url && m.download_id),
+            hurtomDbMovies.filter((m) => m.download_id === '142850' && !m.aws_s3_torrent_url && m.download_id),
             async (movie) => {
                 const [hasFile] = await dbService.s3.hasFileS3Async({ id: movie.download_id });
                 if (hasFile) {
@@ -128,7 +143,7 @@ export const setupAsync = async ({
 
     if (uploadToCdn) {
         await oneByOneAsync(
-            movies.filter((movie) => !movie.aws_s3_torrent_url && movie.download_id),
+            hurtomDbMovies.filter((movie) => !movie.aws_s3_torrent_url && movie.download_id),
             async (movie) => {
                 const fileName = `${movie.download_id}.torrent`;
                 const [hasFile] = await dbService.cdn.hasFileCDNAsync({ fileName: fileName });
@@ -155,7 +170,7 @@ export const setupAsync = async ({
         const [imdbInfoItems = []] = await dbService.imdb.getImdbAllAsync();
 
         await oneByOneAsync(
-            movies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
+            hurtomDbMovies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
             async (movieItem) => {
                 let imdbInfo = imdbInfoItems.find(
                     (imdbItem) =>
@@ -163,7 +178,7 @@ export const setupAsync = async ({
                 );
                 if (imdbInfo) {
                     return;
-				}
+                }
                 const [hurtomDetails, hurtomError] = await dbService.parser.getHurtomPageByIdAsync(movieItem.href || '');
                 if (hurtomError) {
                     return logs.push(`hurtom info by id not found ${movieItem.en_name} error=${hurtomError}`);
@@ -192,7 +207,7 @@ export const setupAsync = async ({
         const [imdbInfoItems = []] = await dbService.imdb.getImdbAllAsync();
 
         await oneByOneAsync(
-            movies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
+            hurtomDbMovies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
             async (movieItem) => {
                 const imdbInfo = imdbInfoItems.find(
                     (imdbItem) =>
@@ -247,7 +262,7 @@ export const setupAsync = async ({
         );
 
         await oneByOneAsync(
-            movies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
+            hurtomDbMovies.filter((movieItem) => !movieItem.imdb_original_id || !movieItem.imdb_id),
             async (movieItem) => {
                 const imdbInfo = imdbInfoItems.find(
                     (imdbItem) =>
@@ -265,6 +280,56 @@ export const setupAsync = async ({
                     return logs.push(`put movie imdb_id error ${movieItem.id} error=${putMovieError}`);
                 }
                 logs.push(`put movie imdb_id success ${movieItem.id} `);
+            },
+        );
+    }
+
+    if (updateRezka) {
+        const [rezkaDbMovies = []] = await dbService.rezkaMovie.getRezkaMoviesAllAsync();
+
+        const [parseItems = [], parserError] = await dbService.parser.getAllRezkaPagesAsync({ type: rezkaType });
+        if (parserError) {
+            logs.push(`rezka items has some error`, parserError);
+        }
+        logs.push(`rezka items return success count=${parseItems?.length}`);
+
+        await oneByOneAsync(parseItems, async (parseItem) => {
+            const dbMovie = rezkaDbMovies?.find((movie) => movie.href === parseItem.href);
+            if (!dbMovie) {
+                const [, postError] = await dbService.rezkaMovie.postRezkaMovieAsync({
+                    href: parseItem.href,
+                    url_id: parseItem.url_id,
+                    en_name: '',
+                    year: parseItem.year,
+                    video_type: rezkaType,
+                });
+                if (postError) {
+                    return logs.push(`post rezka movie error ${parseItem.url_id} error=${postError}`);
+                }
+                logs.push(`post rezka movie success ${parseItem.url_id} `);
+            }
+        });
+    }
+
+    if (updateRezkaById) {
+        const [rezkaDbMovies = []] = await dbService.rezkaMovie.getRezkaMoviesAllAsync();
+
+        await oneByOneAsync(
+            rezkaDbMovies.filter((f) => !f.en_name),
+            async (dbMovie): Promise<any> => {
+                const [parseItem, parserError] = await dbService.parser.getRezkaPageByIdAsync(dbMovie.url_id);
+                if (parserError) {
+                    logs.push(`rezka by id error`, parserError);
+                    return [undefined, logs.get() as any];
+                } else if (parseItem) {
+                    const [, postError] = await dbService.rezkaMovie.putRezkaMovieAsync(dbMovie.id, {
+                        en_name: parseItem.en_name,
+                    });
+                    if (postError) {
+                        return logs.push(`post rezka movie error ${dbMovie.id} error=${postError}`);
+                    }
+                    logs.push(`post rezka movie success ${dbMovie.id} `);
+                }
             },
         );
     }

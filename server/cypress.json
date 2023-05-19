@@ -1,0 +1,21 @@
+{
+    "integrationFolder": "cypress/integration",
+    "trashAssetsBeforeRuns": true,
+    "screenshotsFolder": "cypress/screenshots",
+    "video": false,
+    "screenshotOnRunFailure": false,
+    "viewportWidth": 1280,
+    "viewportHeight": 720,
+    "requestTimeout": 7000,
+    "defaultCommandTimeout": 7000,
+    "chromeWebSecurity": false,
+    "numTestsKeptInMemory": 0,
+    "retries": {
+        "runMode": 0,
+        "openMode": 0
+    },
+    "projectId": "68heq4",
+    "watchForFileChanges": false,
+    "slowTestThreshold": 250,
+    "ignoreTestFiles": ["*wrapper*", "*ignore*", "*mock*"]
+}

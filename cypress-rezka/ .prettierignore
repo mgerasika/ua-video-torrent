@@ -1,0 +1,10 @@
+node-modules
+.next
+__generated__
+.vscode
+assets
+docker
+*.md
+*.json
+storybook-static
+*.prettier-ignore.tsx

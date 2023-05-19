@@ -1,6 +1,7 @@
 {
     "extends": "./tsconfig.paths.json",
     "compilerOptions": {
+        "types": ["cypress", "node"],
         "esModuleInterop": true,
         "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
 

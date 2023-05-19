@@ -1,0 +1,32 @@
+{
+    "presets": [["@babel/preset-env"], "@babel/preset-typescript"],
+    "plugins": [
+        "babel-plugin-twin",
+        "babel-plugin-macros",
+        [
+            "@emotion/babel-plugin-jsx-pragmatic",
+            {
+                "export": "jsx",
+                "import": "__cssprop",
+                "module": "@emotion/react"
+            }
+        ],
+        [
+            "@babel/plugin-transform-react-jsx",
+            {
+                "pragma": "__cssprop",
+                "pragmaFrag": "React.Fragment"
+            }
+        ],
+        [
+            "@emotion",
+            {
+                // sourceMap is on by default but source maps are dead code eliminated in production
+                "sourceMap": true,
+                "autoLabel": "dev-only",
+                "labelFormat": "----[filename]----[local]----",
+                "cssPropOptimization": true
+            }
+        ]
+    ]
+}

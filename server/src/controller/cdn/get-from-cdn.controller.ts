@@ -5,6 +5,7 @@ import { IQueryReturn, toQuery, toQueryPromise } from '@server/utils/to-query.ut
 import { HURTOM_HEADERS } from '../parser/get-hurtom-all.controller';
 import fs from 'fs';
 import { cdnService } from './cdn.service';
+import { dbService } from '../db.service';
 
 interface IRequest {
     params: {

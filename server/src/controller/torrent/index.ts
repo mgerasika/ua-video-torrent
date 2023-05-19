@@ -1,5 +1,7 @@
-import { getTorrentInfo } from './get-torrent-info';
+import { getTorrentInfoAsync } from './get-torrent-info.controller';
+import { putTorrentInfoAsync } from './put-torrent-info.controller';
 
 export const torrent = {
-    getTorrentInfo,
+    getTorrentInfoAsync,
+    putTorrentInfoAsync,
 };
