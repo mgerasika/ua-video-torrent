@@ -44,10 +44,10 @@ export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovie
 
         const data = unique
             .map((key) => {
-                const filteredMovies = movies.filter((m: IMovieResponse) => m.imdb_original_id === key);
+                const filteredMovies = movies.filter((m: IMovieResponse) => m.hurtom_imdb_id === key);
                 const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
                 return {
-                    imdb_original_id: firstMovie?.imdb_original_id,
+                    imdb_original_id: firstMovie?.hurtom_imdb_id,
                     enName: firstMovie?.en_name,
                     imdb_rating: firstMovie?.imdb_rating || 0,
                     poster: firstMovie?.poster || '',

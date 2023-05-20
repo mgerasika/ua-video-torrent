@@ -9,6 +9,7 @@ const cheerio = require('cheerio');
 export interface IRezkaInfoByIdResponse {
     en_name: string;
     year: number;
+    imdb_rezka_relative_link: string;
 }
 
 interface IRequest extends IExpressRequest {
@@ -38,10 +39,13 @@ export const getRezkaPageByIdAsync = async (id: string): Promise<IQueryReturn<IR
     const $ = cheerio.load(html);
     let year = id.replace('.html', '');
     year = year.substr(year.length - 4);
+    const relativeUrl = $('.b-post__info_rates').find('a').attr('href').trim();
+
     return [
         {
             en_name: $('.b-post__origtitle').text().trim(),
             year: +year,
+            imdb_rezka_relative_link: relativeUrl,
         },
     ];
 };

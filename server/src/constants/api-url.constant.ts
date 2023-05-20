@@ -24,11 +24,17 @@ interface IApiUrl {
         rezka_movie: {
             id: (id?: string) => IUrlItem;
         };
+        stream: {
+            id: (id?: string) => IUrlItem;
+        };
         tools: {
             setup: IUrlItem;
         };
         cypress: {
-            id: (id?: string) => IUrlItem;
+            href: (id?: string) => {
+                streams: IUrlItem;
+                imdb: IUrlItem;
+            };
         };
         parser: {
             getHurtomAll: {
@@ -64,7 +70,10 @@ export const API_URL = createUrls<IApiUrl>({
             id: (id?: string) => EMPTY_URL_ITEM,
         },
         cypress: {
-            id: (id?: string) => EMPTY_URL_ITEM,
+            href: (id?: string) => ({
+                streams: EMPTY_URL_ITEM,
+                imdb: EMPTY_URL_ITEM,
+            }),
         },
         user: {
             id: (id?: string) => EMPTY_URL_ITEM,
@@ -79,6 +88,9 @@ export const API_URL = createUrls<IApiUrl>({
             id: (id?: string) => EMPTY_URL_ITEM,
         },
         rezka_movie: {
+            id: (id?: string) => EMPTY_URL_ITEM,
+        },
+        stream: {
             id: (id?: string) => EMPTY_URL_ITEM,
         },
         groupMovie: {

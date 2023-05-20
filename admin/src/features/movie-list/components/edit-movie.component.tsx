@@ -40,14 +40,14 @@ export const EditMovie = ({
       />
       &nbsp;
       <input
-        placeholder="imdb original id"
+        placeholder="imdb hurtom id"
         css={styles.input}
         type="text"
-        value={movie?.imdb_original_id || ""}
+        value={movie?.hurtom_imdb_id || ""}
         onChange={(e) => {
           setMovie({
             ...movie,
-            imdb_original_id: e.target.value,
+            hurtom_imdb_id: e.target.value,
           });
         }}
       />

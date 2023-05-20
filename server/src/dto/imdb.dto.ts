@@ -1,12 +1,22 @@
-import { Entity, Column, PrimaryGeneratedColumn } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, PrimaryColumn, Check } from 'typeorm';
 
+export interface IImdbDto {
+    id: string;
+
+    en_name: string;
+
+    poster: string;
+
+    imdb_rating: number;
+
+    year: number;
+
+    json: string;
+}
 @Entity('imdb')
-export class ImdbDto {
-    @PrimaryGeneratedColumn('uuid')
+export class ImdbDto implements IImdbDto {
+    @PrimaryColumn('text', { nullable: false, unique: true })
     id!: string;
-
-    @Column({ nullable: true, type: 'text', unique: true })
-    original_id!: string;
 
     @Column({ nullable: true, type: 'text' })
     en_name!: string;

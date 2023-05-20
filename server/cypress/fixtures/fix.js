@@ -4,11 +4,9 @@ function eval2(p) {
 	return eval.call(window, p);
 }
 
-
 // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
 function waitForStreams() {
 	window.setTimeout(() => {
-
 
 		if (!window.o) {
 			waitForStreams();

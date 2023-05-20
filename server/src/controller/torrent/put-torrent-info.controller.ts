@@ -2,11 +2,11 @@ import { MovieDto } from '@server/dto/movie.dto';
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { typeOrmAsync } from '@server/utils/type-orm-async.util';
 import { API_URL } from '@server/constants/api-url.constant';
-import { ITorrentInfo } from './get-torrent-info.controller';
+import { ITorrentInfoResponse } from './get-torrent-info.controller';
 import { TorrentInfoDto } from '@server/dto/torrent-info';
 
 interface IRequest extends IExpressRequest {
-    body: ITorrentInfo;
+    body: ITorrentInfoResponse;
     params: {
         id: string;
     };
@@ -23,7 +23,7 @@ app.put(API_URL.api.torrent.id().toString(), async (req: IRequest, res: IRespons
     return res.send(data);
 });
 
-export const putTorrentInfoAsync = async (id: string, data: ITorrentInfo) => {
+export const putTorrentInfoAsync = async (id: string, data: ITorrentInfoResponse) => {
     return typeOrmAsync<TorrentInfoDto>(async (client) => {
         return [await client.getRepository(TorrentInfoDto).save<TorrentInfoDto>({ id: id, num_peers: data.peers })];
     });

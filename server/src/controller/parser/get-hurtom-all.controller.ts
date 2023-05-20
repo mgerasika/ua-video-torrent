@@ -73,7 +73,7 @@ export const HURTOM_HEADERS = {
         'sec-ch-ua': 'Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104',
         'sec-ch-ua-mobile': '?0',
         accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        cookie: 'toloka_ssl=1; SL_G_WPT_TO=en; SL_GWPT_Show_Hide_tmp=1; SL_wptGlobTipTmp=1; toloka_sid=66d1c86220c3b20709f169255caa94b4; toloka_data=a%3A2%3A%7Bs%3A11%3A%22autologinid%22%3Bs%3A32%3A%221c4e4d5678b4f41c60c49c61fab0d728%22%3Bs%3A6%3A%22userid%22%3Bi%3A318894%3B%7D',
+        cookie: 'toloka_ssl=1; SL_G_WPT_TO=en; SL_GWPT_Show_Hide_tmp=1; SL_wptGlobTipTmp=1; toloka_sid=f4bdc2cbd6e6b94ef324ff1c9d0737de; toloka_data=a%3A2%3A%7Bs%3A11%3A%22autologinid%22%3Bs%3A32%3A%224f00b79efebdb325648c81fd032a2b44%22%3Bs%3A6%3A%22userid%22%3Bi%3A318894%3B%7D',
     },
 };
 const YEAR_REGEXP = /\((\d{4})\)/;
@@ -131,7 +131,7 @@ const getHurtomPageAsync = async (page: any): Promise<IQueryReturn<IHurtomInfoRe
         .filter((item: any) => item.name);
 
     if (movies.length === 0) {
-        return [undefined, 'no more films'];
+        return [undefined, 'hurtom no more films'];
     } else {
         return [movies, undefined];
     }

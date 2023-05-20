@@ -106,7 +106,7 @@ const YEAR_REGEXP = /\((\d{4})\)/;
 const getRezkaPageAsync = async (page: any, type: ERezkaVideoType): Promise<IQueryReturn<IRezkaInfoResponse[]>> => {
     const url = `https://rezka.ag/${type}s/page/${page}`;
     console.log('request url = ' + url);
-    const [response, error] = await toQuery(async () => await axios.get(url, REZKA_HEADERS));
+    const [response, error] = await toQuery(() => axios.get(url, REZKA_HEADERS));
     if (error || page == END_PAGE) {
         return [undefined, error || 'custom error - end page limit'];
     }
@@ -134,7 +134,7 @@ const getRezkaPageAsync = async (page: any, type: ERezkaVideoType): Promise<IQue
     });
 
     if (movies.length === 0) {
-        return [undefined, 'no more films'];
+        return [undefined, 'rezka no more films'];
     } else {
         return [movies, undefined];
     }

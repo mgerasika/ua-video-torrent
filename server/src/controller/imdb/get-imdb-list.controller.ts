@@ -1,17 +1,9 @@
-import { ImdbDto } from '@server/dto/imdb.dto';
+import { IImdbDto, ImdbDto } from '@server/dto/imdb.dto';
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { typeOrmAsync } from '@server/utils/type-orm-async.util';
 import { API_URL } from '@server/constants/api-url.constant';
 
-export interface IImdbResponse {
-    id: string;
-    en_name: string;
-    poster: string;
-    imdb_rating: number;
-    year: number;
-    json: string;
-    original_id: string;
-}
+export interface IImdbResponse extends IImdbDto {}
 
 interface IRequest extends IExpressRequest {
     query: {

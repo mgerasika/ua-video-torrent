@@ -9,6 +9,7 @@ export interface IVideoInfoResult {
     en_name: string;
     year: number;
     url: string;
+    imdb_rezka_relative_link: string;
     translations: ITranslation[];
 }
 
@@ -24,7 +25,7 @@ export interface IResolutionItem {
 
 interface IRequest extends IExpressRequest {
     params: {
-        id: string;
+        href: string;
     };
     query: {
         page?: number;
@@ -34,29 +35,29 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IVideoInfoResult, void> {}
 
-app.get(API_URL.api.cypress.id().toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await getCypressAsync(decodeURIComponent(req.params.id));
+app.get(API_URL.api.cypress.href().streams.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await getCypressRezkaStreamsAsync(decodeURIComponent(req.params.href));
     if (error) {
         return res.status(400).send(error);
     }
     return res.send(data);
 });
 
-export const getCypressAsync = async (id: string): Promise<IQueryReturn<IVideoInfoResult>> => {
+export const getCypressRezkaStreamsAsync = async (href: string): Promise<IQueryReturn<IVideoInfoResult>> => {
     return toQueryPromise<IVideoInfoResult>((resolve, reject) => {
         cypress
             .run({
                 env: {
                     CYPRESS_NO_COMMAND_LOG: 1,
-                    URL: `https://rezka.ag/${id.replace('.html', '')}.html`,
+                    URL: href,
                 },
-                spec: './cypress/integration/example.spec.ts',
+                spec: './cypress/integration/get-rezka-streams.spec.ts',
             })
             .then((results: any) => {
                 try {
                     resolve(JSON.parse(results.runs[0].tests[0].attempts[0].error.message));
                 } catch (ex) {
-                    reject('error when try got error from test ' + JSON.stringify(results));
+                    reject('error when try got error from test ' + JSON.stringify(results, null, 2));
                 }
             })
             .catch((err: any) => {

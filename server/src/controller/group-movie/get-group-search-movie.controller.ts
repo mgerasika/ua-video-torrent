@@ -27,11 +27,11 @@ app.get(API_URL.api.groupMovie.id().toString(), async (req: IRequest, res: IResp
 export const groupSearchMovieByIdAsync = async (imdb_id: string): Promise<IQueryReturn<IGroupMovieResponse>> => {
     const [movies, error] = await dbService.movie.searchMoviesAsync();
     if (movies) {
-        const filteredMovies = movies.filter((m) => m.imdb_original_id === imdb_id).sort((a, b) => a.size - b.size);
+        const filteredMovies = movies.filter((m) => m.hurtom_imdb_id === imdb_id).sort((a, b) => a.size - b.size);
 
         const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
         const data: IGroupMovieResponse = {
-            imdb_original_id: firstMovie?.imdb_original_id || '',
+            imdb_original_id: firstMovie?.hurtom_imdb_id || '',
             enName: firstMovie?.en_name || '',
             imdb_rating: firstMovie?.imdb_rating || 0,
             poster: firstMovie?.poster || '',

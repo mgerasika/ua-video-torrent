@@ -1,4 +1,4 @@
-import { IMovieResponse, api } from "@src/api/api.generated";
+import { ERezkaVideoType, IMovieResponse, api } from "@src/api/api.generated";
 import React, { useState, useCallback, useEffect } from "react";
 import { EditMovie } from "../components/edit-movie.component";
 import tw from "twin.macro";
@@ -15,12 +15,15 @@ export const MovieListContainer = () => {
   const handleSetup = useCallback(() => {
     api
       .toolsSetupPost({
-        updateHurtom: true,
-        updateImdb: true,
+        updateHurtom: false,
         uploadTorrentToS3FromMovieDB: false,
-        uploadToCdn: true,
+        uploadToCdn: false,
         searchImdb: true,
-        searchImdbIdInHurtom: true,
+        searchImdbIdInHurtom: false,
+        fixRelationIntoMovieDb: true,
+        rezkaType: ERezkaVideoType.cartoon,
+        updateRezka: false,
+        updateRezkaById: false,
       })
       .then(handleGetAll);
   }, [handleGetAll]);

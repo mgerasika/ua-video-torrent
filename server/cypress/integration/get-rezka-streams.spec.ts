@@ -1,6 +1,6 @@
 import { getStream } from './get-stream.wrapper';
 
-describe('example-get-stream', () => {
+describe('get-rezka-stream', () => {
     it('get-stream', () => {
         const url = Cypress.env('URL');
         cy.log('ENV', url);

@@ -8,7 +8,7 @@ import { dbService } from '../db.service';
 import { cdnService } from '../cdn/cdn.service';
 import WebTorrent from 'webtorrent';
 
-export interface ITorrentInfo {
+export interface ITorrentInfoResponse {
     peers: number;
 }
 interface IRequest {
@@ -17,7 +17,7 @@ interface IRequest {
     };
 }
 
-interface IResponse extends IExpressResponse<ITorrentInfo, void> {}
+interface IResponse extends IExpressResponse<ITorrentInfoResponse, void> {}
 
 app.get(API_URL.api.torrent.id().toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await getTorrentInfoAsync({ id: req.params.id });
@@ -28,7 +28,7 @@ app.get(API_URL.api.torrent.id().toString(), async (req: IRequest, res: IRespons
     return res.send(data);
 });
 
-export const getTorrentInfoAsync = async ({ id }: { id: string }): Promise<IQueryReturn<ITorrentInfo>> => {
+export const getTorrentInfoAsync = async ({ id }: { id: string }): Promise<IQueryReturn<ITorrentInfoResponse>> => {
     const [, torrentError] = await dbService.cdn.getFromCDNAsync({ fileName: `${id}.torrent` });
     if (torrentError) {
         return [, torrentError];

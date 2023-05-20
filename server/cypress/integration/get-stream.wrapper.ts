@@ -1,21 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-// export interface IVideoInfoResult {
-//     en_name: string;
-//     year: number;
-//     url: string;
-//     translations: ITranslation[];
-// }
-
-// export interface ITranslation {
-//     resolutions: IResolutionItem[];
-//     translation: string;
-// }
-
-// export interface IResolutionItem {
-//     resolution: string;
-//     streams: string[];
-// }
-import { IResolutionItem, ITranslation, IVideoInfoResult } from '../../src/controller/cypress/get-cypress.controller';
+import {
+    IResolutionItem,
+    ITranslation,
+    IVideoInfoResult,
+} from '../../src/controller/cypress/get-cypress-rezka-streams.controller';
 export const getStream = async ({ url, callback }: { url: string; callback: (outputItems: IVideoInfoResult) => void }) => {
     cy.request('https://rezka.ag/templates/hdrezka/js/playerjs41.js?v=1').as('playerjs');
     cy.readFile('cypress/fixtures/fix.js').as('fix');
@@ -27,7 +14,7 @@ export const getStream = async ({ url, callback }: { url: string; callback: (out
             cy.intercept('GET', '**/playerjs41*', {
                 body: response.body,
             });
-            cy.intercept('POST', '**/get_cdn_series/*').as('exp');
+            cy.intercept('POST', '**/get_cdn_series/*').as('get_cdn_series');
 
             cy.visit(url);
 
@@ -40,6 +27,13 @@ export const getStream = async ({ url, callback }: { url: string; callback: (out
             cy.get('.b-post__origtitle').then((x) => {
                 enName = x.text() || '';
             });
+
+            let imdb_id = '';
+            cy.get('.b-post__info_rates')
+                .find('a')
+                .then((x) => {
+                    imdb_id = x.attr('href') || '';
+                });
 
             const tmpUrl = url.replace('.html', '');
             const year = +tmpUrl.substring(tmpUrl.length - 4);
@@ -55,6 +49,7 @@ export const getStream = async ({ url, callback }: { url: string; callback: (out
                         });
 
                         callback({
+                            imdb_rezka_relative_link: imdb_id,
                             url,
                             en_name: enName,
                             year,
@@ -74,7 +69,7 @@ export const getStream = async ({ url, callback }: { url: string; callback: (out
                                     return;
                                 } else {
                                     cy.wrap(li).click();
-                                    cy.wait('@exp').then((intercept) => {
+                                    cy.wait('@get_cdn_series').then((intercept) => {
                                         const obj = JSON.parse(intercept?.response?.body);
                                         const streamStr = (wnd as any).o.FGeRtNzK(obj.url);
                                         translations.push({
@@ -86,6 +81,7 @@ export const getStream = async ({ url, callback }: { url: string; callback: (out
                             })
                             .then(() => {
                                 callback({
+                                    imdb_rezka_relative_link: imdb_id,
                                     url,
                                     en_name: enName,
                                     year,

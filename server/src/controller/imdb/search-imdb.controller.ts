@@ -1,7 +1,7 @@
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
-import { IQueryReturn } from '@server/utils/to-query.util';
+import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 
 export interface IImdbResultResponse {
     Title: string;
@@ -70,19 +70,19 @@ export const searchImdbMovieInfoAsync = async (
     //const apiKey3 = '7a355028'; //oddbox.cypress@gmail.com
 
     const p = id ? { i: id } : { t: enMovieName, y: year };
-    return axios({
-        method: 'get',
-        url: 'http://www.omdbapi.com/',
-        params: {
-            apikey: apiKey1,
-            type: 'movie',
-            ...p,
-        },
-    }).then((r: any) => {
-        const data = r.data;
-        if (data.Response === 'False') {
-            return [ 'error'];
+    return toQuery<IImdbResultResponse>(async () => {
+        const d = await axios({
+            method: 'get',
+            url: 'http://www.omdbapi.com/',
+            params: {
+                apikey: apiKey1,
+                type: 'movie',
+                ...p,
+            },
+        });
+        if (d.data.Response === 'False') {
+            throw 'Error in search id = ' + id;
         }
-        return [data];
+        return d.data as IImdbResultResponse;
     });
 };

@@ -6,8 +6,28 @@ export enum ERezkaVideoType {
     cartoon = 'cartoon',
 }
 
+export interface IRezkaMovieDto {
+    id: string;
+
+    en_name: string;
+
+    url_id: string;
+
+    year: number;
+
+    href: string;
+
+    video_type: ERezkaVideoType;
+
+    imdb?: ImdbDto;
+
+    imdb_id?: string;
+
+    rezka_imdb_id: string;
+}
+
 @Entity('rezka_movie')
-export class RezkaMovieDto {
+export class RezkaMovieDto implements IRezkaMovieDto {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
@@ -29,4 +49,14 @@ export class RezkaMovieDto {
         default: ERezkaVideoType.film,
     })
     video_type!: ERezkaVideoType;
+
+    @ManyToOne(() => ImdbDto)
+    @JoinColumn({ name: 'imdb_id' })
+    imdb?: ImdbDto;
+
+    @RelationId((item: RezkaMovieDto) => item.imdb)
+    imdb_id?: string;
+
+    @Column({ nullable: true, type: 'text' })
+    rezka_imdb_id!: string;
 }

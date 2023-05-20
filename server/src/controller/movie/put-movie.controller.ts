@@ -26,7 +26,10 @@ app.put(API_URL.api.movie.id().toString(), async (req: IRequest, res: IResponse)
     return res.send(data);
 });
 
-export const putMovieAsync = async (id: string, data: Omit<MovieDto, 'id'>) => {
+export const putMovieAsync = async (id: string, data: Omit<MovieDto, 'id' >) => {
+    if (data.hurtom_imdb_id && !data.hurtom_imdb_id.startsWith('tt')) {
+        return [, 'id should start from tt symbol'];
+    }
     return typeOrmAsync<MovieDto>(async (client) => {
         const entityToUpdate = await client.getRepository(MovieDto).findOne({ where: { id } });
         if (!entityToUpdate) {

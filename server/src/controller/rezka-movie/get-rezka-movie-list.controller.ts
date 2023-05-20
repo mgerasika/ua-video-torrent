@@ -1,16 +1,9 @@
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { typeOrmAsync } from '@server/utils/type-orm-async.util';
 import { API_URL } from '@server/constants/api-url.constant';
-import { ERezkaVideoType, RezkaMovieDto } from '@server/dto/rezka-movie.dto';
+import { ERezkaVideoType, IRezkaMovieDto, RezkaMovieDto } from '@server/dto/rezka-movie.dto';
 
-export interface IRezkaMovieResponse {
-    id: string;
-    en_name: string;
-    href: string;
-    url_id: string;
-	year: number;
-	video_type: ERezkaVideoType;
-}
+export interface IRezkaMovieResponse extends IRezkaMovieDto {}
 
 interface IRequest extends IExpressRequest {
     query: {

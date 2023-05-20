@@ -97,6 +97,58 @@
         }
       }
     },
+    "api/cypress/{id}": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IVideoInfoResult"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "api/group-movie/": {
       "get": {
         "operationId": "",
@@ -761,6 +813,283 @@
         }
       }
     },
+    "api/parser/get-rezka-all/": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "type",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "ERezkaVideoType"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IRezkaInfoResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/parser/get-rezka-all/{id}": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IRezkaInfoByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/rezka_movie/{id}": {
+      "delete": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IRezkaMovieResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IRezkaMovieResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IPutRezkaMovieBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IRezkaMovieResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/rezka_movie/": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IRezkaMovieResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IPostRezkaMovieBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IRezkaMovieResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "api/s3/get/{id}": {
       "get": {
         "operationId": "",
@@ -924,11 +1253,99 @@
             }
           }
         }
+      },
+      "put": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ITorrentInfo"
+              }
+            }
+          }
+        },
+        "responses": {
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
       }
     }
   },
   "components": {
     "schemas": {
+      "IVideoInfoResult": {
+        "type": "object",
+        "required": [
+          "en_name",
+          "year",
+          "url",
+          "translations"
+        ],
+        "properties": {
+          "en_name": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "url": {
+            "type": "string"
+          },
+          "translations": {
+            "type": "ITranslation[]"
+          }
+        }
+      },
+      "ITranslation": {
+        "type": "object",
+        "required": [
+          "resolutions",
+          "translation"
+        ],
+        "properties": {
+          "resolutions": {
+            "type": "IResolutionItem[]"
+          },
+          "translation": {
+            "type": "string"
+          }
+        }
+      },
+      "IResolutionItem": {
+        "type": "object",
+        "required": [
+          "resolution",
+          "streams"
+        ],
+        "properties": {
+          "resolution": {
+            "type": "string"
+          },
+          "streams": {
+            "type": "string[]"
+          }
+        }
+      },
       "IGroupMovieResponse": {
         "type": "object",
         "required": [
@@ -983,8 +1400,7 @@
           "poster",
           "imdb_rating",
           "year",
-          "json",
-          "original_id"
+          "json"
         ],
         "properties": {
           "id": {
@@ -1004,23 +1420,23 @@
           },
           "json": {
             "type": "string"
-          },
-          "original_id": {
-            "type": "string"
           }
         }
       },
       "IPostImdbBody": {
         "type": "object",
         "required": [
+          "id",
           "en_name",
           "poster",
           "imdb_rating",
           "year",
-          "json",
-          "original_id"
+          "json"
         ],
         "properties": {
+          "id": {
+            "type": "string"
+          },
           "en_name": {
             "type": "string"
           },
@@ -1034,9 +1450,6 @@
             "type": "integer"
           },
           "json": {
-            "type": "string"
-          },
-          "original_id": {
             "type": "string"
           }
         }
@@ -1048,8 +1461,7 @@
           "poster",
           "imdb_rating",
           "year",
-          "json",
-          "original_id"
+          "json"
         ],
         "properties": {
           "en_name": {
@@ -1065,9 +1477,6 @@
             "type": "integer"
           },
           "json": {
-            "type": "string"
-          },
-          "original_id": {
             "type": "string"
           }
         }
@@ -1239,7 +1648,8 @@
           "title",
           "download_id",
           "size",
-          "aws_s3_torrent_url"
+          "aws_s3_torrent_url",
+          "hurtom_imdb_id"
         ],
         "properties": {
           "imdb_id": {
@@ -1272,7 +1682,7 @@
           "aws_s3_torrent_url": {
             "type": "string"
           },
-          "imdb_original_id": {
+          "hurtom_imdb_id": {
             "type": "string"
           }
         }
@@ -1288,7 +1698,8 @@
           "title",
           "download_id",
           "size",
-          "aws_s3_torrent_url"
+          "aws_s3_torrent_url",
+          "hurtom_imdb_id"
         ],
         "properties": {
           "imdb_id": {
@@ -1318,7 +1729,7 @@
           "aws_s3_torrent_url": {
             "type": "string"
           },
-          "imdb_original_id": {
+          "hurtom_imdb_id": {
             "type": "string"
           }
         }
@@ -1334,7 +1745,8 @@
           "title",
           "download_id",
           "size",
-          "aws_s3_torrent_url"
+          "aws_s3_torrent_url",
+          "hurtom_imdb_id"
         ],
         "properties": {
           "imdb_id": {
@@ -1364,7 +1776,7 @@
           "aws_s3_torrent_url": {
             "type": "string"
           },
-          "imdb_original_id": {
+          "hurtom_imdb_id": {
             "type": "string"
           }
         }
@@ -1377,14 +1789,14 @@
           "poster",
           "imdb_rating",
           "year",
-          "original_id",
           "imdb_id",
           "ua_name",
           "href",
           "title",
           "download_id",
           "size",
-          "aws_s3_torrent_url"
+          "aws_s3_torrent_url",
+          "hurtom_imdb_id"
         ],
         "properties": {
           "id": {
@@ -1402,9 +1814,6 @@
           "year": {
             "type": "integer"
           },
-          "original_id": {
-            "type": "string"
-          },
           "imdb_id": {
             "type": "string"
           },
@@ -1426,7 +1835,7 @@
           "aws_s3_torrent_url": {
             "type": "string"
           },
-          "imdb_original_id": {
+          "hurtom_imdb_id": {
             "type": "string"
           }
         }
@@ -1473,11 +1882,141 @@
       "IHurtomInfoByIdResponse": {
         "type": "object",
         "required": [
-          "imdb_original_id"
+          "imdb_id"
         ],
         "properties": {
-          "imdb_original_id": {
+          "imdb_id": {
             "type": "string"
+          }
+        }
+      },
+      "IRezkaInfoResponse": {
+        "type": "object",
+        "required": [
+          "url_id",
+          "id_attr",
+          "href",
+          "year"
+        ],
+        "properties": {
+          "url_id": {
+            "type": "string"
+          },
+          "id_attr": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          }
+        }
+      },
+      "IRezkaInfoByIdResponse": {
+        "type": "object",
+        "required": [
+          "en_name",
+          "year"
+        ],
+        "properties": {
+          "en_name": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          }
+        }
+      },
+      "IRezkaMovieResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "en_name",
+          "href",
+          "url_id",
+          "year",
+          "video_type"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "en_name": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "url_id": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "video_type": {
+            "type": "ERezkaVideoType"
+          }
+        }
+      },
+      "ERezkaVideoType": {
+        "type": "string",
+        "enum": [
+          "film",
+          "cartoon"
+        ]
+      },
+      "IPostRezkaMovieBody": {
+        "type": "object",
+        "required": [
+          "en_name",
+          "href",
+          "url_id",
+          "year",
+          "video_type"
+        ],
+        "properties": {
+          "en_name": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "url_id": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "video_type": {
+            "type": "ERezkaVideoType"
+          }
+        }
+      },
+      "IPutRezkaMovieBody": {
+        "type": "object",
+        "required": [
+          "en_name",
+          "href",
+          "url_id",
+          "year",
+          "video_type"
+        ],
+        "properties": {
+          "en_name": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "url_id": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "video_type": {
+            "type": "ERezkaVideoType"
           }
         }
       },
@@ -1489,7 +2028,11 @@
           "uploadToCdn",
           "searchImdb",
           "searchImdbIdInHurtom",
-          "uploadTorrentToS3FromMovieDB"
+          "fixRelationIntoMovieDb",
+          "uploadTorrentToS3FromMovieDB",
+          "updateRezka",
+          "updateRezkaById",
+          "rezkaType"
         ],
         "properties": {
           "updateHurtom": {
@@ -1507,8 +2050,20 @@
           "searchImdbIdInHurtom": {
             "type": "boolean"
           },
+          "fixRelationIntoMovieDb": {
+            "type": "boolean"
+          },
           "uploadTorrentToS3FromMovieDB": {
             "type": "boolean"
+          },
+          "updateRezka": {
+            "type": "boolean"
+          },
+          "updateRezkaById": {
+            "type": "boolean"
+          },
+          "rezkaType": {
+            "type": "ERezkaVideoType"
           }
         }
       },

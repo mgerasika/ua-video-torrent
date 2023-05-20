@@ -8,7 +8,7 @@ import { HURTOM_HEADERS } from './get-hurtom-all.controller';
 const cheerio = require('cheerio');
 
 export interface IHurtomInfoByIdResponse {
-    imdb_original_id: string;
+    imdb_id: string;
 }
 
 interface IRequest extends IExpressRequest {
@@ -40,12 +40,12 @@ export const getHurtomPageByIdAsync = async (id: string): Promise<IQueryReturn<I
     const href = $('.postbody').find('a[rel=nofollow]').attr('href') || '';
     const parts = href.split('/').filter((f: string) => f);
     const imdb_original_id = parts.length ? parts[parts.length - 1] : '';
-    if (imdb_original_id.length < 5 || imdb_original_id.length > 11) {
+    if (imdb_original_id.length < 5 || imdb_original_id.length > 11 || !imdb_original_id.toString().includes('tt')) {
         return [, 'imdb id not found ' + imdb_original_id];
     }
     return [
         {
-            imdb_original_id,
+            imdb_id: imdb_original_id,
         },
     ];
 };

@@ -1,21 +1,9 @@
-import { MovieDto } from '@server/dto/movie.dto';
+import { IMovieDto, MovieDto } from '@server/dto/movie.dto';
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { typeOrmAsync } from '@server/utils/type-orm-async.util';
 import { API_URL } from '@server/constants/api-url.constant';
 
-export interface IMovieResponse {
-    imdb_id: string;
-    id: string;
-    en_name: string;
-    ua_name: string;
-    href: string;
-    year: number;
-    title: string;
-    download_id: string;
-    size: number;
-    aws_s3_torrent_url: string;
-    imdb_original_id?: string;
-}
+export interface IMovieResponse extends IMovieDto {}
 
 interface IRequest extends IExpressRequest {
     query: {

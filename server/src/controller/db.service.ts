@@ -8,6 +8,7 @@ import { groupMovie } from './group-movie';
 import { torrent } from './torrent';
 import { rezkaMovie } from './rezka-movie';
 import { cypress } from './cypress';
+import { stream } from './stream';
 
 export const dbService = {
     movie,
@@ -20,4 +21,5 @@ export const dbService = {
     parser,
     torrent,
     cypress,
+    stream,
 };

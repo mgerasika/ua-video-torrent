@@ -1,5 +1,7 @@
-import { getCypressAsync } from './get-cypress.controller';
+import { getCypressImdbAsync } from './get-cypress-imdb.controller';
+import { getCypressRezkaStreamsAsync } from './get-cypress-rezka-streams.controller';
 
 export const cypress = {
-    getCypressAsync,
+    getCypressImdbAsync,
+    getCypressRezkaStreamsAsync,
 };

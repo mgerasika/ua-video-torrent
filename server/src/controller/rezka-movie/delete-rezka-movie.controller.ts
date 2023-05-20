@@ -1,8 +1,8 @@
-import { MovieDto } from '@server/dto/movie.dto';
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { typeOrmAsync } from '@server/utils/type-orm-async.util';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IRezkaMovieResponse, getRezkaMoviesAllAsync } from './get-rezka-movie-list.controller';
+import { RezkaMovieDto } from '@server/dto/rezka-movie.dto';
 
 interface IRequest extends IExpressRequest {
     params: {
@@ -22,11 +22,11 @@ app.delete(API_URL.api.rezka_movie.id().toString(), async (req: IRequest, res: I
 });
 
 export const deleteRezkaMovieAsync = async (id: string) => {
-    return typeOrmAsync<MovieDto>(async (client) => {
-        const entityToDelete = await client.getRepository(MovieDto).findOne({ where: { id } });
+    return typeOrmAsync<RezkaMovieDto>(async (client) => {
+        const entityToDelete = await client.getRepository(RezkaMovieDto).findOne({ where: { id } });
         if (!entityToDelete) {
             return [undefined, 'entity not found'];
         }
-        return [await client.getRepository(MovieDto).remove(entityToDelete)];
+        return [await client.getRepository(RezkaMovieDto).remove(entityToDelete)];
     });
 };

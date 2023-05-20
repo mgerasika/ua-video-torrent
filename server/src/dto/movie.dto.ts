@@ -1,8 +1,34 @@
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, RelationId } from 'typeorm';
 import { ImdbDto } from './imdb.dto';
 
+export interface IMovieDto {
+    id: string;
+
+    en_name: string;
+
+    ua_name: string;
+
+    href: string;
+
+    year: number;
+
+    title: string;
+
+    download_id: string;
+
+    size: number;
+
+    aws_s3_torrent_url: string;
+
+    imdb?: ImdbDto;
+
+    imdb_id?: string;
+
+    hurtom_imdb_id: string;
+}
+
 @Entity('movie')
-export class MovieDto {
+export class MovieDto implements IMovieDto {
     @PrimaryGeneratedColumn('uuid')
     id!: string;
 
@@ -30,13 +56,13 @@ export class MovieDto {
     @Column({ nullable: true, type: 'text', unique: true })
     aws_s3_torrent_url!: string;
 
-    @Column({ nullable: true, type: 'text' })
-    imdb_original_id?: string;
-
     @ManyToOne(() => ImdbDto)
     @JoinColumn({ name: 'imdb_id' })
     imdb?: ImdbDto;
 
     @RelationId((item: MovieDto) => item.imdb)
     imdb_id?: string;
+
+    @Column({ nullable: true, type: 'text' })
+    hurtom_imdb_id!: string;
 }

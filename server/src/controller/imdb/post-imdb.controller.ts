@@ -4,7 +4,7 @@ import { typeOrmAsync } from '@server/utils/type-orm-async.util';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IImdbResponse } from './get-imdb-list.controller';
 
-interface IPostImdbBody extends Omit<IImdbResponse, 'id'> {}
+interface IPostImdbBody extends IImdbResponse {}
 interface IRequest extends IExpressRequest {
     body: IPostImdbBody;
 }
@@ -19,8 +19,12 @@ app.post(API_URL.api.imdb.toString(), async (req: IRequest, res: IResponse) => {
     return res.send(data);
 });
 
-export const postImdbAsync = async (data: Omit<ImdbDto, 'id'>) => {
+export const postImdbAsync = async (data: ImdbDto) => {
+    if (!data.id.startsWith('tt')) {
+        return [, 'id should start from tt symbol ' + data.id];
+    }
     return await typeOrmAsync<ImdbDto>(async (client) => {
-        return [await client.getRepository(ImdbDto).save(data)];
+        const result = await client.getRepository(ImdbDto).save(data);
+        return [result];
     });
 };
