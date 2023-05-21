@@ -32,7 +32,5 @@ export const VideoPlayer = ({ imgSrc, url }: IProps) => {
 }
 
 const styles = {
-  root: css`
-    border: 1px solid white;
-  `,
+  root: css``,
 }

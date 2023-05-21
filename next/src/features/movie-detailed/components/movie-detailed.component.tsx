@@ -26,11 +26,16 @@ export const MovieDetailed = ({ movie, streams }: IProps): JSX.Element => {
       </div>
       <div tw="flex flex-col lg:flex-row">
         <div tw="relative order-2 lg:order-1 mx-auto">
-          <img
-            src={movie?.poster || ''}
-            tw="min-w-[300px] w-[300px] h-[429px] [object-fit: cover]"
-            alt=""
-          />
+          {stream ? (
+            <VideoPlayer imgSrc={movie?.poster || ''} url={stream.stream_url} />
+          ) : (
+            <img
+              src={movie?.poster || ''}
+              tw="min-w-[300px] w-[300px] h-[429px] [object-fit: cover]"
+              alt=""
+            />
+          )}
+
           <p tw="text-white [font-size: larger] top-2 left-2 absolute bg-black px-2 py-1 border-solid border-white [border-width: 1px]">
             {movie?.imdb_rating}
           </p>
@@ -54,9 +59,6 @@ export const MovieDetailed = ({ movie, streams }: IProps): JSX.Element => {
           </ul>
         </div>
       </div>
-      {stream && (
-        <VideoPlayer imgSrc={movie?.poster || ''} url={stream.stream_url} />
-      )}
     </div>
   )
 }
