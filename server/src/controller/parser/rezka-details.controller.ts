@@ -13,22 +13,22 @@ export interface IRezkaInfoByIdResponse {
 }
 
 interface IRequest extends IExpressRequest {
-    params: {
+    body: {
         id: string;
     };
 }
 
 interface IResponse extends IExpressResponse<IRezkaInfoByIdResponse, void> {}
 
-app.get(API_URL.api.parser.getRezkaAll.id().toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await getRezkaPageByIdAsync(req.params.id);
+app.post(API_URL.api.parser.rezkaDetails.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await parseRezkaDetailsAsync(req.body.id);
     if (error) {
         return res.status(400).send(error);
     }
     return res.send(data);
 });
 
-export const getRezkaPageByIdAsync = async (id: string): Promise<IQueryReturn<IRezkaInfoByIdResponse>> => {
+export const parseRezkaDetailsAsync = async (id: string): Promise<IQueryReturn<IRezkaInfoByIdResponse>> => {
     const url = `https://rezka.ag/${id}.html`;
     console.log('request url = ' + url);
     const [response, error] = await toQuery(() => axios.get(url, REZKA_HEADERS));

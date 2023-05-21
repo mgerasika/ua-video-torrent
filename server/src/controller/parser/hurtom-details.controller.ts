@@ -3,7 +3,7 @@ import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 import { rejects } from 'assert';
-import { HURTOM_HEADERS } from './get-hurtom-all.controller';
+import { HURTOM_HEADERS } from './hurtom-all.controller';
 
 const cheerio = require('cheerio');
 
@@ -12,22 +12,22 @@ export interface IHurtomInfoByIdResponse {
 }
 
 interface IRequest extends IExpressRequest {
-    params: {
+    body: {
         id: string;
     };
 }
 
 interface IResponse extends IExpressResponse<IHurtomInfoByIdResponse, void> {}
 
-app.get(API_URL.api.parser.getHurtomAll.id().toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await getHurtomPageByIdAsync(req.params.id);
+app.post(API_URL.api.parser.hurtomDetails.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await parseHurtomDetailsAsync(req.body.id);
     if (error) {
         return res.status(400).send(error);
     }
     return res.send(data);
 });
 
-export const getHurtomPageByIdAsync = async (id: string): Promise<IQueryReturn<IHurtomInfoByIdResponse>> => {
+export const parseHurtomDetailsAsync = async (id: string): Promise<IQueryReturn<IHurtomInfoByIdResponse>> => {
     const url = `https://toloka.to/${id}`;
     console.log('request url = ' + url);
     const [response, error] = await toQuery(() => axios.get(url, HURTOM_HEADERS));

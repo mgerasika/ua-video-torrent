@@ -1,5 +1,3 @@
-import { getStream } from './get-stream.wrapper';
-
 describe('get-imdb', () => {
     it('get-imdb-rate', () => {
         const url =
@@ -14,7 +12,13 @@ describe('get-imdb', () => {
                 .split('/')
                 .filter((f) => f)
                 .pop();
-            throw JSON.stringify({ id: imdbId });
+            const result = { id: imdbId };
+
+            console.log('result', result);
+            cy.log('result', result);
+            if (Cypress.env('URL')) {
+                throw JSON.stringify(result);
+            }
         });
     });
 });

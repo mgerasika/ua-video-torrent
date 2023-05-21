@@ -17,7 +17,7 @@ app.delete(API_URL.api.stream.id().toString(), async (req: IRequest, res: IRespo
     if (error) {
         return res.status(400).send('error' + error);
     }
-    const [data] = await getStreamAllAsync();
+    const [data] = await getStreamAllAsync({});
     return res.send(data);
 });
 

@@ -1,5 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, RelationId } from 'typeorm';
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, RelationId, OneToMany } from 'typeorm';
 import { ImdbDto } from './imdb.dto';
+import { StreamDto } from './stream.dto';
 
 export enum ERezkaVideoType {
     film = 'film',
@@ -59,4 +60,8 @@ export class RezkaMovieDto implements IRezkaMovieDto {
 
     @Column({ nullable: true, type: 'text' })
     rezka_imdb_id!: string;
+
+    constructor(id: string) {
+        this.id = id;
+    }
 }

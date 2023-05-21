@@ -21,7 +21,7 @@ app.post(API_URL.api.movie.toString(), async (req: IRequest, res: IResponse) => 
     return res.send(data);
 });
 
-export const postMovieAsync = async (data: Omit<MovieDto, 'id'>) => {
+export const postMovieAsync = async (data: Omit<MovieDto, 'id' | 'get_imdb_id'>) => {
     return typeOrmAsync<MovieDto>(async (client) => {
         return [await client.getRepository(MovieDto).save(data)];
     });

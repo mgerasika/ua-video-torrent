@@ -14,7 +14,7 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IRezkaMovieResponse[], void> {}
 
-app.get(API_URL.api.rezka_movie.toString(), async (req: IRequest, res: IResponse) => {
+app.get(API_URL.api.rezkaMovie.toString(), async (req: IRequest, res: IResponse) => {
     const [data, error] = await getRezkaMoviesAllAsync();
     if (error) {
         return res.status(400).send('error' + error);

@@ -31,20 +31,20 @@ const schema = Joi.object<IRequest['query']>({
     // type: Joi.options(...Object.values(ERezkaVideoType)).required(),
 });
 
-app.get(API_URL.api.parser.getRezkaAll.toString(), async (req: IRequest, res: IResponse) => {
+app.post(API_URL.api.parser.rezkaAll.toString(), async (req: IRequest, res: IResponse) => {
     const [, validateError] = validateSchema(schema, req.query);
     if (validateError) {
         return res.status(400).send(validateError);
     }
 
-    const [data, error] = await getAllRezkaPagesAsync({ type: req.query.type });
+    const [data, error] = await parseRezkaAllPagesAsync({ type: req.query.type });
     if (error) {
         return res.status(400).send(error);
     }
     return res.send(data);
 });
 
-export const getAllRezkaPagesAsync = async ({
+export const parseRezkaAllPagesAsync = async ({
     type,
 }: {
     type: ERezkaVideoType;

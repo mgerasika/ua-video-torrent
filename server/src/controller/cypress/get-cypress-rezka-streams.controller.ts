@@ -24,7 +24,7 @@ export interface IResolutionItem {
 }
 
 interface IRequest extends IExpressRequest {
-    params: {
+    body: {
         href: string;
     };
     query: {
@@ -35,8 +35,8 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IVideoInfoResult, void> {}
 
-app.get(API_URL.api.cypress.href().streams.toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await getCypressRezkaStreamsAsync(decodeURIComponent(req.params.href));
+app.get(API_URL.api.cypress.streams.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await getCypressRezkaStreamsAsync(decodeURIComponent(req.body.href));
     if (error) {
         return res.status(400).send(error);
     }

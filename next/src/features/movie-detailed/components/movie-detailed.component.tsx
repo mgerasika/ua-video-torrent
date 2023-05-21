@@ -1,12 +1,18 @@
 import React from 'react'
 import 'twin.macro'
 import Link from 'next/link'
-import { IGroupMovieResponse } from '../../../api/api.generated'
+import {
+  IGroupMovieResponse,
+  IStreamResponse,
+} from '../../../api/api.generated'
+import { VideoPlayer } from './video-player.component'
 
 interface IProps {
+  streams: IStreamResponse[]
   movie: IGroupMovieResponse | undefined
 }
-export const MovieDetailed = ({ movie }: IProps): JSX.Element => {
+export const MovieDetailed = ({ movie, streams }: IProps): JSX.Element => {
+  const stream = streams.length ? streams[0] : undefined
   return (
     //   bg-black relative transition duration-200 ease-in transform hover:scale-110
     <div tw="container min-h-screen mx-auto lg:px-32">
@@ -32,23 +38,25 @@ export const MovieDetailed = ({ movie }: IProps): JSX.Element => {
         <div tw="py-2 px-4 order-2">
           <h3 tw="text-white text-xl">Download torrent:</h3>
           <ul>
-            {movie?.movies
-              .map(movie => (
-                <li tw="text-white pb-1" key={movie.aws_s3_torrent_url}>
-                  <a
-                    tw="cursor-pointer"
-                    target="_blank"
-                    href={movie.aws_s3_torrent_url}
-                    rel="noreferrer"
-                  >
-                    {' '}
-                    - {movie.title} - ({movie.size} GB)
-                  </a>
-                </li>
-              ))}
+            {movie?.movies.map(torrent => (
+              <li tw="text-white pb-1" key={torrent.aws_s3_torrent_url}>
+                <a
+                  tw="cursor-pointer"
+                  target="_blank"
+                  href={torrent.aws_s3_torrent_url}
+                  rel="noreferrer"
+                >
+                  {' '}
+                  - {torrent.title} - ({torrent.size} GB)
+                </a>
+              </li>
+            ))}
           </ul>
         </div>
       </div>
+      {stream && (
+        <VideoPlayer imgSrc={movie?.poster || ''} url={stream.stream_url} />
+      )}
     </div>
   )
 }

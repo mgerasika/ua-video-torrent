@@ -24,6 +24,8 @@ export const MovieListContainer = () => {
         rezkaType: ERezkaVideoType.cartoon,
         updateRezka: false,
         updateRezkaById: false,
+        updateRezkaImdbId: false,
+        updateRezkaStreams: false,
       })
       .then(handleGetAll);
   }, [handleGetAll]);

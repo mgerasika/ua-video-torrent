@@ -67,6 +67,6 @@
         "serverless-tscpaths": "^0.0.8",
         "ts-node": "^10.9.1",
         "typescript": "^5.0.4",
-        "typescript-to-swagger": "^0.1.27"
+        "typescript-to-swagger": "^0.1.30"
     }
 }

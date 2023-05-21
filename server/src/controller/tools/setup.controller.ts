@@ -8,12 +8,14 @@ import { MovieDto } from '@server/dto/movie.dto';
 import { dbService } from '../db.service';
 import Joi from 'joi';
 import { validateSchema } from '@server/utils/validate-schema.util';
-import { IImdbResultResponse } from '../imdb/search-imdb.controller';
 import { createLogs } from '@server/utils/create-logs.utils';
 import { oneByOneAsync } from '@server/utils/one-by-one-async.util';
-import { movie } from '../movie';
 import { IQueryReturn } from '@server/utils/to-query.util';
-import { ERezkaVideoType } from '@server/dto/rezka-movie.dto';
+import { ERezkaVideoType, RezkaMovieDto } from '@server/dto/rezka-movie.dto';
+import { EResolution } from '@server/enum/resolution.enum';
+import { ETranslation } from '@server/enum/translation.enum';
+import { ImdbDto } from '@server/dto/imdb.dto';
+import { IResolutionItem } from '../cypress/get-cypress-rezka-streams.controller';
 
 export interface ISetupBody {
     updateHurtom: boolean;
@@ -24,7 +26,8 @@ export interface ISetupBody {
     uploadTorrentToS3FromMovieDB: boolean;
     updateRezka: boolean;
     updateRezkaById: boolean;
-    updateRezkaImdb: boolean;
+    updateRezkaImdbId: boolean;
+    updateRezkaStreams: boolean;
     rezkaType: ERezkaVideoType;
 }
 
@@ -43,7 +46,8 @@ const schema = Joi.object<ISetupBody>({
 
     updateRezka: Joi.boolean().required(),
     updateRezkaById: Joi.boolean().required(),
-    updateRezkaImdb: Joi.boolean().required(),
+    updateRezkaImdbId: Joi.boolean().required(),
+    updateRezkaStreams: Joi.boolean().required(),
     fixRelationIntoMovieDb: Joi.boolean().required(),
     rezkaType: Joi.string()
         .valid(...Object.values(ERezkaVideoType))
@@ -52,6 +56,9 @@ const schema = Joi.object<ISetupBody>({
 
 app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IResponse) => {
     (req as any).setTimeout(60 * 60 * 60 * 10000);
+    (req as any).connection.on('close', function () {
+        console.log('cancel request');
+    });
 
     const [, validateError] = validateSchema(schema, req.body);
     if (validateError) {
@@ -70,7 +77,7 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
 
     const [dbMovies = []] = await dbService.movie.getMoviesAllAsync();
     if (props.updateHurtom) {
-        const [parseItems = [], parseError] = await dbService.parser.getAllHurtomPagesAsync();
+        const [parseItems = [], parseError] = await dbService.parser.parseHurtomAllPagesAsync();
         if (parseError) {
             logs.push(`hurtom items error`, parseError);
             return [undefined, logs.get() as any];
@@ -172,7 +179,7 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
             if (imdbInfo) {
                 imdbId = imdbInfo.id;
             } else {
-                const [hurtomDetails, hurtomError] = await dbService.parser.getHurtomPageByIdAsync(movieItem.href || '');
+                const [hurtomDetails, hurtomError] = await dbService.parser.parseHurtomDetailsAsync(movieItem.href || '');
                 if (hurtomError) {
                     return logs.push(hurtomError);
                 }
@@ -183,7 +190,6 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
 
                 const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
                     ...movieItem,
-                    imdb_id: imdbId,
                     hurtom_imdb_id: imdbId,
                 });
                 if (putMovieError) {
@@ -247,7 +253,6 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
                 const [, putMovieError] = await dbService.movie.putMovieAsync(movieItem.id, {
                     ...movieItem,
                     imdb: imdbInfo,
-                    imdb_id: imdbInfo?.id,
                     hurtom_imdb_id: imdbInfo?.id,
                 });
                 if (putMovieError) {
@@ -261,7 +266,7 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
     if (props.updateRezka) {
         const [rezkaDbMovies = []] = await dbService.rezkaMovie.getRezkaMoviesAllAsync();
 
-        const [parseItems = [], parserError] = await dbService.parser.getAllRezkaPagesAsync({ type: props.rezkaType });
+        const [parseItems = [], parserError] = await dbService.parser.parseRezkaAllPagesAsync({ type: props.rezkaType });
         if (parserError) {
             logs.push(`rezka items has some error`, parserError);
         }
@@ -292,7 +297,7 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
         await oneByOneAsync(
             rezkaDbMovies.filter((f) => !f.en_name),
             async (dbMovie) => {
-                const [parseItem, parserError] = await dbService.parser.getRezkaPageByIdAsync(dbMovie.url_id);
+                const [parseItem, parserError] = await dbService.parser.parseRezkaDetailsAsync(dbMovie.url_id);
                 if (parserError) {
                     logs.push(`rezka by id error`, parserError);
                     return;
@@ -310,16 +315,17 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
         );
     }
 
-    if (props.updateRezkaImdb) {
+    if (props.updateRezkaImdbId) {
         const [rezkaDbMovies = []] = await dbService.rezkaMovie.getRezkaMoviesAllAsync();
 
+        const items = rezkaDbMovies.filter((f) => !f.rezka_imdb_id).reverse();
+        logs.push('download imdb ids  for ' + items.length);
         await oneByOneAsync(
-            rezkaDbMovies.filter((f) => !f.rezka_imdb_id).reverse(),
+            items,
             async (dbMovie) => {
-                logs.push(`cypress for url `, dbMovie.href);
                 const [parseItem, parserError] = await dbService.cypress.getCypressImdbAsync(dbMovie.href);
                 if (parserError) {
-                    logs.push(`rezka by id error`, parserError);
+                    logs.push(`parse cypress rezka by href error`, parserError);
                     return;
                 } else if (parseItem) {
                     const [, postError] = await dbService.rezkaMovie.putRezkaMovieAsync(dbMovie.id, {
@@ -329,6 +335,64 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
                         return logs.push(`post rezka movie error ${dbMovie.id} error=${postError}`);
                     }
                     logs.push(`post rezka movie imdbId success ${dbMovie.id} `);
+                }
+            },
+            { timeout: 0 },
+        );
+    }
+
+    if (props.updateRezkaStreams) {
+        const [hrefObjects = []] = await dbService.rezkaMovie.searchHrefRezkaMoviesAsync();
+        logs.push('download streams for ' + hrefObjects.length);
+        await oneByOneAsync(
+            hrefObjects,
+            async (hrefObj) => {
+                const [parseItem, parserError] = await dbService.cypress.getCypressRezkaStreamsAsync(hrefObj.href);
+                if (parserError) {
+                    logs.push(`parse cypress rezka by href error`, parserError);
+                    return;
+                } else if (parseItem) {
+                    await oneByOneAsync(
+                        parseItem.translations.filter(
+                            (t) => t.translation.includes('Украинский') || t.translation.includes('Оригинал'),
+                        ),
+                        async (translation) => {
+                            await oneByOneAsync(
+                                [
+                                    translation.resolutions
+                                        .filter(
+                                            (resolution) =>
+                                                resolution.resolution.includes('1080') ||
+                                                resolution.resolution.includes('1280p'),
+                                        )
+                                        .pop(),
+                                ].filter((f) => f) as IResolutionItem[],
+                                async (resolution: IResolutionItem) => {
+                                    await oneByOneAsync(
+                                        resolution.streams,
+                                        async (stream) => {
+                                            const [postStream, postStreamError] = await dbService.stream.postStreamAsync({
+                                                stream_url: stream,
+                                                translation_original_text: translation.translation,
+                                                imdb: new ImdbDto(hrefObj.rezka_imdb_id),
+                                                resolution_enum: ('_' + resolution.resolution) as EResolution,
+                                                translation_enum: null as unknown as ETranslation,
+                                            });
+                                            if (postStreamError) {
+                                                logs.push(`post stream error`, postStreamError);
+                                                return;
+                                            } else if (postStream) {
+                                                logs.push(`post stream success`, postStream);
+                                            }
+                                        },
+                                        { timeout: 0 },
+                                    );
+                                },
+                                { timeout: 0 },
+                            );
+                        },
+                        { timeout: 0 },
+                    );
                 }
             },
             { timeout: 0 },

@@ -1,3 +1,4 @@
+import { searchRezkaMoviesWithoutStreamsAsync } from './search-href.controller';
 import { getRezkaMoviesAllAsync } from './get-rezka-movie-list.controller';
 import { getRezkaMovieByIdAsync } from './get-rezka-movie.controller';
 import { postRezkaMovieAsync } from './post-rezka-movie.controller';
@@ -10,4 +11,5 @@ export const rezkaMovie = {
     postRezkaMovieAsync,
     putRezkaMovieAsync,
     deleteRezkaMovieAsync,
+    searchHrefRezkaMoviesAsync: searchRezkaMoviesWithoutStreamsAsync,
 };

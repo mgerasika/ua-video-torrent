@@ -1,5 +1,9 @@
 import tw from 'twin.macro'
-import { IGroupMovieResponse, api } from '../api/api.generated'
+import {
+  IGroupMovieResponse,
+  ISearchRezkaMovieResponse,
+  api,
+} from '../api/api.generated'
 import { MoviesComponent } from '../features/movies/components/movies.component'
 import { getMoviesAsync } from '../api/get-movies'
 import Link from 'next/link'
@@ -10,10 +14,11 @@ import { useScrollEnd } from '../use-scroll-end.hook'
 interface IProps {
   page: string
   allMovies: IGroupMovieResponse[]
+  withoutStreams: ISearchRezkaMovieResponse[]
 }
 const PAGE_SIZE = 20
 
-const App = ({ allMovies }: IProps) => {
+const App = ({ allMovies, withoutStreams }: IProps) => {
   const [page, setPage] = useState(0)
 
   const movies = useMemo(() => {
@@ -44,7 +49,7 @@ const App = ({ allMovies }: IProps) => {
 
   return (
     <div>
-      <MoviesComponent movies={movies} />
+      <MoviesComponent movies={movies} withoutStreams={withoutStreams} />
       <div tw="p-6 text-center text-2xl">
         <div onClick={handleScrollEnd} tw="text-white ">
           Next
@@ -54,12 +59,16 @@ const App = ({ allMovies }: IProps) => {
   )
 }
 
-export async function getStaticProps() {
+export async function getStaticProps(): Promise<{
+  props: Omit<IProps, 'page'>
+}> {
   const movies = await getMoviesAsync()
+  const withoutStreams = await api.rezkaMovieSearchRezkaWithoutStreamGet({})
 
   return {
     props: {
       allMovies: movies,
+      withoutStreams: withoutStreams.data,
     },
   }
 }

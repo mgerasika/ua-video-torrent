@@ -26,15 +26,15 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IHurtomInfoResponse[], void> {}
 
-app.get(API_URL.api.parser.getHurtomAll.toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await getAllHurtomPagesAsync();
+app.post(API_URL.api.parser.hurtomAll.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await parseHurtomAllPagesAsync();
     if (error) {
         return res.status(400).send(error);
     }
     return res.send(data);
 });
 
-export const getAllHurtomPagesAsync = async (): Promise<IQueryReturn<IHurtomInfoResponse[]>> => {
+export const parseHurtomAllPagesAsync = async (): Promise<IQueryReturn<IHurtomInfoResponse[]>> => {
     const allHurtomItems: IHurtomInfoResponse[] = [];
     const fnAsync: any = async (page: number) => {
         const [hurtomItems, error] = await getHurtomPageAsync(page);

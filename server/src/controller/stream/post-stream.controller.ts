@@ -17,11 +17,11 @@ app.post(API_URL.api.stream.toString(), async (req: IRequest, res: IResponse) =>
     if (error) {
         return res.status(400).send('error' + error);
     }
-    const [data] = await getStreamAllAsync();
+    const [data] = await getStreamAllAsync({});
     return res.send(data);
 });
 
-export const postStreamAsync = async (data: Omit<StreamDto, 'id'>) => {
+export const postStreamAsync = async (data: Omit<StreamDto, 'id' | 'imdb_id'>) => {
     return typeOrmAsync<StreamDto>(async (client) => {
         return [await client.getRepository(StreamDto).save(data)];
     });

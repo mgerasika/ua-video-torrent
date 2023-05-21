@@ -6,13 +6,13 @@
     "version": "0.0.1"
   },
   "paths": {
-    "api/cdn/get/{file_name}": {
+    "api/cdn/{id}": {
       "get": {
         "operationId": "",
         "summary": "",
         "parameters": [
           {
-            "name": "file_name",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -42,13 +42,13 @@
         }
       }
     },
-    "api/cdn/get/{file_name}hasFile/": {
+    "api/cdn/{id}hasFile/": {
       "get": {
         "operationId": "",
         "summary": "",
         "parameters": [
           {
-            "name": "file_name",
+            "name": "id",
             "in": "path",
             "required": true,
             "schema": {
@@ -97,19 +97,11 @@
         }
       }
     },
-    "api/cypress/{id}": {
+    "api/cypress/imdb/": {
       "get": {
         "operationId": "",
         "summary": "",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "page",
             "in": "query",
@@ -127,6 +119,72 @@
             }
           }
         ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "name": "href",
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/cypress/streams/": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "name": "href",
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
         "responses": {
           "200": {
             "content": {
@@ -196,19 +254,11 @@
         }
       }
     },
-    "api/group-movie/{id}": {
+    "api/imdb/": {
       "get": {
         "operationId": "",
         "summary": "",
         "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          },
           {
             "name": "page",
             "in": "query",
@@ -231,7 +281,45 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/IGroupMovieResponse"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IImdbResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IPostImdbBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IImdbResponse"
                 }
               }
             }
@@ -362,11 +450,19 @@
         }
       }
     },
-    "api/imdb/": {
+    "api/group-movie/{id}": {
       "get": {
         "operationId": "",
         "summary": "",
         "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
           {
             "name": "page",
             "in": "query",
@@ -389,45 +485,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/IImdbResponse"
-                  }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ void"
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "operationId": "",
-        "summary": "",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/IPostImdbBody"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IImdbResponse"
+                  "$ref": "#/components/schemas/IGroupMovieResponse"
                 }
               }
             }
@@ -730,8 +788,8 @@
         }
       }
     },
-    "api/parser/get-hurtom-all/": {
-      "get": {
+    "api/parser/hurtom-all/": {
+      "post": {
         "operationId": "",
         "summary": "",
         "parameters": [
@@ -777,20 +835,22 @@
         }
       }
     },
-    "api/parser/get-hurtom-all/{id}": {
-      "get": {
+    "api/parser/hurtom-details/": {
+      "post": {
         "operationId": "",
         "summary": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "name": "id",
+              "schema": {
+                "type": "string"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "content": {
@@ -813,8 +873,8 @@
         }
       }
     },
-    "api/parser/get-rezka-all/": {
-      "get": {
+    "api/parser/rezka-all/": {
+      "post": {
         "operationId": "",
         "summary": "",
         "parameters": [
@@ -852,20 +912,22 @@
         }
       }
     },
-    "api/parser/get-rezka-all/{id}": {
-      "get": {
+    "api/parser/rezka-details/": {
+      "post": {
         "operationId": "",
         "summary": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "name": "id",
+              "schema": {
+                "type": "string"
+              }
             }
           }
-        ],
+        },
         "responses": {
           "200": {
             "content": {
@@ -888,7 +950,7 @@
         }
       }
     },
-    "api/rezka_movie/{id}": {
+    "api/rezka-movie/{id}": {
       "delete": {
         "operationId": "",
         "summary": "",
@@ -1005,7 +1067,7 @@
         }
       }
     },
-    "api/rezka_movie/": {
+    "api/rezka-movie/": {
       "get": {
         "operationId": "",
         "summary": "",
@@ -1090,7 +1152,7 @@
         }
       }
     },
-    "api/s3/get/{id}": {
+    "api/s3/{id}": {
       "get": {
         "operationId": "",
         "summary": "",
@@ -1126,7 +1188,54 @@
         }
       }
     },
-    "api/s3/get/{id}hasFile/": {
+    "api/rezka-movie/search-rezka-without-stream/": {
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "page",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": true,
+            "schema": {
+              "type": "integer"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ISearchRezkaMovieResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/s3/{id}hasFile/": {
       "get": {
         "operationId": "",
         "summary": "",
@@ -1170,6 +1279,200 @@
           }
         },
         "responses": {
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/stream/{id}": {
+      "delete": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IStreamResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IPutRezkaMovieBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IStreamResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IStreamResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "api/stream/": {
+      "post": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/IPostRezkaMovieBody"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IStreamResponse"
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [
+          {
+            "name": "imdb_id",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/IStreamResponse"
+                  }
+                }
+              }
+            }
+          },
           "400": {
             "content": {
               "application/json": {
@@ -1238,7 +1541,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/ITorrentInfo"
+                  "$ref": "#/components/schemas/ITorrentInfoResponse"
                 }
               }
             }
@@ -1272,7 +1575,7 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/ITorrentInfo"
+                "$ref": "#/components/schemas/ITorrentInfoResponse"
               }
             }
           }
@@ -1299,6 +1602,7 @@
           "en_name",
           "year",
           "url",
+          "imdb_rezka_relative_link",
           "translations"
         ],
         "properties": {
@@ -1309,6 +1613,9 @@
             "type": "integer"
           },
           "url": {
+            "type": "string"
+          },
+          "imdb_rezka_relative_link": {
             "type": "string"
           },
           "translations": {
@@ -1350,7 +1657,7 @@
         "type": "object",
         "required": [
           "enName",
-          "imdb_original_id",
+          "imdb_id",
           "imdb_rating",
           "poster",
           "movies"
@@ -1359,7 +1666,7 @@
           "enName": {
             "type": "string"
           },
-          "imdb_original_id": {
+          "imdb_id": {
             "type": "string"
           },
           "imdb_rating": {
@@ -1639,7 +1946,6 @@
       "IMovieResponse": {
         "type": "object",
         "required": [
-          "imdb_id",
           "id",
           "en_name",
           "ua_name",
@@ -1652,9 +1958,6 @@
           "hurtom_imdb_id"
         ],
         "properties": {
-          "imdb_id": {
-            "type": "string"
-          },
           "id": {
             "type": "string"
           },
@@ -1682,6 +1985,92 @@
           "aws_s3_torrent_url": {
             "type": "string"
           },
+          "imdb": {
+            "type": "ImdbDto"
+          },
+          "imdb_id": {
+            "type": "string"
+          },
+          "hurtom_imdb_id": {
+            "type": "string"
+          }
+        }
+      },
+      "ImdbDto": {
+        "type": "object",
+        "required": [
+          "id",
+          "en_name",
+          "poster",
+          "imdb_rating",
+          "year",
+          "json"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "en_name": {
+            "type": "string"
+          },
+          "poster": {
+            "type": "string"
+          },
+          "imdb_rating": {
+            "type": "integer"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "json": {
+            "type": "string"
+          }
+        }
+      },
+      "IPutMovieBody": {
+        "type": "object",
+        "required": [
+          "en_name",
+          "ua_name",
+          "href",
+          "year",
+          "title",
+          "download_id",
+          "size",
+          "aws_s3_torrent_url",
+          "hurtom_imdb_id"
+        ],
+        "properties": {
+          "en_name": {
+            "type": "string"
+          },
+          "ua_name": {
+            "type": "string"
+          },
+          "href": {
+            "type": "string"
+          },
+          "year": {
+            "type": "integer"
+          },
+          "title": {
+            "type": "string"
+          },
+          "download_id": {
+            "type": "string"
+          },
+          "size": {
+            "type": "integer"
+          },
+          "aws_s3_torrent_url": {
+            "type": "string"
+          },
+          "imdb": {
+            "type": "ImdbDto"
+          },
+          "imdb_id": {
+            "type": "string"
+          },
           "hurtom_imdb_id": {
             "type": "string"
           }
@@ -1690,7 +2079,6 @@
       "IPostMovieBody": {
         "type": "object",
         "required": [
-          "imdb_id",
           "en_name",
           "ua_name",
           "href",
@@ -1702,9 +2090,6 @@
           "hurtom_imdb_id"
         ],
         "properties": {
-          "imdb_id": {
-            "type": "string"
-          },
           "en_name": {
             "type": "string"
           },
@@ -1729,51 +2114,10 @@
           "aws_s3_torrent_url": {
             "type": "string"
           },
-          "hurtom_imdb_id": {
-            "type": "string"
-          }
-        }
-      },
-      "IPutMovieBody": {
-        "type": "object",
-        "required": [
-          "imdb_id",
-          "en_name",
-          "ua_name",
-          "href",
-          "year",
-          "title",
-          "download_id",
-          "size",
-          "aws_s3_torrent_url",
-          "hurtom_imdb_id"
-        ],
-        "properties": {
+          "imdb": {
+            "type": "ImdbDto"
+          },
           "imdb_id": {
-            "type": "string"
-          },
-          "en_name": {
-            "type": "string"
-          },
-          "ua_name": {
-            "type": "string"
-          },
-          "href": {
-            "type": "string"
-          },
-          "year": {
-            "type": "integer"
-          },
-          "title": {
-            "type": "string"
-          },
-          "download_id": {
-            "type": "string"
-          },
-          "size": {
-            "type": "integer"
-          },
-          "aws_s3_torrent_url": {
             "type": "string"
           },
           "hurtom_imdb_id": {
@@ -1789,7 +2133,6 @@
           "poster",
           "imdb_rating",
           "year",
-          "imdb_id",
           "ua_name",
           "href",
           "title",
@@ -1814,9 +2157,6 @@
           "year": {
             "type": "integer"
           },
-          "imdb_id": {
-            "type": "string"
-          },
           "ua_name": {
             "type": "string"
           },
@@ -1833,6 +2173,12 @@
             "type": "integer"
           },
           "aws_s3_torrent_url": {
+            "type": "string"
+          },
+          "imdb": {
+            "type": "ImdbDto"
+          },
+          "imdb_id": {
             "type": "string"
           },
           "hurtom_imdb_id": {
@@ -1917,7 +2263,8 @@
         "type": "object",
         "required": [
           "en_name",
-          "year"
+          "year",
+          "imdb_rezka_relative_link"
         ],
         "properties": {
           "en_name": {
@@ -1925,6 +2272,9 @@
           },
           "year": {
             "type": "integer"
+          },
+          "imdb_rezka_relative_link": {
+            "type": "string"
           }
         }
       },
@@ -1933,10 +2283,11 @@
         "required": [
           "id",
           "en_name",
-          "href",
           "url_id",
           "year",
-          "video_type"
+          "href",
+          "video_type",
+          "rezka_imdb_id"
         ],
         "properties": {
           "id": {
@@ -1945,17 +2296,26 @@
           "en_name": {
             "type": "string"
           },
-          "href": {
-            "type": "string"
-          },
           "url_id": {
             "type": "string"
           },
           "year": {
             "type": "integer"
           },
+          "href": {
+            "type": "string"
+          },
           "video_type": {
             "type": "ERezkaVideoType"
+          },
+          "imdb": {
+            "type": "ImdbDto"
+          },
+          "imdb_id": {
+            "type": "string"
+          },
+          "rezka_imdb_id": {
+            "type": "string"
           }
         }
       },
@@ -1970,16 +2330,14 @@
         "type": "object",
         "required": [
           "en_name",
-          "href",
           "url_id",
           "year",
-          "video_type"
+          "href",
+          "video_type",
+          "rezka_imdb_id"
         ],
         "properties": {
           "en_name": {
-            "type": "string"
-          },
-          "href": {
             "type": "string"
           },
           "url_id": {
@@ -1988,8 +2346,20 @@
           "year": {
             "type": "integer"
           },
+          "href": {
+            "type": "string"
+          },
           "video_type": {
             "type": "ERezkaVideoType"
+          },
+          "imdb": {
+            "type": "ImdbDto"
+          },
+          "imdb_id": {
+            "type": "string"
+          },
+          "rezka_imdb_id": {
+            "type": "string"
           }
         }
       },
@@ -1997,16 +2367,14 @@
         "type": "object",
         "required": [
           "en_name",
-          "href",
           "url_id",
           "year",
-          "video_type"
+          "href",
+          "video_type",
+          "rezka_imdb_id"
         ],
         "properties": {
           "en_name": {
-            "type": "string"
-          },
-          "href": {
             "type": "string"
           },
           "url_id": {
@@ -2015,16 +2383,96 @@
           "year": {
             "type": "integer"
           },
+          "href": {
+            "type": "string"
+          },
           "video_type": {
             "type": "ERezkaVideoType"
+          },
+          "imdb": {
+            "type": "ImdbDto"
+          },
+          "imdb_id": {
+            "type": "string"
+          },
+          "rezka_imdb_id": {
+            "type": "string"
           }
         }
+      },
+      "ISearchRezkaMovieResponse": {
+        "type": "object",
+        "required": [
+          "href",
+          "rezka_imdb_id",
+          "id"
+        ],
+        "properties": {
+          "href": {
+            "type": "string"
+          },
+          "rezka_imdb_id": {
+            "type": "string"
+          },
+          "id": {
+            "type": "string"
+          }
+        }
+      },
+      "IStreamResponse": {
+        "type": "object",
+        "required": [
+          "id",
+          "translation_original_text",
+          "resolution_enum",
+          "translation_enum",
+          "stream_url"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "translation_original_text": {
+            "type": "string"
+          },
+          "resolution_enum": {
+            "type": "EResolution"
+          },
+          "translation_enum": {
+            "type": "ETranslation"
+          },
+          "stream_url": {
+            "type": "string"
+          },
+          "imdb": {
+            "type": "ImdbDto"
+          },
+          "imdb_id": {
+            "type": "string"
+          }
+        }
+      },
+      "EResolution": {
+        "type": "string",
+        "enum": [
+          "_360p",
+          "_480p",
+          "_720p",
+          "_1080p",
+          "_1280p"
+        ]
+      },
+      "ETranslation": {
+        "type": "string",
+        "enum": [
+          "default",
+          "ua_1"
+        ]
       },
       "ISetupBody": {
         "type": "object",
         "required": [
           "updateHurtom",
-          "updateImdb",
           "uploadToCdn",
           "searchImdb",
           "searchImdbIdInHurtom",
@@ -2032,13 +2480,12 @@
           "uploadTorrentToS3FromMovieDB",
           "updateRezka",
           "updateRezkaById",
+          "updateRezkaImdbId",
+          "updateRezkaStreams",
           "rezkaType"
         ],
         "properties": {
           "updateHurtom": {
-            "type": "boolean"
-          },
-          "updateImdb": {
             "type": "boolean"
           },
           "uploadToCdn": {
@@ -2062,12 +2509,18 @@
           "updateRezkaById": {
             "type": "boolean"
           },
+          "updateRezkaImdbId": {
+            "type": "boolean"
+          },
+          "updateRezkaStreams": {
+            "type": "boolean"
+          },
           "rezkaType": {
             "type": "ERezkaVideoType"
           }
         }
       },
-      "ITorrentInfo": {
+      "ITorrentInfoResponse": {
         "type": "object",
         "required": [
           "peers"

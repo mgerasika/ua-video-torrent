@@ -1,11 +1,11 @@
-import { getAllHurtomPagesAsync } from '../parser/get-hurtom-all.controller';
-import { getHurtomPageByIdAsync } from './get-hurtom-by-id.controller';
-import { getAllRezkaPagesAsync } from './rezka-all.controller';
-import { getRezkaPageByIdAsync } from './rezka-by-id.controller';
+import { parseHurtomAllPagesAsync } from './hurtom-all.controller';
+import { parseHurtomDetailsAsync } from './hurtom-details.controller';
+import { parseRezkaAllPagesAsync } from './rezka-all.controller';
+import { parseRezkaDetailsAsync } from './rezka-details.controller';
 
 export const parser = {
-    getHurtomPageByIdAsync,
-    getAllHurtomPagesAsync,
-    getRezkaPageByIdAsync,
-    getAllRezkaPagesAsync,
+    parseHurtomDetailsAsync,
+    parseHurtomAllPagesAsync,
+    parseRezkaDetailsAsync,
+    parseRezkaAllPagesAsync,
 };

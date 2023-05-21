@@ -12,7 +12,7 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IRezkaMovieResponse[], void> {}
 
-app.post(API_URL.api.rezka_movie.toString(), async (req: IRequest, res: IResponse) => {
+app.post(API_URL.api.rezkaMovie.toString(), async (req: IRequest, res: IResponse) => {
     const [, error] = await postRezkaMovieAsync(req.body);
     if (error) {
         return res.status(400).send('error' + error);
@@ -21,7 +21,7 @@ app.post(API_URL.api.rezka_movie.toString(), async (req: IRequest, res: IRespons
     return res.send(data);
 });
 
-export const postRezkaMovieAsync = async (data: Omit<RezkaMovieDto, 'id'>) => {
+export const postRezkaMovieAsync = async (data: Omit<RezkaMovieDto, 'id' | 'get_imdb_id'>) => {
     return typeOrmAsync<RezkaMovieDto>(async (client) => {
         return [await client.getRepository(RezkaMovieDto).save(data)];
     });

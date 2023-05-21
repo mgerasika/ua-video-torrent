@@ -1,25 +1,17 @@
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, RelationId } from 'typeorm';
 import { ImdbDto } from './imdb.dto';
-
-export enum EResolution {
-    _360 = '360p',
-    _480 = '480p',
-    _720p = '720p',
-    _1080 = '1080p',
-    _1280 = '1280p',
-}
-
-export enum ETranslation {
-    default = 'default',
-    ua_1 = 'ua_1',
-}
+import { EResolution } from '@server/enum/resolution.enum';
+import { ETranslation } from '@server/enum/translation.enum';
+import { RezkaMovieDto } from './rezka-movie.dto';
 
 export interface IStreamDto {
     id: string;
 
-    resolution: EResolution;
+    translation_original_text: string;
 
-    translation: ETranslation;
+    resolution_enum: EResolution;
+
+    translation_enum: ETranslation;
 
     stream_url: string;
 
@@ -35,21 +27,26 @@ export class StreamDto implements IStreamDto {
     @Column({
         type: 'enum',
         enum: EResolution,
-        default: EResolution._360,
+        default: EResolution._360p,
+        nullable: true,
     })
-    resolution!: EResolution;
+    resolution_enum!: EResolution;
 
     @Column({
         type: 'enum',
         enum: ETranslation,
         default: ETranslation.default,
+        nullable: true,
     })
-    translation!: ETranslation;
+    translation_enum!: ETranslation;
 
     @Column({ nullable: false, type: 'text' })
+    translation_original_text!: string;
+
+    @Column({ nullable: false, type: 'text', unique: true })
     stream_url!: string;
 
-    @ManyToOne(() => ImdbDto)
+    @ManyToOne(() => ImdbDto, { nullable: false })
     @JoinColumn({ name: 'imdb_id' })
     imdb?: ImdbDto;
 

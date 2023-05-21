@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IExpressResponse, app } from '@server/express-app';
-import { HURTOM_HEADERS } from '../parser/get-hurtom-all.controller';
+import { HURTOM_HEADERS } from '../parser/hurtom-all.controller';
 import { cdnService } from './cdn.service';
 import { error } from 'console';
 import { ENV } from '@server/env';

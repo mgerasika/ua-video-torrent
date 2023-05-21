@@ -12,7 +12,7 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<IRezkaMovieResponse[], void> {}
 
-app.delete(API_URL.api.rezka_movie.id().toString(), async (req: IRequest, res: IResponse) => {
+app.delete(API_URL.api.rezkaMovie.id().toString(), async (req: IRequest, res: IResponse) => {
     const [, error] = await deleteRezkaMovieAsync(req.params.id);
     if (error) {
         return res.status(400).send('error' + error);

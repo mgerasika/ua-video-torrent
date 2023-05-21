@@ -32,4 +32,8 @@ export class ImdbDto implements IImdbDto {
 
     @Column({ nullable: true, type: 'json' })
     json!: string;
+
+    constructor(id: string) {
+        this.id = id;
+    }
 }

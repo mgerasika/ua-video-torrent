@@ -2,7 +2,7 @@ import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IExpressResponse, app } from '@server/express-app';
 import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
-import { HURTOM_HEADERS } from '../parser/get-hurtom-all.controller';
+import { HURTOM_HEADERS } from '../parser/hurtom-all.controller';
 import { S3_BUCKED_NAME, s3 } from './s3.service';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';

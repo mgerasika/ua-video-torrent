@@ -7,14 +7,14 @@ import { IQueryReturn, toQuery, toQueryPromise } from '@server/utils/to-query.ut
 
 interface IRequest {
     params: {
-        file_name: string;
+        id: string;
     };
 }
 
 interface IResponse extends IExpressResponse<void, void> {}
 
-app.get(API_URL.api.cdn.get.file_name().hasFile.toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await hasFileCDNAsync({ fileName: req.params.file_name });
+app.get(API_URL.api.cdn.id().hasFile.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await hasFileCDNAsync({ fileName: req.params.id });
     if (error) {
         return res.status(400).send(error);
     }

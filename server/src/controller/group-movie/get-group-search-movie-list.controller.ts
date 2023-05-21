@@ -8,7 +8,7 @@ import { IQueryReturn } from '@server/utils/to-query.util';
 interface IGroupMovieItem extends Pick<ISearchMovieResponse, 'aws_s3_torrent_url' | 'title' | 'size'> {}
 export interface IGroupMovieResponse {
     enName: string;
-    imdb_original_id: string;
+    imdb_id: string;
     imdb_rating: number;
     poster: string;
     movies: IGroupMovieItem[];
@@ -36,18 +36,18 @@ export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovie
 
     if (movies) {
         const unique = Object.keys(
-            movies.reduce((acc: any, it: any) => {
-                acc[it.imdb_original_id || ''] = it.imdb_original_id;
+            movies.reduce((acc: any, it: ISearchMovieResponse) => {
+                acc[it.imdb_id || ''] = it.imdb_id;
                 return acc;
             }, {}),
         );
 
         const data = unique
             .map((key) => {
-                const filteredMovies = movies.filter((m: IMovieResponse) => m.hurtom_imdb_id === key);
+                const filteredMovies = movies.filter((m: IMovieResponse) => m.imdb_id === key);
                 const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
                 return {
-                    imdb_original_id: firstMovie?.hurtom_imdb_id,
+                    imdb_id: firstMovie?.imdb_id,
                     enName: firstMovie?.en_name,
                     imdb_rating: firstMovie?.imdb_rating || 0,
                     poster: firstMovie?.poster || '',

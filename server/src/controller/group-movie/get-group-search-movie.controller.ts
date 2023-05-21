@@ -31,7 +31,7 @@ export const groupSearchMovieByIdAsync = async (imdb_id: string): Promise<IQuery
 
         const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
         const data: IGroupMovieResponse = {
-            imdb_original_id: firstMovie?.hurtom_imdb_id || '',
+            imdb_id: firstMovie?.hurtom_imdb_id || '',
             enName: firstMovie?.en_name || '',
             imdb_rating: firstMovie?.imdb_rating || 0,
             poster: firstMovie?.poster || '',

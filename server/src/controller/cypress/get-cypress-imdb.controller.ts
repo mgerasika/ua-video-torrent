@@ -6,7 +6,7 @@ import { rejects } from 'assert';
 const cypress = require('cypress');
 
 interface IRequest extends IExpressRequest {
-    params: {
+    body: {
         href: string;
     };
     query: {
@@ -17,8 +17,8 @@ interface IRequest extends IExpressRequest {
 
 interface IResponse extends IExpressResponse<string, void> {}
 
-app.get(API_URL.api.cypress.href().imdb.toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await getCypressImdbAsync(decodeURIComponent(req.params.href));
+app.get(API_URL.api.cypress.imdb.toString(), async (req: IRequest, res: IResponse) => {
+    const [data, error] = await getCypressImdbAsync(decodeURIComponent(req.body.href));
     if (error) {
         return res.status(400).send(error);
     }
