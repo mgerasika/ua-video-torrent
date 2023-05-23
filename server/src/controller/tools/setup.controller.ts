@@ -11,11 +11,9 @@ import { validateSchema } from '@server/utils/validate-schema.util';
 import { createLogs } from '@server/utils/create-logs.utils';
 import { oneByOneAsync } from '@server/utils/one-by-one-async.util';
 import { IQueryReturn } from '@server/utils/to-query.util';
-import { ERezkaVideoType, RezkaMovieDto } from '@server/dto/rezka-movie.dto';
 import { EResolution } from '@server/enum/resolution.enum';
 import { ETranslation } from '@server/enum/translation.enum';
 import { ImdbDto } from '@server/dto/imdb.dto';
-import { IResolutionItem } from '../cypress/get-cypress-rezka-streams.controller';
 
 export interface ISetupBody {
     updateHurtom: boolean;
@@ -24,11 +22,6 @@ export interface ISetupBody {
     searchImdbIdInHurtom: boolean;
     fixRelationIntoMovieDb: boolean;
     uploadTorrentToS3FromMovieDB: boolean;
-    updateRezka: boolean;
-    updateRezkaById: boolean;
-    updateRezkaImdbId: boolean;
-    updateRezkaStreams: boolean;
-    rezkaType: ERezkaVideoType;
 }
 
 interface IRequest extends IExpressRequest {
@@ -43,15 +36,6 @@ const schema = Joi.object<ISetupBody>({
     uploadToCdn: Joi.boolean().required(),
     searchImdb: Joi.boolean().required(),
     searchImdbIdInHurtom: Joi.boolean().required(),
-
-    updateRezka: Joi.boolean().required(),
-    updateRezkaById: Joi.boolean().required(),
-    updateRezkaImdbId: Joi.boolean().required(),
-    updateRezkaStreams: Joi.boolean().required(),
-    fixRelationIntoMovieDb: Joi.boolean().required(),
-    rezkaType: Joi.string()
-        .valid(...Object.values(ERezkaVideoType))
-        .required(),
 });
 
 app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IResponse) => {
@@ -261,142 +245,6 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
                 logs.push(`put movie imdb_id relation success ${movieItem.id} `);
             }
         });
-    }
-
-    if (props.updateRezka) {
-        const [rezkaDbMovies = []] = await dbService.rezkaMovie.getRezkaMoviesAllAsync();
-
-        const [parseItems = [], parserError] = await dbService.parser.parseRezkaAllPagesAsync({ type: props.rezkaType });
-        if (parserError) {
-            logs.push(`rezka items has some error`, parserError);
-        }
-        logs.push(`rezka items return success count=${parseItems?.length}`);
-
-        await oneByOneAsync(parseItems, async (parseItem) => {
-            const dbMovie = rezkaDbMovies?.find((movie) => movie.href === parseItem.href);
-            if (!dbMovie) {
-                const [, postError] = await dbService.rezkaMovie.postRezkaMovieAsync({
-                    href: parseItem.href,
-                    url_id: parseItem.url_id,
-                    en_name: '',
-                    year: parseItem.year,
-                    video_type: props.rezkaType,
-                    rezka_imdb_id: null as unknown as string,
-                });
-                if (postError) {
-                    return logs.push(`post rezka movie error ${parseItem.url_id} error=${postError}`);
-                }
-                logs.push(`post rezka movie success ${parseItem.url_id} `);
-            }
-        });
-    }
-
-    if (props.updateRezkaById) {
-        const [rezkaDbMovies = []] = await dbService.rezkaMovie.getRezkaMoviesAllAsync();
-
-        await oneByOneAsync(
-            rezkaDbMovies.filter((f) => !f.en_name),
-            async (dbMovie) => {
-                const [parseItem, parserError] = await dbService.parser.parseRezkaDetailsAsync(dbMovie.url_id);
-                if (parserError) {
-                    logs.push(`rezka by id error`, parserError);
-                    return;
-                } else if (parseItem) {
-                    const [, postError] = await dbService.rezkaMovie.putRezkaMovieAsync(dbMovie.id, {
-                        en_name: parseItem.en_name,
-                    });
-                    if (postError) {
-                        return logs.push(`post rezka movie error ${dbMovie.id} error=${postError}`);
-                    }
-                    logs.push(`post rezka movie success ${dbMovie.id} `);
-                }
-            },
-            { timeout: 5000 },
-        );
-    }
-
-    if (props.updateRezkaImdbId) {
-        const [rezkaDbMovies = []] = await dbService.rezkaMovie.getRezkaMoviesAllAsync();
-
-        const items = rezkaDbMovies.filter((f) => !f.rezka_imdb_id).reverse();
-        logs.push('download imdb ids  for ' + items.length);
-        await oneByOneAsync(
-            items,
-            async (dbMovie) => {
-                const [parseItem, parserError] = await dbService.cypress.getCypressImdbAsync(dbMovie.href);
-                if (parserError) {
-                    logs.push(`parse cypress rezka by href error`, parserError);
-                    return;
-                } else if (parseItem) {
-                    const [, postError] = await dbService.rezkaMovie.putRezkaMovieAsync(dbMovie.id, {
-                        rezka_imdb_id: parseItem.id,
-                    });
-                    if (postError) {
-                        return logs.push(`post rezka movie error ${dbMovie.id} error=${postError}`);
-                    }
-                    logs.push(`post rezka movie imdbId success ${dbMovie.id} `);
-                }
-            },
-            { timeout: 0 },
-        );
-    }
-
-    if (props.updateRezkaStreams) {
-        const [hrefObjects = []] = await dbService.rezkaMovie.searchHrefRezkaMoviesAsync();
-        logs.push('download streams for ' + hrefObjects.length);
-        await oneByOneAsync(
-            hrefObjects,
-            async (hrefObj) => {
-                const [parseItem, parserError] = await dbService.cypress.getCypressRezkaStreamsAsync(hrefObj.href);
-                if (parserError) {
-                    logs.push(`parse cypress rezka by href error`, parserError);
-                    return;
-                } else if (parseItem) {
-                    await oneByOneAsync(
-                        parseItem.translations.filter(
-                            (t) => t.translation.includes('Украинский') || t.translation.includes('Оригинал'),
-                        ),
-                        async (translation) => {
-                            await oneByOneAsync(
-                                [
-                                    translation.resolutions
-                                        .filter(
-                                            (resolution) =>
-                                                resolution.resolution.includes('1080') ||
-                                                resolution.resolution.includes('1280p'),
-                                        )
-                                        .pop(),
-                                ].filter((f) => f) as IResolutionItem[],
-                                async (resolution: IResolutionItem) => {
-                                    await oneByOneAsync(
-                                        resolution.streams,
-                                        async (stream) => {
-                                            const [postStream, postStreamError] = await dbService.stream.postStreamAsync({
-                                                stream_url: stream,
-                                                translation_original_text: translation.translation,
-                                                imdb: new ImdbDto(hrefObj.rezka_imdb_id),
-                                                resolution_enum: ('_' + resolution.resolution) as EResolution,
-                                                translation_enum: null as unknown as ETranslation,
-                                            });
-                                            if (postStreamError) {
-                                                logs.push(`post stream error`, postStreamError);
-                                                return;
-                                            } else if (postStream) {
-                                                logs.push(`post stream success`, postStream);
-                                            }
-                                        },
-                                        { timeout: 0 },
-                                    );
-                                },
-                                { timeout: 0 },
-                            );
-                        },
-                        { timeout: 0 },
-                    );
-                }
-            },
-            { timeout: 0 },
-        );
     }
 
     return [logs.get(), undefined];

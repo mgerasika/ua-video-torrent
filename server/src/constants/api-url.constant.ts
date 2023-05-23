@@ -18,26 +18,14 @@ interface IApiUrl {
 
             id: (id?: string) => IUrlItem;
         };
-        rezkaMovie: {
-            searchRezkaWithoutStream: IUrlItem;
 
-            id: (id?: string) => IUrlItem;
-        };
-        stream: {
-            id: (id?: string) => IUrlItem;
-        };
         tools: {
             setup: IUrlItem;
         };
-        cypress: {
-            streams: IUrlItem;
-            imdb: IUrlItem;
-        };
+
         parser: {
             hurtomAll: IUrlItem;
             hurtomDetails: IUrlItem;
-            rezkaAll: IUrlItem;
-            rezkaDetails: IUrlItem;
         };
         s3: {
             id: (id?: string) => {
@@ -60,10 +48,7 @@ export const API_URL = createUrls<IApiUrl>({
         torrent: {
             id: (id?: string) => EMPTY_URL_ITEM,
         },
-        cypress: {
-            streams: EMPTY_URL_ITEM,
-            imdb: EMPTY_URL_ITEM,
-        },
+
         imdb: {
             id: (id?: string) => EMPTY_URL_ITEM,
             search: EMPTY_URL_ITEM,
@@ -73,13 +58,7 @@ export const API_URL = createUrls<IApiUrl>({
 
             id: (id?: string) => EMPTY_URL_ITEM,
         },
-        rezkaMovie: {
-            searchRezkaWithoutStream: EMPTY_URL_ITEM,
-            id: (id?: string) => EMPTY_URL_ITEM,
-        },
-        stream: {
-            id: (id?: string) => EMPTY_URL_ITEM,
-        },
+
         groupMovie: {
             id: (id?: string) => EMPTY_URL_ITEM,
         },
@@ -89,8 +68,6 @@ export const API_URL = createUrls<IApiUrl>({
         parser: {
             hurtomAll: EMPTY_URL_ITEM,
             hurtomDetails: EMPTY_URL_ITEM,
-            rezkaAll: EMPTY_URL_ITEM,
-            rezkaDetails: EMPTY_URL_ITEM,
         },
         s3: {
             id: (id?: string) => ({

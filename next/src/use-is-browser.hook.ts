@@ -1,7 +1,7 @@
 import { useEffect, useRef } from 'react'
 
 export const useIsBrowser = (): boolean => {
-  const b = useRef<boolean>(true)
+  const b = useRef<boolean>(false)
   useEffect(() => {
     if (typeof window !== undefined) {
       b.current = true

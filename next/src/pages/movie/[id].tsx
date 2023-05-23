@@ -1,17 +1,11 @@
-import {
-  IGroupMovieResponse,
-  IStreamResponse,
-  api,
-} from '../../api/api.generated'
-import { getMoviesAsync } from '../../api/get-movies'
+import { IGroupMovieResponse, api } from '../../api/api.generated'
 import { MovieDetailed } from '../../features/movie-detailed/components/movie-detailed.component'
 
 interface IProps {
   movie: IGroupMovieResponse
-  streams: IStreamResponse[]
 }
-export default function Movie({ movie, streams }: IProps) {
-  return <MovieDetailed movie={movie} streams={streams} />
+export default function Movie({ movie }: IProps) {
+  return <MovieDetailed movie={movie} />
 }
 
 export async function getStaticProps({
@@ -22,11 +16,12 @@ export async function getStaticProps({
   props: IProps
 }> {
   const groupMovie = await api.groupMovieIdGet(params.id, {})
-  const streams = await api.streamGet({
-    imdb_id: groupMovie.data.imdb_id,
-  })
 
-  return { props: { movie: groupMovie.data, streams: streams.data } }
+  return {
+    props: {
+      movie: groupMovie.data,
+    },
+  }
 }
 
 export async function getStaticPaths() {

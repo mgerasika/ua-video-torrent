@@ -6,13 +6,9 @@ import { cdn } from './cdn';
 import { parser } from './parser';
 import { groupMovie } from './group-movie';
 import { torrent } from './torrent';
-import { rezkaMovie } from './rezka-movie';
-import { cypress } from './cypress';
-import { stream } from './stream';
 
 export const dbService = {
     movie,
-    rezkaMovie,
     groupMovie,
     imdb,
     tools,
@@ -20,6 +16,4 @@ export const dbService = {
     cdn,
     parser,
     torrent,
-    cypress,
-    stream,
 };

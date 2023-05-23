@@ -1,18 +1,12 @@
-import React from 'react'
+import React, { useMemo, useState } from 'react'
 import 'twin.macro'
 import Link from 'next/link'
-import {
-  IGroupMovieResponse,
-  IStreamResponse,
-} from '../../../api/api.generated'
-import { VideoPlayer } from './video-player.component'
+import { IGroupMovieResponse } from '../../../api/api.generated'
 
 interface IProps {
-  streams: IStreamResponse[]
   movie: IGroupMovieResponse | undefined
 }
-export const MovieDetailed = ({ movie, streams }: IProps): JSX.Element => {
-  const stream = streams.length ? streams[0] : undefined
+export const MovieDetailed = ({ movie }: IProps): JSX.Element => {
   return (
     //   bg-black relative transition duration-200 ease-in transform hover:scale-110
     <div tw="container min-h-screen mx-auto lg:px-32">
@@ -26,16 +20,12 @@ export const MovieDetailed = ({ movie, streams }: IProps): JSX.Element => {
       </div>
       <div tw="flex flex-col lg:flex-row">
         <div tw="relative order-2 lg:order-1 mx-auto">
-          {stream ? (
-            <VideoPlayer imgSrc={movie?.poster || ''} url={stream.stream_url} />
-          ) : (
-            <img
-              src={movie?.poster || ''}
-              tw="min-w-[300px] w-[300px] h-[429px] [object-fit: cover]"
-              alt=""
-            />
-          )}
-
+          <img
+            src={movie?.poster || ''}
+            tw="min-w-[300px] w-[300px] h-[429px] [object-fit: cover]"
+            alt=""
+          />
+          )
           <p tw="text-white [font-size: larger] top-2 left-2 absolute bg-black px-2 py-1 border-solid border-white [border-width: 1px]">
             {movie?.imdb_rating}
           </p>
