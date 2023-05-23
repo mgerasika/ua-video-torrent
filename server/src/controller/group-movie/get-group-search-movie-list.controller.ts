@@ -59,8 +59,7 @@ export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovie
                     }),
                 } as IGroupMovieResponse;
             })
-            .sort((a, b) => b.imdb_rating - a.imdb_rating)
-            .slice(0, 20);
+            .sort((a, b) => b.imdb_rating - a.imdb_rating);
 
         return [data as unknown as IGroupMovieResponse[]];
     } else {
