@@ -7,7 +7,7 @@
         "s": "nodemon --config nodemon-sls.json --exec \"sls offline -s dev\"",
         "build": "npx tsc",
         "start": "node dist/index.js",
-        "dev": "concurrently \"npx tsc --watch\" \"nodemon -r dotenv/config -q dist/index.js\"",
+        "dev": "concurrently \"npx tsc --watch\" \"nodemon -r dotenv/config -q --inspect=9229 dist/index.js\"",
         "codegen": "npx ts-node scripts/codegen.ts",
         "deploy": "firebase deploy",
         "cy": " cypress open watchForFileChanges=false --config-file cypress.json "

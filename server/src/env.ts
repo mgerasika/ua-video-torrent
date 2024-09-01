@@ -1,10 +1,10 @@
 export const ENV = {
     user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
     owner_user: process.env.DB_OWNER_USER,
     owner_password: process.env.DB_OWNER_PASSWORD,
-    host: '178.210.131.101',
+    host: process.env.DB_HOST,
     database: 'ua-video-torrent',
-    password: process.env.DB_PASSWORD,
     node_env: process.env.NODE_ENV,
     port: 5432,
     cdn: 'https://ua-video-torrent-cdn.web.app/',

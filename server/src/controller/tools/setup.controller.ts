@@ -32,10 +32,11 @@ interface IResponse extends IExpressResponse<string[], void> {}
 
 const schema = Joi.object<ISetupBody>({
     updateHurtom: Joi.boolean().required(),
-    uploadTorrentToS3FromMovieDB: Joi.boolean().required(),
     uploadToCdn: Joi.boolean().required(),
     searchImdb: Joi.boolean().required(),
+    fixRelationIntoMovieDb: Joi.boolean().required(),
     searchImdbIdInHurtom: Joi.boolean().required(),
+    uploadTorrentToS3FromMovieDB: Joi.boolean().required(),
 });
 
 app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IResponse) => {
@@ -190,7 +191,6 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
         await oneByOneAsync(dbMovies, async (movieItem) => {
             const imdbInfo = imdbInfoItems.find(
                 (imdbItem) =>
-                    imdbItem.en_name === movieItem.en_name ||
                     imdbItem.id === movieItem.hurtom_imdb_id ||
                     imdbItem.id === movieItem.imdb_id,
             );
@@ -230,7 +230,7 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
         logs.push(`found ${filtered.length} items without IMDB id`);
         await oneByOneAsync(filtered, async (movieItem) => {
             const imdbInfo = imdbInfoItems.find(
-                (imdbItem) => imdbItem.en_name === movieItem.en_name || imdbItem.id === movieItem.hurtom_imdb_id,
+                (imdbItem) => imdbItem.id === movieItem.hurtom_imdb_id,
             );
 
             if (imdbInfo) {

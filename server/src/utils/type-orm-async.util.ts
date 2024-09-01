@@ -5,8 +5,7 @@ import { DataSource } from 'typeorm';
 import { IQueryReturn } from './to-query.util';
 import { TorrentInfoDto } from '@server/dto/torrent-info';
 import { StreamDto } from '@server/dto/stream.dto';
-
-const IS_DEBUG = ENV.node_env === 'development';
+import { IS_DEBUG } from '@server/constants/is-debug.constant';
 
 let _dataSource: DataSource | undefined = undefined;
 const getDataSource = (): DataSource => {
@@ -16,9 +15,9 @@ const getDataSource = (): DataSource => {
     _dataSource = new DataSource({
         type: 'postgres',
         username: IS_DEBUG ? ENV.owner_user : ENV.user,
+        password: IS_DEBUG ? ENV.owner_password : ENV.password,
         host: ENV.host,
         database: ENV.database,
-        password: IS_DEBUG ? ENV.owner_password : ENV.password,
         port: ENV.port,
         entities: [MovieDto, ImdbDto, TorrentInfoDto,  StreamDto],
         synchronize: true,

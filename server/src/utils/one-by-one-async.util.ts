@@ -4,7 +4,7 @@ export async function oneByOneAsync<T>(items: T[], fn: (item: T) => Promise<void
             return new Promise((resolve, reject) => {
                 setTimeout(() => {
                     fn(item).then(resolve).catch(reject);
-                }, settings?.timeout );
+                }, settings?.timeout  );
             });
         };
     });

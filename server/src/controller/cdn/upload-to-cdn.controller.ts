@@ -35,13 +35,16 @@ export const uploadFileToCDNAsync = async ({
     hurtomId: string;
     fileName: string;
 }): Promise<IQueryReturn<string>> => {
-    const [response] = await toQuery(() =>
+    const [response,error] = await toQuery(() =>
         axios.get(`https://toloka.to/download.php?id=${hurtomId}`, {
             ...HURTOM_HEADERS,
             responseType: 'arraybuffer',
             responseEncoding: 'utf-8',
         }),
     );
+    if(error) {
+        return [,'Failed to download torrent ' + error];
+    }
 
     const fileContent = response?.data as string;
 

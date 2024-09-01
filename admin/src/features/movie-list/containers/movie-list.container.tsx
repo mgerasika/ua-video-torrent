@@ -1,14 +1,21 @@
-import { ERezkaVideoType, IMovieResponse, api } from "@src/api/api.generated";
+import { IMovieResponse, api } from "@src/api/api.generated";
 import React, { useState, useCallback, useEffect } from "react";
 import { EditMovie } from "../components/edit-movie.component";
 import tw from "twin.macro";
+import { css } from "@emotion/react";
 
 export const MovieListContainer = () => {
   const [movies, setMovies] = useState<IMovieResponse[]>();
   const [movieDetailed, setMovieDetailed] = useState<IMovieResponse>();
   const handleGetAll = useCallback(() => {
     api.movieGet({}).then((data) => {
-      setMovies(data.data);
+      setMovies(data.data.sort((item1,item2) => {
+        if (item1.title < item2.title)
+          return 1;
+        if ( item1.title > item2.title)
+          return -1;
+        return 0;
+      }));
     });
   }, []);
 
@@ -17,24 +24,17 @@ export const MovieListContainer = () => {
       .toolsSetupPost({
         updateHurtom: false,
         uploadTorrentToS3FromMovieDB: false,
-        uploadToCdn: false,
+        uploadToCdn: true,
         searchImdb: true,
-        searchImdbIdInHurtom: false,
+        searchImdbIdInHurtom: true,
         fixRelationIntoMovieDb: true,
-        rezkaType: ERezkaVideoType.cartoon,
-        updateRezka: false,
-        updateRezkaById: false,
-        updateRezkaImdbId: false,
-        updateRezkaStreams: false,
       })
       .then(handleGetAll);
   }, [handleGetAll]);
 
   useEffect(() => {
-    api.movieGet({}).then((data) => {
-      setMovies(data.data);
-    });
-  }, []);
+    handleGetAll();
+  }, [handleGetAll]);
 
   const handleGetById = useCallback((id: string) => {
     api.movieIdGet(id).then((data) => {
@@ -69,7 +69,7 @@ export const MovieListContainer = () => {
       <button css={styles.button} onClick={handleSetup}>
         setup
       </button>
-      Total {movies?.filter((movie) => !movie.imdb_id).length}
+      Total movies without IMDB ID = {movies?.filter((movie) => !movie.imdb_id).length}
       {movies
         ?.filter((m) => !m.imdb_id)
         .map((movie) => {
@@ -82,6 +82,8 @@ export const MovieListContainer = () => {
                 {movie.en_name} ({movie.year})
                 <div>
                   <i> ({movie.title}) </i>
+
+                  {movie.hurtom_imdb_id && <span css={css`color:black;background-color:yellow; padding:4px;`}> {movie.hurtom_imdb_id} </span>}
                 </div>
               </div>
 
