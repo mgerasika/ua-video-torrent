@@ -29,6 +29,7 @@ This app - it's html parser that get all hd cartoons info from https://toloka.to
 
 [customer web site](https://ua-video-torrent-next.web.app/)
 
-![image](https://github.com/user-attachments/assets/1034f138-1528-4f59-9092-c2f79271d208)
+![image](https://github.com/user-attachments/assets/ca974ab5-433a-4652-bf0b-c3bc8a9e651c)
+
 
 
