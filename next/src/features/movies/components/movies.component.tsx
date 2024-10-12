@@ -150,7 +150,7 @@ export const MoviesComponent = ({ allMovies, allGenres, allYears }: IProps): JSX
       </div>
       <div tw="px-3 grid 2xl:grid-cols-5 md:grid-cols-2 lg:grid-cols-3 grid-cols-1  gap-x-6 gap-y-12  justify-items-center">
         {movies?.map(movie => {
-          return <MovieCard key={movie.enName} movie={movie} hasStream={true} />
+          return <MovieCard key={movie.enName} movie={movie}  />
         })}
       </div>
       <div tw="p-6 text-center text-2xl">

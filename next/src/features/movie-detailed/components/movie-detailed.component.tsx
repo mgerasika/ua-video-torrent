@@ -26,7 +26,7 @@ export const MovieDetailed = ({ movie }: IProps): JSX.Element => {
             alt=""
           />
           )
-          <p tw="text-white [font-size: larger] top-2 left-2 absolute bg-black px-2 py-1 border-solid border-white [border-width: 1px]">
+          <p  tw="text-white [font-size: larger] top-2 left-2 absolute [background: #374151 ]  px-2 py-1 border-solid border-white [border-width: 1px]">
             {movie?.imdb_rating}
           </p>
         </div>

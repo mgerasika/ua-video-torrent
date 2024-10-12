@@ -1,5 +1,5 @@
 import { ReactNode, useCallback } from 'react'
-import tw from 'twin.macro'
+import tw, { css } from 'twin.macro'
 
 interface IProps {
   css?: any
@@ -16,7 +16,7 @@ export const StatusTag = ({
     <div
       onClick={onClick}
       className={className}
-      tw="text-white [font-size: medium] [border-radius: 6px] bg-black px-2 py-0 border-solid border-white [border-width: 1px] lowercase font-light"
+      tw="text-white [font-size: medium] [border-radius: 6px]  px-2 py-0 border-solid border-white [border-width: 1px] lowercase font-light"
     >
       {children}
     </div>
