@@ -26,6 +26,7 @@ export interface IGroupMovieResponse {
   year: string;
   genre: string
   enName: string
+  uaName: string;
   imdb_id: string
   imdb_rating: number
   poster: string

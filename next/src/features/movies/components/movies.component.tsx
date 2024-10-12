@@ -31,7 +31,7 @@ export const MoviesComponent = ({ allMovies, allGenres, allYears }: IProps): JSX
       const search = filter.searchText.toLowerCase()
       res = res.filter(
         movie =>
-          movie.enName.toLowerCase().includes(search) ,
+          movie.enName.toLowerCase().includes(search)  || movie.uaName.toLowerCase().includes(search) ,
       )
     }
     
