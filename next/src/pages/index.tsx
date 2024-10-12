@@ -13,47 +13,17 @@ import { useScrollEnd } from '../use-scroll-end.hook'
 interface IProps {
   page: string
   allMovies: IGroupMovieResponse[]
+  allGenres: string[]
+  allYears: string[]
 }
 const PAGE_SIZE = 20
 
-const App = ({ allMovies }: IProps) => {
-  const [page, setPage] = useState(0)
-
-  const movies = useMemo(() => {
-    return allMovies.slice(
-      0,
-      Math.min(allMovies.length, PAGE_SIZE * (page + 1)),
-    )
-  }, [page])
-
-  const handleScrollEnd = useCallback(() => {
-    setPage(prev => {
-      const newVal = prev + 1
-      sessionStorage.setItem('page', newVal + '')
-      return newVal
-    })
-  }, [page])
-
-  useEffect(() => {
-    const newPage = sessionStorage.getItem('page')
-    if (newPage) {
-      setPage(+newPage)
-    }
-  }, [])
-
-  useScrollEnd({
-    onScrollEnd: handleScrollEnd,
-  })
+const App = ({ allMovies, allGenres, allYears }: IProps) => {
 
   return (
-    <div>
-      <MoviesComponent movies={movies} />
-      <div tw="p-6 text-center text-2xl">
-        <div onClick={handleScrollEnd} tw="text-white ">
-          Next
-        </div>
-      </div>
-    </div>
+      <MoviesComponent allMovies={allMovies}  allGenres={allGenres}
+        allYears={allYears} />
+     
   )
 }
 
@@ -61,9 +31,27 @@ export async function getStaticProps(): Promise<{
   props: Omit<IProps, 'page'>
 }> {
   const movies = await getMoviesAsync()
-
+  const genres = movies.slice(0,5).map(movie => movie.genre)
+  const currentYear = new Date().getFullYear()
   return {
     props: {
+      allGenres: genres
+        .join(',')
+        .split(',')
+        .map(f => f.trim())
+        .reduce((acc: string[], it: string) => {
+          if (!acc.includes(it)) {
+            acc.push(it)
+          }
+          return acc
+        }, []),
+      allYears: [
+        '1900-1979',
+        '1980-1999',
+        `2000-${currentYear - 2}`,
+        (currentYear - 1).toString(),
+        currentYear.toString(),
+      ],
       allMovies: movies,
     },
   }

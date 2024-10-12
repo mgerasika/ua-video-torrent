@@ -1,6 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, RelationId, OneToMany } from 'typeorm';
 import { ImdbDto } from './imdb.dto';
-import { StreamDto } from './stream.dto';
 
 export enum ERezkaVideoType {
     film = 'film',

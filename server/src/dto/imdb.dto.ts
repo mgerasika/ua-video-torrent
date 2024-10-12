@@ -11,7 +11,7 @@ export interface IImdbDto {
 
     year: number;
 
-    json: string;
+    json: object;
 }
 @Entity('imdb')
 export class ImdbDto implements IImdbDto {
@@ -30,8 +30,8 @@ export class ImdbDto implements IImdbDto {
     @Column({ nullable: false, type: 'numeric' })
     year!: number;
 
-    @Column({ nullable: true, type: 'json' })
-    json!: string;
+    @Column({ nullable: true, type: 'jsonb' })
+    json!: object;
 
     constructor(id: string) {
         this.id = id;

@@ -3,8 +3,6 @@ import { MovieDto } from '@server/dto/movie.dto';
 import { ENV } from '@server/env';
 import { DataSource } from 'typeorm';
 import { IQueryReturn } from './to-query.util';
-import { TorrentInfoDto } from '@server/dto/torrent-info';
-import { StreamDto } from '@server/dto/stream.dto';
 import { IS_DEBUG } from '@server/constants/is-debug.constant';
 
 let _dataSource: DataSource | undefined = undefined;
@@ -19,7 +17,7 @@ const getDataSource = (): DataSource => {
         host: ENV.host,
         database: ENV.database,
         port: ENV.port,
-        entities: [MovieDto, ImdbDto, TorrentInfoDto,  StreamDto],
+        entities: [MovieDto, ImdbDto],
         synchronize: true,
         poolSize: 10,
         logging: false,

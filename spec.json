@@ -891,77 +891,6 @@
           }
         }
       }
-    },
-    "api/torrent/{id}": {
-      "get": {
-        "operationId": "",
-        "summary": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ITorrentInfoResponse"
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ void"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "operationId": "",
-        "summary": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/ITorrentInfoResponse"
-              }
-            }
-          }
-        },
-        "responses": {
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ void"
-                }
-              }
-            }
-          }
-        }
-      }
     }
   },
   "components": {
@@ -1039,7 +968,35 @@
             "type": "integer"
           },
           "json": {
-            "type": "string"
+            "type": "object",
+            "required": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "properties": {
+              "0": {
+                "type": "o"
+              },
+              "1": {
+                "type": "b"
+              },
+              "2": {
+                "type": "j"
+              },
+              "3": {
+                "type": "e"
+              },
+              "4": {
+                "type": "c"
+              },
+              "5": {
+                "type": "t"
+              }
+            }
           }
         }
       },
@@ -1070,7 +1027,35 @@
             "type": "integer"
           },
           "json": {
-            "type": "string"
+            "type": "object",
+            "required": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "properties": {
+              "0": {
+                "type": "o"
+              },
+              "1": {
+                "type": "b"
+              },
+              "2": {
+                "type": "j"
+              },
+              "3": {
+                "type": "e"
+              },
+              "4": {
+                "type": "c"
+              },
+              "5": {
+                "type": "t"
+              }
+            }
           }
         }
       },
@@ -1097,7 +1082,35 @@
             "type": "integer"
           },
           "json": {
-            "type": "string"
+            "type": "object",
+            "required": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "properties": {
+              "0": {
+                "type": "o"
+              },
+              "1": {
+                "type": "b"
+              },
+              "2": {
+                "type": "j"
+              },
+              "3": {
+                "type": "e"
+              },
+              "4": {
+                "type": "c"
+              },
+              "5": {
+                "type": "t"
+              }
+            }
           }
         }
       },
@@ -1336,7 +1349,35 @@
             "type": "integer"
           },
           "json": {
-            "type": "string"
+            "type": "object",
+            "required": [
+              "0",
+              "1",
+              "2",
+              "3",
+              "4",
+              "5"
+            ],
+            "properties": {
+              "0": {
+                "type": "o"
+              },
+              "1": {
+                "type": "b"
+              },
+              "2": {
+                "type": "j"
+              },
+              "3": {
+                "type": "e"
+              },
+              "4": {
+                "type": "c"
+              },
+              "5": {
+                "type": "t"
+              }
+            }
           }
         }
       },
@@ -1577,17 +1618,6 @@
           },
           "uploadTorrentToS3FromMovieDB": {
             "type": "boolean"
-          }
-        }
-      },
-      "ITorrentInfoResponse": {
-        "type": "object",
-        "required": [
-          "peers"
-        ],
-        "properties": {
-          "peers": {
-            "type": "integer"
           }
         }
       }

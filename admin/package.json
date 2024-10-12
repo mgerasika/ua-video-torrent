@@ -44,6 +44,9 @@
     "codegen": "npx babel-node-ts --config-file ./scripts/custom-babel-config.js scripts/codegen.ts",
     "deploy": "firebase deploy"
   },
+  "engines": {
+    "node": "16.14"
+  },
   "eslintConfig": {
     "extends": [
       "react-app",

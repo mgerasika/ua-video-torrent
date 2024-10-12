@@ -23,6 +23,8 @@ console.log('API_SERVER_URL', API_SERVER_URL)
 // DON'T REMOVE THIS COMMENTS!!! Code between comments auto-generated
 // INSERT START
 export interface IGroupMovieResponse {
+  year: string;
+  genre: string
   enName: string
   imdb_id: string
   imdb_rating: number

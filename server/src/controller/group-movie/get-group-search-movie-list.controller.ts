@@ -7,7 +7,10 @@ import { IQueryReturn } from '@server/utils/to-query.util';
 
 interface IGroupMovieItem extends Pick<ISearchMovieResponse, 'aws_s3_torrent_url' | 'title' | 'size'> {}
 export interface IGroupMovieResponse {
+    year: string;
+    genre: string
     enName: string;
+    uaName: string;
     imdb_id: string;
     imdb_rating: number;
     poster: string;
@@ -33,6 +36,7 @@ app.get(API_URL.api.groupMovie.toString(), async (req: IRequest, res: IResponse)
 
 export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovieResponse[]>> => {
     const [movies, error] = await dbService.movie.searchMoviesAsync();
+    const [imdbs, imdbError] = await dbService.imdb.getImdbAllAsync();
 
     if (movies) {
         const unique = Object.keys(
@@ -43,25 +47,30 @@ export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovie
         );
 
         const data = unique
-            .map((key) => {
+            .map((key): IGroupMovieResponse => {
                 const filteredMovies = movies.filter((m: IMovieResponse) => m.imdb_id === key);
                 const firstMovie = filteredMovies.length ? filteredMovies[0] : undefined;
+                const imdb= imdbs?.find(imdb => imdb.id === firstMovie?.imdb_id);
                 return {
-                    imdb_id: firstMovie?.imdb_id,
-                    enName: firstMovie?.en_name,
+                    imdb_id: firstMovie?.imdb_id || '',
+                    enName: firstMovie?.en_name || '',
+                    uaName: firstMovie?.ua_name || '',
+                    year: imdb?.year + '',
+                    genre: (imdb?.json as any)?.Genre,
                     imdb_rating: firstMovie?.imdb_rating || 0,
                     poster: firstMovie?.poster || '',
                     movies: filteredMovies.map((m) => {
                         return {
                             aws_s3_torrent_url: m.aws_s3_torrent_url,
                             title: m.title,
+                            size: m.size
                         };
                     }),
-                } as IGroupMovieResponse;
+                };
             })
             .sort((a, b) => b.imdb_rating - a.imdb_rating);
 
-        return [data as unknown as IGroupMovieResponse[]];
+        return [data ];
     } else {
         return [undefined, error as string];
     }

@@ -210,7 +210,7 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
                 const [, postImdbError] = await postImdbAsync({
                     en_name: newImdbInfo.Title,
                     imdb_rating: +newImdbInfo.imdbRating,
-                    json: JSON.stringify(newImdbInfo),
+                    json: newImdbInfo,
                     poster: newImdbInfo.Poster,
                     year: +newImdbInfo.Year,
                     id: newImdbInfo.imdbID,
