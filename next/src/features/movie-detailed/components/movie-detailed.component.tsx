@@ -39,7 +39,7 @@ export const MovieDetailed = ({ movie }: IProps): JSX.Element => {
                 <a
                   tw="cursor-pointer"
                   target="_blank"
-                  href={torrent.torrent_url}
+                  href={encodeURI(torrent.torrent_url)}
                   rel="noreferrer"
                 >
                   {' '}
