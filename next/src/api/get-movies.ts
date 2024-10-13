@@ -6,6 +6,6 @@ export const getMoviesAsync = async () => {
     throw response.error
   }
   return response.data.filter(groupMovie =>
-    groupMovie.movies.some(subMovie => subMovie.aws_s3_torrent_url),
+    groupMovie.movies.some(subMovie => subMovie.torrent_url),
   )
 }

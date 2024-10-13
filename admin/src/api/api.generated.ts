@@ -20,16 +20,6 @@ const API_SERVER_URL =
 // DON'T REMOVE THIS COMMENTS!!! Code between comments auto-generated
 // INSERT START
 export interface IGroupMovieResponse {
-	'enName': string;
-	'imdb_id': string;
-	'imdb_rating': number;
-	'poster': string;
-	'movies': IGroupMovieItem[];
-}
-export interface IGroupMovieItem {
-	'title': string;
-	'size': number;
-	'aws_s3_torrent_url': string;
 }
 export interface IImdbResponse {
 	'id': string;
@@ -37,7 +27,7 @@ export interface IImdbResponse {
 	'poster': string;
 	'imdb_rating': number;
 	'year': number;
-	'json': string;
+	'json': object;
 }
 export interface IPostImdbBody {
 	'id': string;
@@ -45,14 +35,14 @@ export interface IPostImdbBody {
 	'poster': string;
 	'imdb_rating': number;
 	'year': number;
-	'json': string;
+	'json': object;
 }
 export interface IPutImdbBody {
 	'en_name': string;
 	'poster': string;
 	'imdb_rating': number;
 	'year': number;
-	'json': string;
+	'json': object;
 }
 export interface ISearchImdbBody {
 	'enName': string;
@@ -103,7 +93,7 @@ export interface IMovieResponse {
 	'title': string;
 	'download_id': string;
 	'size': number;
-	'aws_s3_torrent_url': string;
+	'torrent_url': string;
 	'imdb'?: ImdbDto;
 	'imdb_id'?: string;
 	'hurtom_imdb_id': string;
@@ -114,7 +104,7 @@ export interface ImdbDto {
 	'poster': string;
 	'imdb_rating': number;
 	'year': number;
-	'json': string;
+	'json':object;
 }
 export interface IPostMovieBody {
 	'en_name': string;
@@ -124,7 +114,7 @@ export interface IPostMovieBody {
 	'title': string;
 	'download_id': string;
 	'size': number;
-	'aws_s3_torrent_url': string;
+	'torrent_url': string;
 	'imdb'?: ImdbDto;
 	'imdb_id'?: string;
 	'hurtom_imdb_id': string;
@@ -137,7 +127,7 @@ export interface IPutMovieBody {
 	'title': string;
 	'download_id': string;
 	'size': number;
-	'aws_s3_torrent_url': string;
+	'torrent_url': string;
 	'imdb'?: ImdbDto;
 	'imdb_id'?: string;
 	'hurtom_imdb_id': string;
@@ -153,10 +143,13 @@ export interface ISearchMovieResponse {
 	'title': string;
 	'download_id': string;
 	'size': number;
-	'aws_s3_torrent_url': string;
+	'torrent_url': string;
 	'imdb'?: ImdbDto;
 	'imdb_id'?: string;
 	'hurtom_imdb_id': string;
+}
+export interface IHurtomInfoByIdResponse {
+	'imdb_id': string;
 }
 export interface IHurtomInfoResponse {
 	'id': string;
@@ -168,9 +161,6 @@ export interface IHurtomInfoResponse {
 	'size': number;
 	'downloadId': string;
 }
-export interface IHurtomInfoByIdResponse {
-	'imdb_id': string;
-}
 export interface ISetupBody {
 	'updateHurtom': boolean;
 	'uploadToCdn': boolean;
@@ -178,9 +168,6 @@ export interface ISetupBody {
 	'searchImdbIdInHurtom': boolean;
 	'fixRelationIntoMovieDb': boolean;
 	'uploadTorrentToS3FromMovieDB': boolean;
-}
-export interface ITorrentInfoResponse {
-	'peers': number;
 }
 export type TCdnIdGetError = ''
 	 |'undefined';
@@ -216,9 +203,9 @@ export type TMoviePostError = ''
 	 |'undefined';
 export type TMovieSearchGetError = ''
 	 |'undefined';
-export type TParserHurtomAllPostError = ''
-	 |'undefined';
 export type TParserHurtomDetailsPostError = ''
+	 |'undefined';
+export type TParserHurtomAllPostError = ''
 	 |'undefined';
 export type TS3IdGetError = ''
 	 |'undefined';
@@ -227,10 +214,6 @@ export type TS3IdHasFileGetError = ''
 export type TS3UploadPostError = ''
 	 |'undefined';
 export type TToolsSetupPostError = ''
-	 |'undefined';
-export type TTorrentIdGetError = ''
-	 |'undefined';
-export type TTorrentIdPutError = ''
 	 |'undefined';
 export type TPartialErrorCodes =
 
@@ -251,14 +234,12 @@ export type TPartialErrorCodes =
 	 | TMovieGetError
 	 | TMoviePostError
 	 | TMovieSearchGetError
-	 | TParserHurtomAllPostError
 	 | TParserHurtomDetailsPostError
+	 | TParserHurtomAllPostError
 	 | TS3IdGetError
 	 | TS3IdHasFileGetError
 	 | TS3UploadPostError
-	 | TToolsSetupPostError
-	 | TTorrentIdGetError
-	 | TTorrentIdPutError	 | '';
+	 | TToolsSetupPostError	 | '';
 
 export const createApiRequest = (rs: IRequestService) => ({
 	cdnIdGet : (id:string): CustomPromise<CustomAxiosResponse<Blob,TCdnIdGetError>,IBEError<TCdnIdGetError>> =>
@@ -312,11 +293,11 @@ export const createApiRequest = (rs: IRequestService) => ({
 	movieSearchGet : (query: {page?:number,limit?:number} | undefined): CustomPromise<CustomAxiosResponse<Array<ISearchMovieResponse>,TMovieSearchGetError>,IBEError<TMovieSearchGetError>> =>
 		rs.get(formatUrl(API_SERVER_URL + `api/movie/search/`, query) ),
 
-	parserHurtomAllPost : (query: {page?:number,limit?:number} | undefined): CustomPromise<CustomAxiosResponse<Array<IHurtomInfoResponse>,TParserHurtomAllPostError>,IBEError<TParserHurtomAllPostError>> =>
-		rs.post(formatUrl(API_SERVER_URL + `api/parser/hurtom-all/`, query) ),
-
 	parserHurtomDetailsPost : (): CustomPromise<CustomAxiosResponse<IHurtomInfoByIdResponse,TParserHurtomDetailsPostError>,IBEError<TParserHurtomDetailsPostError>> =>
 		rs.post(formatUrl(API_SERVER_URL + `api/parser/hurtom-details/`) ),
+
+	parserHurtomAllPost : (query: {page?:number,limit?:number} | undefined): CustomPromise<CustomAxiosResponse<Array<IHurtomInfoResponse>,TParserHurtomAllPostError>,IBEError<TParserHurtomAllPostError>> =>
+		rs.post(formatUrl(API_SERVER_URL + `api/parser/hurtom-all/`, query) ),
 
 	s3IdGet : (id:string): CustomPromise<CustomAxiosResponse<string,TS3IdGetError>,IBEError<TS3IdGetError>> =>
 		rs.get(formatUrl(API_SERVER_URL + `api/s3/${id}`) ),
@@ -329,12 +310,6 @@ export const createApiRequest = (rs: IRequestService) => ({
 
 	toolsSetupPost : (body: ISetupBody): CustomPromise<CustomAxiosResponse<string[],TToolsSetupPostError>,IBEError<TToolsSetupPostError>> =>
 		rs.post(formatUrl(API_SERVER_URL + `api/tools/setup/`) , body),
-
-	torrentIdGet : (id:string): CustomPromise<CustomAxiosResponse<ITorrentInfoResponse,TTorrentIdGetError>,IBEError<TTorrentIdGetError>> =>
-		rs.get(formatUrl(API_SERVER_URL + `api/torrent/${id}`) ),
-
-	torrentIdPut : (id:string, body: ITorrentInfoResponse): CustomPromise<CustomAxiosResponse<void,TTorrentIdPutError>,IBEError<TTorrentIdPutError>> =>
-		rs.put(formatUrl(API_SERVER_URL + `api/torrent/${id}`) , body),
 
 });
 
@@ -356,14 +331,12 @@ const URL = {
 	movieGet:  (): string => `api/movie/`,
 	moviePost:  (): string => `api/movie/`,
 	movieSearchGet:  (): string => `api/movie/search/`,
-	parserHurtomAllPost:  (): string => `api/parser/hurtom-all/`,
 	parserHurtomDetailsPost:  (): string => `api/parser/hurtom-details/`,
+	parserHurtomAllPost:  (): string => `api/parser/hurtom-all/`,
 	s3IdGet:  (id:string): string => `api/s3/${id}`,
 	s3IdHasFileGet:  (id:string): string => `api/s3/${id}hasFile/`,
 	s3UploadPost:  (): string => `api/s3/upload/`,
 	toolsSetupPost:  (): string => `api/tools/setup/`,
-	torrentIdGet:  (id:string): string => `api/torrent/${id}`,
-	torrentIdPut:  (id:string): string => `api/torrent/${id}`,
 };
 // INSERT END
 // DON'T REMOVE THIS COMMENTS!!!
@@ -372,6 +345,7 @@ export const API_URL = URL;
 export const api = {
   ...createApiRequest(requestService),
 };
+
 
 
 

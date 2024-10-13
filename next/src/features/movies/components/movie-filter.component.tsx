@@ -3,7 +3,7 @@ import { SelectedButton } from '../../../general-ui/selected-button/selected-but
 import { IMovieFilter } from '../../../interfaces/movie-filter.interface'
 import 'twin.macro'
 import { SelectButtonList } from '../../../general-ui/select-button-list/select-button-list.component'
-import { useIsMounted } from '../../../use-is-mounted.hook'
+import { useIsMounted } from '../../../hooks/use-is-mounted.hook'
 import { SearchInput } from '../../../general-ui/search-input/search-input.component'
 
 export const ALL_LANG = ['audio original', 'audio ukrainian']
@@ -66,7 +66,7 @@ export const MovieFilter = ({
   return (
     <div tw="text-white">
 		  <SearchInput
-			  tw="mx-1 mb-2"
+			  tw="mb-2"
         text={filter.searchText}
         onTextChange={handleSearchTextChange}
       />

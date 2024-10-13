@@ -8,7 +8,7 @@ import { getMoviesAsync } from '../api/get-movies'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import { useScrollEnd } from '../use-scroll-end.hook'
+import { useScrollEnd } from '../hooks/use-scroll-end.hook'
 
 interface IProps {
   page: string

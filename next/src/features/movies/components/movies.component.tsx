@@ -4,17 +4,23 @@ import { IGroupMovieResponse } from '../../../api/api.generated'
 import 'twin.macro'
 import { IMovieFilter } from '../../../interfaces/movie-filter.interface'
 import { useLocalStorageState } from '../../../hooks/use-local-storage-state.hook'
-import { useScrollEnd } from '../../../use-scroll-end.hook'
+import { useScrollEnd } from '../../../hooks/use-scroll-end.hook'
 import { ALL_LANG, MovieFilter } from './movie-filter.component'
+import { useRestoreScroll } from '../../../hooks/use-restore-scroll.hook'
+import { ArrowUpOutlined } from '@ant-design/icons'
 
 const PAGE_SIZE = 20
 
 interface IProps {
-  allMovies: IGroupMovieResponse[] 
+  allMovies: IGroupMovieResponse[]
   allGenres: string[]
   allYears: string[]
 }
-export const MoviesComponent = ({ allMovies, allGenres, allYears }: IProps): JSX.Element => {
+export const MoviesComponent = ({
+  allMovies,
+  allGenres,
+  allYears,
+}: IProps): JSX.Element => {
   const [filter, setFilter] = useLocalStorageState<IMovieFilter>('filter-v3', {
     genres: [],
     years: [],
@@ -31,10 +37,11 @@ export const MoviesComponent = ({ allMovies, allGenres, allYears }: IProps): JSX
       const search = filter.searchText.toLowerCase()
       res = res.filter(
         movie =>
-          movie.enName.toLowerCase().includes(search)  || movie.uaName.toLowerCase().includes(search) ,
+          movie.enName.toLowerCase().includes(search) ||
+          movie.uaName.toLowerCase().includes(search),
       )
     }
-    
+
     if (filter?.genres.length) {
       res = res.filter(movie =>
         filter.genres.some(filterGenre => movie.genre.includes(filterGenre)),
@@ -48,8 +55,7 @@ export const MoviesComponent = ({ allMovies, allGenres, allYears }: IProps): JSX
     //     }
     //     if (movie.has_ua && filter.languages.includes(ALL_LANG[1])) {
     //       return true
-		// }
-		
+    // }
 
     if (filter?.years.length) {
       const YEAR_PAIRS = filter.years.map(year => {
@@ -88,6 +94,10 @@ export const MoviesComponent = ({ allMovies, allGenres, allYears }: IProps): JSX
     })
   }, [page])
 
+  const handleScrollTop = useCallback(() => {
+   window.scrollTo(0,0);
+  }, [])
+
   useEffect(() => {
     const newPage = sessionStorage.getItem('page')
     if (newPage) {
@@ -95,64 +105,54 @@ export const MoviesComponent = ({ allMovies, allGenres, allYears }: IProps): JSX
     }
   }, [])
 
-  useScrollEnd({
+  const {scrollY} = useScrollEnd({
     onScrollEnd: handleScrollEnd,
   })
 
-  const onFilterChange= (settings: IMovieFilter) => {
+  useRestoreScroll()
+
+  const handleFilterChange = useCallback((settings: IMovieFilter) => {
     setPage(0)
     sessionStorage.setItem('page', 0 + '')
     setFilter(settings)
-  }
-
-  useEffect(() => {
-    let interval = 0
-    const handleScroll = () => {
-      interval = window.setTimeout(() => {
-        window.sessionStorage.setItem('scrollTop', window.scrollY + '')
-      }, 500)
-    }
-
-    window.addEventListener('scroll', handleScroll)
-
-    return (): void => {
-      window.clearTimeout(interval)
-      window.removeEventListener('scroll', handleScroll)
-    }
   }, [])
 
-  useEffect(() => {
-    const interval = setTimeout(() => {
-      const position = window.sessionStorage.getItem('scrollTop')
-      if (position) {
-        window.scrollTo({ left: 0, top: +position || 0 })
-      }
-    })
-    return () => window.clearInterval(interval)
-  }, [400])
   return (
     <div tw="mx-auto container px-4">
-      <h2 tw="text-white text-[30px] text-center  py-4">HD Cartoons (from <a href="https://toloka.to/" target='blank'>toloka.to</a>)</h2>
+      <h2 tw="text-white text-[30px] text-center  py-4 relative">
+        HD Cartoons
+        {/* <sup tw="text-sm absolute top-2">
+          from <a href="https://toloka.to/" tw="text-blue-300 underline" target="blank">
+          toloka.to
+        </a>
+        </sup> */}
+       
+      </h2>
       <MovieFilter
         allGenres={allGenres}
         allYears={allYears}
         filter={filter}
-        onFilterChange={onFilterChange}
+        onFilterChange={handleFilterChange}
       />
-      <div tw="text-left text-white pb-1 px-1">
+      <div tw="text-left text-white pb-1 ">&nbsp;
         {filteredMovies.length === allMovies.length ? (
-          <>total - {allMovies.length}</>
+          <>Total - {allMovies.length}</>
         ) : (
           <>
-           found - {filteredMovies.length} / total - {allMovies.length}
+            Found - {filteredMovies.length} / Total - {allMovies.length}
           </>
         )}
       </div>
       <div tw="px-3 grid 2xl:grid-cols-5 md:grid-cols-2 lg:grid-cols-3 grid-cols-1  gap-x-6 gap-y-12  justify-items-center">
         {movies?.map(movie => {
-          return <MovieCard key={movie.enName} movie={movie}  />
+          return <MovieCard key={movie.enName} movie={movie} />
         })}
       </div>
+      {scrollY > 0 ? (
+          <div onClick={handleScrollTop} tw="opacity-60 text-white fixed right-4 bottom-4 [border: 1px solid white] [border-radius: 50%] [background-color: #5e2750] w-16 h-16 flex items-center justify-between">
+            <ArrowUpOutlined tw="mx-auto text-3xl" />
+          </div>
+        ) : null}
       <div tw="p-6 text-center text-2xl">
         {hasNext ? (
           <div onClick={handleScrollEnd} tw="text-white ">

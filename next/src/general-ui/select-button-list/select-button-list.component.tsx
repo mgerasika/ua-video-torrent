@@ -44,7 +44,7 @@ export const SelectButtonList = ({
         {showAll && (
           <SelectedButton
             name={'all'}
-            tw="m-1"
+            tw="mr-1 mb-1"
             title={value.length === allItems.length ? 'none' : 'all'}
             onChange={handleAllGenreChange}
             selected={value.length === allItems.length}
@@ -53,7 +53,7 @@ export const SelectButtonList = ({
         {allItems.map(item => {
           return (
             <SelectedButton
-              tw="m-1"
+              tw="mr-1 mb-1"
               key={item}
               name={item}
               title={item}

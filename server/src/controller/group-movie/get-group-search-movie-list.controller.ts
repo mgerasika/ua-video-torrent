@@ -5,7 +5,7 @@ import { ISearchMovieResponse } from '../movie/search/get-search-list-movie.cont
 import { IMovieResponse } from '../movie/get-movie-list.controller';
 import { IQueryReturn } from '@server/utils/to-query.util';
 
-interface IGroupMovieItem extends Pick<ISearchMovieResponse, 'aws_s3_torrent_url' | 'title' | 'size'> {}
+interface IGroupMovieItem extends Pick<ISearchMovieResponse, 'torrent_url' | 'title' | 'size'> {}
 export interface IGroupMovieResponse {
     year: string;
     genre: string
@@ -61,7 +61,7 @@ export const groupSearchMoviesAsync = async (): Promise<IQueryReturn<IGroupMovie
                     poster: firstMovie?.poster || '',
                     movies: filteredMovies.map((m) => {
                         return {
-                            aws_s3_torrent_url: m.aws_s3_torrent_url,
+                            torrent_url: m.torrent_url,
                             title: m.title,
                             size: m.size
                         };
