@@ -68,6 +68,7 @@ function getMovieName(text: string) {
         .trim();
 }
 
+
 export const HURTOM_HEADERS = {
     headers: {
         authority: 'toloka.to',

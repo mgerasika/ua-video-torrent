@@ -1,13 +1,19 @@
 import { useRouter } from 'next/router'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 
 interface IProps {
   onScrollTop?: () => void
   onScrollEnd?: () => void
 }
-export const useScrollEnd = ({ onScrollTop, onScrollEnd }: IProps) => {
+
+interface IReturn {
+  scrollY:number;
+}
+export const useScrollEnd = ({ onScrollTop, onScrollEnd }: IProps): IReturn => {
+  const [scrollY, setScrollY] = useState(0);
   useEffect(() => {
     const handleScroll = () => {
+      setScrollY(window.scrollY);
       const scrollBottom =
         window.document.documentElement.offsetHeight -
         (window.scrollY + window.document.documentElement.clientHeight)
@@ -26,4 +32,6 @@ export const useScrollEnd = ({ onScrollTop, onScrollEnd }: IProps) => {
       window.removeEventListener('scroll', handleScroll)
     }
   }, [onScrollEnd, onScrollTop])
+
+  return {scrollY};
 }

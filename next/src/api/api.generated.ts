@@ -35,7 +35,7 @@ export interface IGroupMovieResponse {
 export interface IGroupMovieItem {
   title: string
   size: number
-  aws_s3_torrent_url: string
+  torrent_url: string
 }
 export interface IImdbResponse {
   id: string
@@ -109,7 +109,7 @@ export interface IMovieResponse {
   title: string
   download_id: string
   size: number
-  aws_s3_torrent_url: string
+  torrent_url: string
   imdb?: ImdbDto
   imdb_id?: string
   hurtom_imdb_id: string
@@ -130,7 +130,7 @@ export interface IPostMovieBody {
   title: string
   download_id: string
   size: number
-  aws_s3_torrent_url: string
+  torrent_url: string
   imdb?: ImdbDto
   imdb_id?: string
   hurtom_imdb_id: string
@@ -143,7 +143,7 @@ export interface IPutMovieBody {
   title: string
   download_id: string
   size: number
-  aws_s3_torrent_url: string
+  torrent_url: string
   imdb?: ImdbDto
   imdb_id?: string
   hurtom_imdb_id: string
@@ -159,7 +159,7 @@ export interface ISearchMovieResponse {
   title: string
   download_id: string
   size: number
-  aws_s3_torrent_url: string
+  torrent_url: string
   imdb?: ImdbDto
   imdb_id?: string
   hurtom_imdb_id: string

@@ -36,6 +36,9 @@ export const groupSearchMovieByIdAsync = async (imdb_id: string): Promise<IQuery
             imdb_rating: firstMovie?.imdb_rating || 0,
             poster: firstMovie?.poster || '',
             movies: filteredMovies,
+            genre: '',
+            uaName: firstMovie?.ua_name || '',
+            year: firstMovie?.year + ''
         };
 
         return [data, undefined];

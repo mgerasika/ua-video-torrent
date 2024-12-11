@@ -678,6 +678,44 @@
         }
       }
     },
+    "api/parser/hurtom-details/": {
+      "post": {
+        "operationId": "",
+        "summary": "",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "name": "id",
+              "schema": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/IHurtomInfoByIdResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ void"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "api/parser/hurtom-all/": {
       "post": {
         "operationId": "",
@@ -709,44 +747,6 @@
                   "items": {
                     "$ref": "#/components/schemas/IHurtomInfoResponse"
                   }
-                }
-              }
-            }
-          },
-          "400": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/ void"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "api/parser/hurtom-details/": {
-      "post": {
-        "operationId": "",
-        "summary": "",
-        "parameters": [],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "name": "id",
-              "schema": {
-                "type": "string"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "content": {
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/IHurtomInfoByIdResponse"
                 }
               }
             }
@@ -897,49 +897,8 @@
     "schemas": {
       "IGroupMovieResponse": {
         "type": "object",
-        "required": [
-          "enName",
-          "imdb_id",
-          "imdb_rating",
-          "poster",
-          "movies"
-        ],
-        "properties": {
-          "enName": {
-            "type": "string"
-          },
-          "imdb_id": {
-            "type": "string"
-          },
-          "imdb_rating": {
-            "type": "integer"
-          },
-          "poster": {
-            "type": "string"
-          },
-          "movies": {
-            "type": "IGroupMovieItem[]"
-          }
-        }
-      },
-      "IGroupMovieItem": {
-        "type": "object",
-        "required": [
-          "title",
-          "size",
-          "aws_s3_torrent_url"
-        ],
-        "properties": {
-          "title": {
-            "type": "string"
-          },
-          "size": {
-            "type": "integer"
-          },
-          "aws_s3_torrent_url": {
-            "type": "string"
-          }
-        }
+        "required": [],
+        "properties": {}
       },
       "IImdbResponse": {
         "type": "object",
@@ -1280,7 +1239,7 @@
           "title",
           "download_id",
           "size",
-          "aws_s3_torrent_url",
+          "torrent_url",
           "hurtom_imdb_id"
         ],
         "properties": {
@@ -1308,7 +1267,7 @@
           "size": {
             "type": "integer"
           },
-          "aws_s3_torrent_url": {
+          "torrent_url": {
             "type": "string"
           },
           "imdb": {
@@ -1391,7 +1350,7 @@
           "title",
           "download_id",
           "size",
-          "aws_s3_torrent_url",
+          "torrent_url",
           "hurtom_imdb_id"
         ],
         "properties": {
@@ -1416,7 +1375,7 @@
           "size": {
             "type": "integer"
           },
-          "aws_s3_torrent_url": {
+          "torrent_url": {
             "type": "string"
           },
           "imdb": {
@@ -1440,7 +1399,7 @@
           "title",
           "download_id",
           "size",
-          "aws_s3_torrent_url",
+          "torrent_url",
           "hurtom_imdb_id"
         ],
         "properties": {
@@ -1465,7 +1424,7 @@
           "size": {
             "type": "integer"
           },
-          "aws_s3_torrent_url": {
+          "torrent_url": {
             "type": "string"
           },
           "imdb": {
@@ -1492,7 +1451,7 @@
           "title",
           "download_id",
           "size",
-          "aws_s3_torrent_url",
+          "torrent_url",
           "hurtom_imdb_id"
         ],
         "properties": {
@@ -1526,7 +1485,7 @@
           "size": {
             "type": "integer"
           },
-          "aws_s3_torrent_url": {
+          "torrent_url": {
             "type": "string"
           },
           "imdb": {
@@ -1536,6 +1495,17 @@
             "type": "string"
           },
           "hurtom_imdb_id": {
+            "type": "string"
+          }
+        }
+      },
+      "IHurtomInfoByIdResponse": {
+        "type": "object",
+        "required": [
+          "imdb_id"
+        ],
+        "properties": {
+          "imdb_id": {
             "type": "string"
           }
         }
@@ -1575,17 +1545,6 @@
             "type": "integer"
           },
           "downloadId": {
-            "type": "string"
-          }
-        }
-      },
-      "IHurtomInfoByIdResponse": {
-        "type": "object",
-        "required": [
-          "imdb_id"
-        ],
-        "properties": {
-          "imdb_id": {
             "type": "string"
           }
         }

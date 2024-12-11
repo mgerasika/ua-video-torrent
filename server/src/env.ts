@@ -9,4 +9,6 @@ export const ENV = {
     toloka_cookie: process.env.TOLOKA_COOKIE,
     port: 5432,
     cdn: 'https://ua-video-torrent-cdn.web.app/',
+    ONE_BY_ONE_TIMEOUT: 100
 };
+

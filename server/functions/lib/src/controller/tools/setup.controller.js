@@ -48,7 +48,7 @@ const setup = async ({ updateHurtom, updateImdb, uploadTorrentToS3FromMovieDB, }
                             ua_name: hurtomItem.uaName,
                             year: +hurtomItem.year,
                             download_id: hurtomItem.downloadId,
-                            aws_s3_torrent_url: '',
+                            torrent_url: '',
                             size: hurtomItem.size,
                         });
                         if (error) {
@@ -79,7 +79,7 @@ const setup = async ({ updateHurtom, updateImdb, uploadTorrentToS3FromMovieDB, }
         if (movies) {
             const fns = movies.map((movie) => {
                 return async () => {
-                    if (!movie.aws_s3_torrent_url && movie.download_id) {
+                    if (!movie.torrent_url && movie.download_id) {
                         const [, hasFileError] = await db_service_1.dbService.s3.hasFileS3Async({ id: movie.download_id });
                         if (hasFileError) {
                             const [successUpload, errorUpload] = await db_service_1.dbService.s3.uploadFileToAmazonAsync({

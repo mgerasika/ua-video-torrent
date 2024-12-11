@@ -21,7 +21,7 @@ app.post(API_URL.api.cdn.upload.toString(), async (req: IRequest, res: IResponse
     if (!req.body.id) {
         return res.status(400).send('id is undefined');
     }
-    const [data, error] = await uploadFileToCDNAsync({ hurtomId: req.body.id, fileName: req.body.fileName });
+    const [data, error] = await uploadFileToCDNAsync({ downloadId: req.body.id, fileName: req.body.fileName });
     if (error) {
         return res.status(400).send(error);
     }
@@ -29,14 +29,14 @@ app.post(API_URL.api.cdn.upload.toString(), async (req: IRequest, res: IResponse
 });
 
 export const uploadFileToCDNAsync = async ({
-    hurtomId,
+    downloadId,
     fileName,
 }: {
-    hurtomId: string;
+    downloadId: string;
     fileName: string;
 }): Promise<IQueryReturn<string>> => {
     const [response,error] = await toQuery(() =>
-        axios.get(`https://toloka.to/download.php?id=${hurtomId}`, {
+        axios.get(`https://toloka.to/download.php?id=${downloadId}`, {
             ...HURTOM_HEADERS,
             responseType: 'arraybuffer',
             responseEncoding: 'utf-8',
@@ -53,7 +53,8 @@ export const uploadFileToCDNAsync = async ({
     }
 
     return toQueryPromise((resolve, reject) => {
-        fs.writeFile(cdnService.cdnFile(fileName), fileContent, (err: unknown) => {
+        const path = cdnService.cdnFile(fileName);
+        fs.writeFile(path, fileContent, (err: unknown) => {
             if (err) {
                 return reject(error as unknown as string);
             }
