@@ -4,7 +4,7 @@ import fs from 'fs';
 export const cdnService = {
     cdnFile: (file: string) => {
         const parentDir = findParentDirectoryByNameSync('server');
-        const res = path.join(parentDir || '', 'cdn/dist/' + file);
+        const res = path.join(parentDir || '', 'next/public/' + file);
         return res;
     },
 };

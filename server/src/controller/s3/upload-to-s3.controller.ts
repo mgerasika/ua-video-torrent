@@ -5,7 +5,7 @@ import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 import { HURTOM_HEADERS } from '../parser/hurtom-all.controller';
 import { S3_BUCKED_NAME, s3 } from './s3.service';
 import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand } from '@aws-sdk/client-s3';
 const fs = require('fs');
 
 // permissions for s3 bucket
@@ -22,17 +22,21 @@ app.post(API_URL.api.s3.upload.toString(), async (req: IRequest, res: IResponse)
     if (!req.body.id) {
         return res.status(400).send('id is undefined');
     }
-    const [data, error] = await uploadFileToAmazonAsync({ id: req.body.id });
+    const [data, error] = await uploadFileToAmazonAsync({ id: req.body.id, cookies:[] });
     if (error) {
         return res.status(400).send(error);
     }
     return res.send(data);
 });
 
-export const uploadFileToAmazonAsync = async ({ id }: { id: string }): Promise<IQueryReturn<string>> => {
+export const uploadFileToAmazonAsync = async ({ id, cookies }: { id: string, cookies: string[] }): Promise<IQueryReturn<string>> => {
     console.log('uploadFileToAmazonAsync start');
 
-    const [response] = await toQuery(() => axios.get(`https://toloka.to/download.php?id=${id}`, HURTOM_HEADERS));
+    const [response] = await toQuery(() => axios.get(`https://toloka.to/download.php?id=${id}`, {  withCredentials: true,
+    headers: 
+    {...HURTOM_HEADERS,
+        Cookie: cookies.map(cookie => cookie.split(';')[0]).join('; ')
+    }}));
 
     const fileContent = response?.data as string;
 

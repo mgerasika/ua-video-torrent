@@ -4,6 +4,7 @@ import { API_URL } from '@server/constants/api-url.constant';
 import { IQueryReturn, toQuery } from '@server/utils/to-query.util';
 import { rejects } from 'assert';
 import { ENV } from '@server/env';
+import { hurtomLoginAsync } from './hurtom-login.controller';
 
 const cheerio = require('cheerio');
 
@@ -36,9 +37,11 @@ app.post(API_URL.api.parser.hurtomAll.toString(), async (req: IRequest, res: IRe
 });
 
 export const parseHurtomAllPagesAsync = async (): Promise<IQueryReturn<IHurtomInfoResponse[]>> => {
+    const [loginInfo] = await hurtomLoginAsync()
     const allHurtomItems: IHurtomInfoResponse[] = [];
+    console.log('cookies', loginInfo?.cookies)
     const fnAsync: any = async (page: number) => {
-        const [hurtomItems, error] = await getHurtomPageAsync(page);
+        const [hurtomItems, error] = await getHurtomPageAsync(page, loginInfo?.cookies || []);
         if (hurtomItems) {
             allHurtomItems.push(hurtomItems as unknown as IHurtomInfoResponse);
             return fnAsync(++page);
@@ -70,22 +73,37 @@ function getMovieName(text: string) {
 
 
 export const HURTOM_HEADERS = {
-    headers: {
-        authority: 'toloka.to',
-        'sec-ch-ua': 'Chromium";v="104", " Not A;Brand";v="99", "Google Chrome";v="104',
-        'sec-ch-ua-mobile': '?0',
-        accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
-        cookie: ENV.toloka_cookie,
-    },
+    authority: 'toloka.to',
+    'sec-ch-ua': '"Google Chrome";v="131", "Chromium";v="131", "Not_A Brand";v="24"',
+    'sec-ch-ua-mobile': '?0',
+    'sec-ch-ua-platform': '"Windows"',
+    accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
+    'sec-fetch-dest': 'document',
+    'sec-fetch-mode': 'navigate',
+    'sec-fetch-site': 'same-origin',
+    'sec-fetch-user': '?1',
+    'upgrade-insecure-requests': '1',
+    Referer: 'https://toloka.to/',
+    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36',
 };
+
 const YEAR_REGEXP = /\((\d{4})\)/;
-const getHurtomPageAsync = async (page: any): Promise<IQueryReturn<IHurtomInfoResponse[]>> => {
+const getHurtomPageAsync = async (page: any, cookies: string[]): Promise<IQueryReturn<IHurtomInfoResponse[]>> => {
     const url = `https://toloka.to/f139${page ? '-' + page * 90 : ''}`;
     console.log('request url = ' + url);
-    const [response, error] = await toQuery(() => axios.get(url, HURTOM_HEADERS));
+    
+    const [response, error] = await toQuery(() => axios.get(url, { withCredentials: true, headers: {
+        ...HURTOM_HEADERS,
+        Cookie: cookies.map(cookie => cookie.split(';')[0]).join('; ')
+    },
+  
+}));
     if (error) {
         return [undefined, error];
     }
+    // console.log('request headers = ' + response?.config.headers);
+    console.log('response status = ' + response?.status);
+
     const html = response?.data;
     const $ = cheerio.load(html);
     let trs: any = [];
@@ -133,7 +151,7 @@ const getHurtomPageAsync = async (page: any): Promise<IQueryReturn<IHurtomInfoRe
         .filter((item: any) => item.name);
 
     if (movies.length === 0) {
-        return [undefined, 'hurtom no more films'];
+        return [undefined, 'hurtom no more films or login page' ];
     } else {
         return [movies, undefined];
     }

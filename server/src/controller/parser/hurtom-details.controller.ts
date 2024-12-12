@@ -20,17 +20,19 @@ interface IRequest extends IExpressRequest {
 interface IResponse extends IExpressResponse<IHurtomInfoByIdResponse, void> {}
 
 app.post(API_URL.api.parser.hurtomDetails.toString(), async (req: IRequest, res: IResponse) => {
-    const [data, error] = await parseHurtomDetailsAsync(req.body.id);
+    const [data, error] = await parseHurtomDetailsAsync(req.body.id, []);
     if (error) {
         return res.status(400).send(error);
     }
     return res.send(data);
 });
 
-export const parseHurtomDetailsAsync = async (id: string): Promise<IQueryReturn<IHurtomInfoByIdResponse>> => {
+export const parseHurtomDetailsAsync = async (id: string, cookies: string[]): Promise<IQueryReturn<IHurtomInfoByIdResponse>> => {
     const url = `https://toloka.to/${id}`;
     console.log('request url = ' + url);
-    const [response, error] = await toQuery(() => axios.get(url, HURTOM_HEADERS));
+    const [response, error] = await toQuery(() => axios.get(url, { withCredentials: true,headers: {...HURTOM_HEADERS, 
+        Cookie: cookies.map(cookie => cookie.split(';')[0]).join('; ')
+    }}));
     if (error) {
         return [undefined, error];
     }

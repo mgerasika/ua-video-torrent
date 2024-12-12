@@ -14,7 +14,7 @@ export interface ISetupBody {
     searchImdb: boolean;
     searchImdbIdInHurtom: boolean;
     fixRelationIntoMovieDb: boolean;
-    uploadTorrentToS3FromMovieDB: boolean;
+    deprecated_uploadTorrentToS3FromMovieDB: boolean;
 }
 
 interface IRequest extends IExpressRequest {
@@ -29,7 +29,7 @@ const schema = Joi.object<ISetupBody>({
     searchImdb: Joi.boolean().required(),
     fixRelationIntoMovieDb: Joi.boolean().required(),
     searchImdbIdInHurtom: Joi.boolean().required(),
-    uploadTorrentToS3FromMovieDB: Joi.boolean().required(),
+    deprecated_uploadTorrentToS3FromMovieDB: Joi.boolean().optional(),
 });
 
 app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IResponse) => {
@@ -98,7 +98,7 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
         }, {timeout:0});
     }
 
-    if (props.uploadTorrentToS3FromMovieDB) {
+    if (props.deprecated_uploadTorrentToS3FromMovieDB) {
         await oneByOneAsync(
             dbMovies.filter((m) => !m.torrent_url && m.download_id),
             async (movie) => {

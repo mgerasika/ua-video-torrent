@@ -21,7 +21,7 @@ app.post(API_URL.api.cdn.upload.toString(), async (req: IRequest, res: IResponse
     if (!req.body.id) {
         return res.status(400).send('id is undefined');
     }
-    const [data, error] = await uploadFileToCDNAsync({ downloadId: req.body.id, fileName: req.body.fileName });
+    const [data, error] = await uploadFileToCDNAsync({ downloadId: req.body.id, fileName: req.body.fileName, cookies:[] },);
     if (error) {
         return res.status(400).send(error);
     }
@@ -31,16 +31,19 @@ app.post(API_URL.api.cdn.upload.toString(), async (req: IRequest, res: IResponse
 export const uploadFileToCDNAsync = async ({
     downloadId,
     fileName,
+    cookies
 }: {
     downloadId: string;
     fileName: string;
+    cookies: string[]
 }): Promise<IQueryReturn<string>> => {
     const [response,error] = await toQuery(() =>
-        axios.get(`https://toloka.to/download.php?id=${downloadId}`, {
-            ...HURTOM_HEADERS,
+        axios.get(`https://toloka.to/download.php?id=${downloadId}`, {withCredentials: true,
+            headers: {...HURTOM_HEADERS,   Cookie: cookies.map(cookie => cookie.split(';')[0]).join('; ')},
+            
             responseType: 'arraybuffer',
             responseEncoding: 'utf-8',
-        }),
+        },),
     );
     if(error) {
         return [,'Failed to download torrent ' + error];

@@ -26,6 +26,7 @@ interface IApiUrl {
         parser: {
             hurtomAll: IUrlItem;
             hurtomDetails: IUrlItem;
+            hurtomLogin: IUrlItem;
         };
         s3: {
             id: (id?: string) => {
@@ -68,6 +69,7 @@ export const API_URL = createUrls<IApiUrl>({
         parser: {
             hurtomAll: EMPTY_URL_ITEM,
             hurtomDetails: EMPTY_URL_ITEM,
+            hurtomLogin: EMPTY_URL_ITEM
         },
         s3: {
             id: (id?: string) => ({

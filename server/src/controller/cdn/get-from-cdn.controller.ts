@@ -2,7 +2,7 @@ import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IExpressResponse, app } from '@server/express-app';
 import { IQueryReturn, toQuery, toQueryPromise } from '@server/utils/to-query.util';
-import { HURTOM_HEADERS } from '../parser/hurtom-all.controller';
+
 import fs from 'fs';
 import { cdnService } from './cdn.service';
 import { dbService } from '../db.service';

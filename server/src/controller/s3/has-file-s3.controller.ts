@@ -2,7 +2,6 @@ import axios from 'axios';
 import { API_URL } from '@server/constants/api-url.constant';
 import { IExpressResponse, app } from '@server/express-app';
 import { IQueryReturn, toQuery, toQueryPromise } from '@server/utils/to-query.util';
-import { HURTOM_HEADERS } from '../parser/hurtom-all.controller';
 import { S3_BUCKED_NAME, s3 } from './s3.service';
 const { headObject } = require('@aws-sdk/s3-request-presigner');
 

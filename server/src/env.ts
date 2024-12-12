@@ -6,9 +6,8 @@ export const ENV = {
     host: process.env.DB_HOST,
     database: 'ua-video-torrent',
     node_env: process.env.NODE_ENV,
-    toloka_cookie: process.env.TOLOKA_COOKIE,
     port: 5434,
-    cdn: 'https://ua-video-torrent-cdn.web.app/',
+    cdn: 'https://ua-video-torrent-next.web.app/',
     ONE_BY_ONE_TIMEOUT: 100
 };
 
