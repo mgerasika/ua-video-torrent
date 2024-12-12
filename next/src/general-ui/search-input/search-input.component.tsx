@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import 'twin.macro'
-import { useIsMounted } from '../../use-is-mounted.hook'
+import { useIsMounted } from '../../hooks/use-is-mounted.hook'
 import { CloseOutlined } from '@ant-design/icons'
 
 interface IProps {

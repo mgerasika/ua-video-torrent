@@ -5,7 +5,7 @@ export async function toQuery<T>(callback: () => Promise<T>): Promise<IQueryRetu
         const data = (await callback()) as T;
         return [data];
     } catch (ex) {
-        const error = (ex as Error) || 'empty error';
+        const error = (ex as Error);
         return [undefined, error];
     }
 }

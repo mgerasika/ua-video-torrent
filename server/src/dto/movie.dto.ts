@@ -18,7 +18,7 @@ export interface IMovieDto {
 
     size: number;
 
-    aws_s3_torrent_url: string;
+    torrent_url: string;
 
     imdb?: ImdbDto;
 
@@ -54,7 +54,7 @@ export class MovieDto implements IMovieDto {
     size!: number;
 
     @Column({ nullable: true, type: 'text', unique: true })
-    aws_s3_torrent_url!: string;
+    torrent_url!: string;
 
     @ManyToOne(() => ImdbDto)
     @JoinColumn({ name: 'imdb_id' })

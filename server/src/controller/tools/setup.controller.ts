@@ -1,19 +1,12 @@
 import { IExpressRequest, IExpressResponse, app } from '@server/express-app';
 import { API_URL } from '@server/constants/api-url.constant';
-import { IImdbResponse, getImdbAllAsync } from '../imdb/get-imdb-list.controller';
 import { postImdbAsync } from '../imdb/post-imdb.controller';
-import { getMoviesAllAsync } from '../movie/get-movie-list.controller';
-import { putMovieAsync } from '../movie/put-movie.controller';
-import { MovieDto } from '@server/dto/movie.dto';
 import { dbService } from '../db.service';
 import Joi from 'joi';
 import { validateSchema } from '@server/utils/validate-schema.util';
 import { createLogs } from '@server/utils/create-logs.utils';
 import { oneByOneAsync } from '@server/utils/one-by-one-async.util';
 import { IQueryReturn } from '@server/utils/to-query.util';
-import { EResolution } from '@server/enum/resolution.enum';
-import { ETranslation } from '@server/enum/translation.enum';
-import { ImdbDto } from '@server/dto/imdb.dto';
 
 export interface ISetupBody {
     updateHurtom: boolean;
@@ -60,6 +53,7 @@ app.post(API_URL.api.tools.setup.toString(), async (req: IRequest, res: IRespons
 export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string[]>> => {
     const logs = createLogs();
 
+    logs.push('request params ', props)
     const [dbMovies = []] = await dbService.movie.getMoviesAllAsync();
     if (props.updateHurtom) {
         const [parseItems = [], parseError] = await dbService.parser.parseHurtomAllPagesAsync();
@@ -80,7 +74,7 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
                     ua_name: hurtomItem.uaName,
                     year: +hurtomItem.year,
                     download_id: hurtomItem.downloadId,
-                    aws_s3_torrent_url: null as unknown as '',
+                    torrent_url: null as unknown as '',
                     size: hurtomItem.size,
                     hurtom_imdb_id: '',
                 });
@@ -99,12 +93,14 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
                 }
                 logs.push(`put movie success ${hurtomItem.id} `);
             }
-        });
+          
+
+        }, {timeout:0});
     }
 
     if (props.uploadTorrentToS3FromMovieDB) {
         await oneByOneAsync(
-            dbMovies.filter((m) => !m.aws_s3_torrent_url && m.download_id),
+            dbMovies.filter((m) => !m.torrent_url && m.download_id),
             async (movie) => {
                 const [hasFile] = await dbService.s3.hasFileS3Async({ id: movie.download_id });
                 if (hasFile) {
@@ -120,32 +116,35 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
                 logs.push(`success upload to s3`, movie.download_id);
                 await dbService.movie.putMovieAsync(movie.id, {
                     ...movie,
-                    aws_s3_torrent_url: successUpload as string,
+                    torrent_url: successUpload as string,
                 });
             },
         );
     }
 
     if (props.uploadToCdn) {
+        const filteredMovies = dbMovies.filter((movie) => !movie.torrent_url).filter((movie) => movie.download_id);
+        logs.push('Movies without cdn file ', filteredMovies.length)
         await oneByOneAsync(
-            dbMovies.filter((movie) => !movie.aws_s3_torrent_url && movie.download_id),
+            filteredMovies,
             async (movie) => {
-                const fileName = `${movie.download_id}.torrent`;
+                const fileName = sanitizeFilename( `${movie.title}-${movie.download_id}.torrent`);
                 const [hasFile] = await dbService.cdn.hasFileCDNAsync({ fileName: fileName });
                 if (hasFile) {
+                    console.log('File already exit', fileName)
                     return;
                 }
                 const [successUpload, errorUpload] = await dbService.cdn.uploadFileToCDNAsync({
                     fileName: fileName,
-                    hurtomId: movie.download_id,
+                    downloadId: movie.download_id,
                 });
                 if (errorUpload) {
                     return logs.push(`error upload to cdn`, errorUpload);
                 }
-                logs.push(`success upload to cdn`, movie.download_id);
+                logs.push(`success upload to cdn. Path = `, successUpload);
                 await dbService.movie.putMovieAsync(movie.id, {
                     ...movie,
-                    aws_s3_torrent_url: successUpload || '',
+                    torrent_url: successUpload || '',
                 });
             },
         );
@@ -188,15 +187,16 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
     if (props.searchImdb) {
         const [imdbInfoItems = []] = await dbService.imdb.getImdbAllAsync();
 
-        await oneByOneAsync(dbMovies, async (movieItem) => {
-            const imdbInfo = imdbInfoItems.find(
+        const filtered = dbMovies.filter(movieItem =>{
+            return !imdbInfoItems.find(
                 (imdbItem) =>
                     imdbItem.id === movieItem.hurtom_imdb_id ||
                     imdbItem.id === movieItem.imdb_id,
-            );
-            if (imdbInfo) {
-                return;
-            }
+            )
+        })
+        logs.push('Search imdb for = ' + filtered.length);
+        await oneByOneAsync(filtered, async (movieItem) => {
+            
             const [newImdbInfo, newImdbInfoError] = await dbService.imdb.searchImdbMovieInfoAsync(
                 movieItem.en_name,
                 movieItem.year + '',
@@ -244,8 +244,16 @@ export const setupAsync = async (props: ISetupBody): Promise<IQueryReturn<string
                 }
                 logs.push(`put movie imdb_id relation success ${movieItem.id} `);
             }
-        });
+        },{timeout:0});
     }
 
     return [logs.get(), undefined];
 };
+
+function sanitizeFilename(filename: string) {
+    // Define a regex to match any invalid characters for file names
+    const invalidChars = /[\/\\:*?"<>|]/g;
+  
+    // Replace invalid characters with a dash or any other symbol you prefer
+    return filename.replace(invalidChars, '-');
+  }
